@@ -407,6 +407,21 @@
 			}
 		},
 		onLoad() {
+			// #ifdef APP-PLUS
+			const value = uni.getStorageSync('launchFlag');
+			console.log(value)
+			if(value !== true){
+				uni.setStorage({
+					key:'launchFlag',
+					data:true,
+					success:function(){
+						uni.redirectTo({
+							url:'guidePage'
+						})
+					}
+				})
+			}
+			// #endif
 			// var a = this.$oSit.Interface.address.Url;
 			// console.log(a)
 			//加载应用名称
@@ -433,7 +448,7 @@
 			// this.GetRotationChart();
 			this.loadData();
 			//#ifdef APP-PLUS
-			this.loadService();
+			// this.loadService();
 			this.checkLogin();//登录是否过期
 			//#endif
 
