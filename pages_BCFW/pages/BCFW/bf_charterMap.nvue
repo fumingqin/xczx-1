@@ -1,0 +1,800 @@
+<template>
+	<view>
+		<map id="map1" ref="map1" class="map" :style="{height:mapHeight}" :scale="scale" :longitude="longitude" :latitude="latitude"
+		 :polyline="polyline" :markers="markers" :show-location="true">
+		</map>
+		<image @click="back" src="../../static/BCFW/choice/charterMap/back1.png" style="width: 120rpx;height: 120rpx;position: fixed;top: 40px;left: 1px;"></image>
+		<view style="position: fixed;bottom: 0upx; ">
+			<image src="../../static/BCFW/choice/charterMap/police.png" style="width: 120rpx;height: 120rpx;margin-left: 10rpx;"
+			 @click="callPolice"></image>
+			<!-- 行程信息   -->
+			<scroll-view class="cm_content" scroll-y="true">
+				<view class="ct_state" v-if="driverInformation.or_Type == 0">
+					<text class="sa_text">等待接单</text>
+				</view>
+				<view class="ct_state" v-if="driverInformation.or_Type == 1">
+					<text class="sa_text">司机已接单</text>
+				</view>
+				<view class="ct_state" v-if="driverInformation.or_Type == 2">
+					<text class="sa_text">司机已出发</text>
+				</view>
+				<view class="ct_state" v-if="driverInformation.or_Type == 3">
+					<text class="sa_text">司机已到出发地</text>
+				</view>
+				<view class="ct_state" v-if="driverInformation.or_Type == 4">
+					<text class="sa_text">订单执行中</text>
+				</view>
+				<view class="ct_state" v-if="driverInformation.or_Type == 5">
+					<text class="sa_text">待支付</text>
+					<text class="sa_popu" @click="open">去支付></text>
+				</view>
+				<view class="ct_state" v-if="driverInformation.or_Type == 6">
+					<text class="sa_text">支付完成</text>
+				</view>
+				<view class="ct_state" v-if="driverInformation.or_Type == 7 ||driverInformation.or_Type == 8">
+					<text class="sa_text">已取消</text>
+				</view>
+				<view class="ct_state" v-if="driverInformation.or_Type == 9">
+					<text class="sa_text">支付失败</text>
+				</view>
+				<view class="ct_state" v-if="driverInformation.or_Type == 10">
+					<text class="sa_text">到达目的地</text>
+				</view>
+				<view class="ct_state" v-if="driverInformation.or_Type == 11">
+					<text class="sa_text">待补款</text>
+					<text class="sa_popu" @click="open">去支付></text>
+				</view>
+				<view class="ct_state" v-if="driverInformation.or_Type == 12">
+					<text class="sa_text">补款完成</text>
+				</view>
+				<view class="ct_state" v-if="driverInformation.or_Type == 13">
+					<text class="sa_text">订单完成</text>
+				</view>
+				<!-- <uni-popup ref="popup" type="bottom">
+					<view class="po_boxVlew">
+						<view class="bv_topText">
+							<view></view>
+							<text class="tt_text">支付{{driverInformation.name}}师傅车费</text>
+							<text class="tt_icon jdticon icon-fork " @click="close(1)"></text>
+						</view>
+						<view class="bv_cost">
+							<text class="cs_text">{{driverInformation.overtimeCharge}}</text>
+							<text class="cs_text2">元</text>
+						</view>
+						<text class="bv_detailed">费用明细></text>
+						<view class="bv_coupon">
+							<text class="cp_text">优惠券</text>
+							<text class="cp_text2">请选择优惠券></text>
+						</view>
+						<view class="bv_paymentMethod">
+							<view class="pm_choice">
+								<view style="flex-direction: row;">
+									<image class="pm_image" src="../../static/BCFW/choice/charterMap/weixin.png"></image>
+									<text class="pm_text">微信</text>
+								</view>
+								<radio-group class="labelClass">
+									<radio style="color:#00c700;" :value="weixinId" :checked="choiceIndex ===1 ? true : false" @click="Selection" />
+								</radio-group>
+							</view>
+							<view class="pm_choice2">
+								<view style="flex-direction: row;">
+									<image class="pm_image" src="../../static/BCFW/choice/charterMap/zhifubao.png"></image>
+									<text class="pm_text">支付宝</text>
+								</view>
+								<radio-group class="labelClass">
+									<radio :color="'#01aaef'" :value="zhifubaoId" :checked="choiceIndex2 ===1 ? true : false" @click="Selection2" />
+								</radio-group>
+							</view>
+							<button class="bt_remind4" type="warn">确定支付{{driverInformation.overtimeCharge}}元</button>
+						</view>
+					</view>
+				</uni-popup> -->
+				<!-- 司机信息 -->
+				<view class="ct_information" v-if="driverInformation.or_Type == 1 || driverInformation.or_Type == 2
+				 || driverInformation.or_Type == 3 || driverInformation.or_Type == 4 || driverInformation.or_Type == 9 || driverInformation.or_Type == 10
+				   || driverInformation.or_Type == 11 || driverInformation.or_Type == 12 || driverInformation.or_Type == 13">
+					<text class="if_topTitle">司机信息</text>
+					<view class="if_text">
+						<text class="te_text">车牌号:{{driverInformation.cm_licensePlate}}</text>
+						<text class="te_text">车型:{{driverInformation.cm_vehicleType}}</text>
+					</view>
+					<view class="if_text">
+						<text class="te_text">姓名:{{(driverInformation.cm_driverName.substr(0,1))+'师傅'}}</text>
+						<text class="te_text">驾龄:{{driverInformation.cm_vehicleAge}}年</text>
+					</view>
+					<view class="if_text">
+						<text class="te_text">电话:{{(driverInformation.or_driverTelephone.substr(0,3))+'****'+(driverInformation.or_driverTelephone.substr(7,11))}}</text>
+					</view>
+					<view class="if_button" v-if="driverInformation.or_Type == 1 || driverInformation.or_Type == 2 || driverInformation.or_Type == 3 
+					 || driverInformation.or_Type == 4">
+						<button class="bt_remind3" type="warn" @click="tel(driverInformation.or_driverTelephone)">联系司机</button>
+					</view>
+				</view>
+
+
+				<!-- 费用详情 -->
+				<view class="ct_feeDetails" v-if="driverInformation.or_class == '包车-定制'">
+					<text class="if_topTitle2">费用详情</text>
+					<view class="if_text">
+						<text class="te_text">包车天数:{{driverInformation.cm_day}}天</text>
+						<!-- <text class="te_text">已包时长:{{driverInformation.cm_duration}}时</text> -->
+					</view>
+					<!-- <view class="if_text">
+						<text class="te_text">包车费用:{{driverInformation.cm_money}}元</text>
+						<text class="te_text">超时费用:{{driverInformation.cm_timeout}}元</text>
+					</view>
+					<view class="if_text">
+						<text class="te_text">总计:{{driverInformation.cm_totalCost}}元</text>
+					</view> -->
+				</view>
+				<!-- 路线信息 -->
+				<view class="ct_routeInformation">
+					<text class="if_topTitle3">路线信息</text>
+					<view class="if_text">
+						<text class="te_text2">上车点:{{driverInformation.or_boardingPoint}}</text>
+					</view>
+					<view class="if_text">
+						<text class="te_text3">目的地:{{driverInformation.or_destination}}</text>
+					</view>
+					<view class="if_text">
+						<!-- <text class="te_text">总里程:{{Math.round(driverInformation.cm_totalLi)}}</text> -->
+						<text class="te_text">总时长:{{Math.round(driverInformation.cm_totalDuration)}}分</text>
+					</view>
+				</view>
+			</scroll-view>
+		</view>
+		<!-- <uni-popup ref='callPolice' :animation='true' type='center' :maskClick='false'> -->
+			<!--一键报警-->
+			<!-- <view class="popupBlock" style="margin: 0 auto;">
+				<view class="popupTitle">
+					<view style="width: 72rpx;"></view>
+					<text class="popupTitleFont">一键报警</text>
+					<uni-icons @click="cancle" color='#999999' size='24' type='closeempty'></uni-icons>
+				</view>
+				<view>
+					<picker @change='pickerChange' mode="selector" :value="pickerValue" :range='callPoliceArr' style="align-items: center;">
+						<text class="popupTitleFont">{{reason}}</text>
+					</picker>
+					<textarea name='remark' v-model="remark" placeholder="备注,可不填"></textarea>
+					<button @click="sendCall" class="popupButtonOk">
+						<text class="popupButtonOkFont">确定</text>
+					</button>
+				</view>
+			</view> -->
+		<!-- </uni-popup> -->
+	</view>
+</template>
+
+<script>
+	import $taxi from '@/common/Czc.js';
+	import $bcfw from '@/common/BCFW/bcfw.js'
+	import uniIcons from '@/pages_BCFW/components/BCFW/uni-icons/uni-icons.vue';
+	import Map from '@/pages_BCFW/components/BCFW/my-openMap/openMap.js';
+	import uniPopup from '@/pages_BCFW/components/BCFW/uni-popup/uni-popup.vue';
+	export default {
+		components: {
+			uniIcons,
+			uniPopup
+		},
+		data() {
+			return {
+				scale: 14,
+				longitude: "118.600608", //地图中心点经度
+				latitude: "24.889217", //地图中心点纬度
+				points: [],
+				polyline: [],
+				markers: [],
+				mapHeight: '',
+				viewHeight: '',
+				resultData: {},
+				status: 0,
+				directionInterval: 0,
+				orderInterval: 0,
+				callPoliceArr: [
+					'车辆损坏',
+					'身体不适'
+				],
+				reason: '请选择报警原因',
+				pickerValue: -1,
+				remark: '',
+				or_number: '',
+				driverInformation: {
+					or_Type: '',
+					cm_licensePlate: '',
+					cm_vehicleType: '',
+					cm_driverName: '',
+					cm_vehicleAge: '',
+					or_driverTelephone: '',
+					cm_day: '',
+					cm_duration: '',
+					cm_money: '',
+					cm_timeout: '',
+					cm_totalCost: '',
+					or_boardingPoint: '',
+					or_destination: '',
+					cm_totalLi: '',
+					cm_totalDuration: '',
+				},
+
+				UrgentPhone: "110", //紧急联系人电话
+				weixinId: 1,
+				zhifubaoId: 2,
+				choiceIndex: 0,
+				choiceIndex2: 0,
+			}
+		},
+		onLoad(options) {
+			var that = this;
+			that.or_number = JSON.parse(options.or_number);
+			that.userInfo = uni.getStorageSync('userInfo') || '';
+			that.bcfwData();
+			// that.routeInit();
+			// that.setMarker(1, 118.600608, 24.889217, '../../static/BCFW/choice/charterMap/Start.png');
+			// that.setMarker(2, 118.613688, 24.912702, '../../static/BCFW/choice/charterMap/End.png');
+			// that.getDirectionDriving(that.longitude + ',' + that.latitude, '118.613688,24.912702');
+			uni.getSystemInfo({
+				//设置地图高度为可使用的高度
+				success: function(res) {
+					that.mapHeight = res.windowHeight + 'px';
+					that.viewHeight = (res.windowHeight * 0.4) + 'px'
+				}
+			});
+		},
+		methods: {
+			bcfwData: function() {
+				uni.request({
+					url: $bcfw.Interface.fw_charterDetails.value,
+					method: $bcfw.Interface.fw_charterDetails.method,
+					header: {
+						'content-type': 'application/json'
+					},
+					data: {
+						or_number: this.or_number,
+					},
+					success: (res) => {
+						// console.log(res)
+						this.driverInformation = res.data.data;
+						// this.driverInformation.cm_totalLi = res.data.data.cm_totalLi.toFixed(0);
+						// this.driverInformation.cm_totalDuration = Math.round(res.data.data.cm_totalDuration);
+					}
+				})
+			},
+
+			//---------------------------------模拟接口数据---------------------------------
+			// async routeInit() {
+			// 	let driverInformation = await this.$api.lyfwcwd('driverInformation');
+			// 	this.driverInformation = driverInformation.data;
+
+			// if(this.driverInformation.overtimeCharge>0){
+			// 	this.$refs.popup.open();
+			// }else{
+
+			// }
+			// console.log(driverInformation.data)
+			// },
+
+			//------------------------------弹框事件-----------------------------------------
+
+			// open() {
+			// 	// 需要在 popup 组件，指定 ref 为 popup
+			// 	this.$refs.popup.open()
+			// },
+			// //关闭
+			// close(e) {
+			// 	if (e == 1) {
+			// 		this.$refs.popup.close()
+			// 	}
+			// },
+
+			// //picker相关
+			// callPolice: function() {
+			// 	let that = this;
+			// 	that.$refs.callPolice.open();
+			// },
+			// cancle: function() {
+			// 	let that = this;
+			// 	that.$refs.callPolice.close();
+			// },
+			// pickerChange: function(e) {
+			// 	let that = this;
+			// 	// console.log(e);
+			// 	that.pickerValue = e.detail.value;
+			// 	that.reason = that.callPoliceArr[e.detail.value];
+			// },
+			// sendCall: function() {
+			// 	let that = this;
+			// 	if (that.pickerValue < 0) {
+			// 		uni.showToast({
+			// 			title: '请选择一个原因',
+			// 			icon: 'none'
+			// 		});
+			// 		return;
+			// 	}
+			// 	//发送
+			// 	// console.log(that.reason);
+			// 	// console.log(that.remark);
+			// 	uni.showToast({
+			// 		title: '发送成功',
+			// 		icon: 'none',
+			// 		success: function() {
+			// 			that.cancle();
+			// 		}
+			// 	})
+			// },
+
+			back: function() {
+				var that = this;
+				uni.navigateBack({});
+			},
+
+			Selection: function() {
+				if (this.choiceIndex == 0) {
+					this.choiceIndex = 1;
+				} else {
+					this.choiceIndex = 0;
+				}
+			},
+
+			Selection2: function() {
+				if (this.choiceIndex2 == 0) {
+					this.choiceIndex2 = 1;
+				} else {
+					this.choiceIndex2 = 0;
+				}
+			},
+
+			setMarker: function(id, lon, lat, iconPath) {
+				var width = 20;
+				var height = 20;
+				//描绘点的方法
+				var that = this;
+				var marker = new Object();
+				//画终点经纬度
+				marker = {
+					id: id,
+					latitude: lat,
+					longitude: lon,
+					iconPath: iconPath,
+					width: width,
+					height: height
+				};
+				that.markers.push(marker);
+			},
+			getDirectionDriving: function(startLonLat, endLonLat) {
+				//调用高德api取得路径规划并绘制线路 
+				var that = this;
+				uni.request({
+					url: $bcfw.InterfaceAddress[0],
+					data: {
+						startLonLat: startLonLat,
+						endLonLat: endLonLat,
+					},
+					method: "GET",
+					success: function(res) {
+						//日后会加入定时，此处需清空
+						that.points = [];
+						that.polyline = [];
+
+						var polylineArr = [];
+						var points = [];
+
+						polylineArr = res.data.Polyline;
+
+						for (var i = 0; i < polylineArr.length; i++) {
+							var arr = polylineArr[i].split(';');
+							for (var j = 0; j < arr.length; j++) {
+								points.push(arr[j]);
+							}
+						}
+						//根据文件建设对象经纬度数组
+						for (var i = 0; i < points.length; i++) {
+							var arr = points[i].split(',');
+							var obj = {
+								longitude: arr[0],
+								latitude: arr[1]
+							}
+							that.points.push(obj);
+						}
+						var obj = {
+							points: that.points,
+							color: "#4BDD25",
+							arrowLine: true,
+							width: 5
+						};
+						that.polyline.push(obj);
+					},
+					fail: function(res) {
+						// console.log(res);
+					}
+				});
+			},
+			
+			//-------------------------拨打电话-------------------------
+			tel: function(e) {
+				uni.makePhoneCall({
+					phoneNumber: e
+				})
+			},
+			//-------------------------一键报警-------------------------
+			callPolice: function() {
+				//一键报警
+				let that = this;
+				if (that.userInfo.autograph != "") {
+					that.UrgentPhone = that.userInfo.autograph
+				}
+				uni.showModal({
+					title: "一键报警",
+					content: "注意：恶意报警将承担相关法律责任",
+					confirmText: "报警",
+					confirmColor: "#E74246",
+					success(res) {
+						if (res.confirm) {
+							uni.getLocation({
+								type: 'gcj02',
+								geocode: true,
+								success: function(res) {
+									//#ifdef MP-WEIXIN
+									that.getAddressByLocation(res)
+									// #endif
+									// #ifdef APP-PLUS
+								 	uni.request({
+										url: $taxi.Interface.addPassengerOneTouchAlarm.value,
+										method: $taxi.Interface.addPassengerOneTouchAlarm.method,
+										data: {
+											orderNumber: that.orderNumber,
+											passengerNumber: that.userInfo.userId,
+											Lon: res.longitude,
+											Lat: res.latitude,
+											Address: that.packAddress(res.address),
+										},
+										success(res) {
+											console.log(res)
+											uni.makePhoneCall({ //拨打紧急联系人电话
+												phoneNumber: that.UrgentPhone
+											});
+											if (res.data.status) {
+												uni.showToast({
+													title: res.data.msg,
+													icon: "none"
+												})
+											} else {
+												uni.showToast({
+													title: res.data.msg,
+													icon: "none"
+												})
+											}
+										},
+										fail() {
+											uni.makePhoneCall({ //拨打紧急联系人电话
+												phoneNumber: that.UrgentPhone
+											});
+											uni.showToast({
+												title: "网络连接失败",
+												icon: "none"
+											})
+										}
+									})
+									// #endif
+								}
+							});
+						}
+					}
+				})
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.map {
+		width: 750rpx;
+	}
+
+	.popupBlock {
+		width: 650rpx;
+		padding: 30rpx;
+		background-color: #FFFFFF;
+		border-radius: 12rpx;
+	}
+
+	.popupTitle {
+		margin-bottom: 50rpx;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.popupTitleFont {
+		font-size: 38rpx;
+		font-family: Source Han Sans SC;
+		font-weight: 400;
+		color: #333333;
+	}
+
+	.popupButtonChoose {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		padding: 30rpx;
+		background-color: #FFFFFF;
+		border-color: #AAAAAA;
+		border-width: 1rpx;
+		border-radius: 12rpx;
+	}
+
+	.popupButtonChooseFont {
+		font-size: 36rpx;
+		font-family: Source Han Sans SC;
+		font-weight: 400;
+		color: #333333;
+	}
+
+	.popupButtonOk {
+		margin-top: 50rpx;
+		// padding: 30rpx;
+		background-color: #FC6A6C;
+		box-shadow: 0px 7px 38px 8px rgba(216, 48, 75, 0.15);
+		border-radius: 12rpx;
+	}
+
+	.popupButtonOkFont {
+		font-size: 36rpx;
+		font-family: Source Han Sans SC;
+		font-weight: 400;
+		color: #FFFFFF;
+	}
+
+	.cm_content {
+		margin: 28upx 25upx 28upx 25upx;
+		width: 698upx;
+		height: 600upx;
+	}
+
+	.ct_state {
+		flex-direction: row;
+		justify-content: space-between;
+		width: 698upx;
+		border-radius: 10px;
+		padding: 30upx;
+		background-color: #fff;
+		margin-bottom: 20upx;
+	}
+
+	.sa_text {
+		font-size: 30upx;
+		text-align: left;
+	}
+
+	.sa_popu {
+		font-size: 30upx;
+		color: #06b4fd;
+	}
+
+	.ct_information {
+		width: 698upx;
+		border-radius: 10px;
+		background-color: #fff;
+		padding: 30upx 0;
+		margin-bottom: 20upx;
+	}
+
+	.if_topTitle {
+		padding-left: 31upx;
+		font-size: 36upx;
+		font-weight: bold;
+	}
+
+	.if_button {
+		// flex-direction: row;
+		// justify-content: space-between;
+		padding-top: 37upx;
+	}
+
+	.bt_remind {
+		flex-direction: row;
+		justify-content: space-between;
+		margin-left: 31upx;
+		width: 305upx;
+		font-size: 34upx;
+	}
+
+	.bt_remind2 {
+		flex-direction: row;
+		justify-content: space-between;
+		margin-right: 31upx;
+		width: 305upx;
+		font-size: 34upx;
+	}
+
+	.bt_remind3 {
+		flex-direction: row;
+		justify-content: center;
+		margin: 0 31upx;
+		width: 639upx;
+		font-size: 34upx;
+	}
+
+	.ct_feeDetails {
+		width: 698upx;
+		border-radius: 10px;
+		background-color: #fff;
+		margin-bottom: 20upx;
+		padding: 30upx 0;
+	}
+
+	.if_topTitle2 {
+		padding-left: 31upx;
+		font-size: 36upx;
+		font-weight: bold;
+	}
+
+	.ct_routeInformation {
+		width: 698upx;
+		border-radius: 10px;
+		background-color: #fff;
+		margin-bottom: 40upx;
+		padding: 30upx 0;
+
+	}
+
+	.if_topTitle3 {
+		padding-left: 31upx;
+		font-size: 36upx;
+		font-weight: bold;
+		// padding-bottom: 20upx;
+	}
+
+	//内容公共样式
+	.if_text {
+		flex-direction: row;
+		justify-content: space-between;
+		padding-left: 31upx;
+		padding-top: 33upx;
+
+	}
+
+	.te_text {
+		flex-direction: row;
+		justify-content: space-between;
+		font-size: 30upx;
+		width: 320upx;
+	}
+
+	.te_text2 {
+		// overflow: hidden;
+		// lines: 1;
+		// text-overflow: ellipsis;
+		// /* #ifdef MP-WEIXIN*/
+		// white-space: nowrap;
+		// /*#endif*/
+		flex-direction: row;
+		justify-content: space-between;
+		font-size: 30upx;
+		// width: 300upx;
+		height: 40upx;
+	}
+
+	.te_text3 {
+		// overflow: hidden;
+		// lines: 1;
+		// text-overflow: ellipsis;
+		// /* #ifdef MP-WEIXIN*/
+		// white-space: nowrap;
+		// /*#endif*/
+		flex-direction: row;
+		justify-content: space-between;
+		font-size: 30upx;
+		// width: 320upx;
+		height: 40upx;
+	}
+
+	//---支付弹框样式-----
+	//顶部
+	.po_boxVlew {
+		background-color: #FFFFFF;
+		border-radius: 30rpx;
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
+	}
+
+	.bv_topText {
+		flex-direction: row;
+		justify-content: space-between;
+		padding-top: 48upx;
+		padding-left: 42upx;
+		padding-right: 42upx;
+	}
+
+	.tt_text {
+		font-size: 38upx;
+		font-weight: bold;
+	}
+
+	.tt_icon {
+		font-size: 32upx;
+	}
+
+	//价格
+	.bv_cost {
+		flex-direction: row;
+		justify-content: center;
+		padding-top: 117upx;
+	}
+
+	.cs_text {
+		font-size: 60upx;
+		font-weight: bold;
+	}
+
+	.cs_text2 {
+		top: 24upx;
+		left: 5upx;
+		font-size: 37upx;
+	}
+
+	//费用明细
+	.bv_detailed {
+		text-align: center;
+		font-size: 32upx;
+		color: #aaa;
+	}
+
+	//优惠券
+	.bv_coupon {
+		flex-direction: row;
+		justify-content: space-between;
+		margin-top: 70upx;
+		margin-left: 58upx;
+		margin-right: 58upx;
+		padding-bottom: 32upx;
+		border-bottom-style: dotted;
+		border-bottom-color: #F5F5F5;
+		border-bottom-width: 1px;
+	}
+
+	.cp_text {
+		font-size: 32upx;
+	}
+
+	.cp_text2 {
+		font-size: 32upx;
+		color: #aaa;
+	}
+
+	//选择付款方式
+	.bv_paymentMethod {
+		padding-top: 43upx;
+		padding-left: 58upx;
+		padding-right: 58upx;
+	}
+
+	.pm_choice {
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+	.pm_choice2 {
+		flex-direction: row;
+		justify-content: space-between;
+		padding-top: 63upx;
+	}
+
+	.pm_image {
+		width: 42upx;
+		height: 42upx;
+	}
+
+	.pm_text {
+		font-size: 32upx;
+		padding-left: 20upx;
+	}
+
+	.bt_remind4 {
+		flex-direction: row;
+		justify-content: center;
+		margin-top: 90upx;
+		margin-bottom: 76upx;
+		width: 639upx;
+		font-size: 34upx;
+	}
+</style>

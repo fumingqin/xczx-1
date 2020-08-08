@@ -1,0 +1,723 @@
+<template>
+	<view>
+		<map id="map1" ref="map1" class="map" :style="{height:mapHeight}" :scale="scale" :longitude="longitude" :latitude="latitude"
+		 :polyline="polyline" :markers="markers" :show-location="false">
+		</map>
+
+		<view style="position: fixed;bottom: 0;">
+			<view class="ct_state">
+				<text class="sa_text">行程</text>
+				<text class="sa_text2">{{drivingRecord.PayPrice/100}}元</text>
+				<text class="sa_text3" @click="jump">查看明细></text>
+			</view>
+
+			<view class="ct_state2">
+				<view></view>
+				<text class="sa_text4">请对本次骑行进行评价！</text>
+				<view></view>
+				<view class="st_view">
+					<!-- 评价 -->
+					<view></view>
+					<text class="vi_evaluate" @click="open">去评价</text>
+					<view></view>
+					<!-- 满意 -->
+					<!-- <image class="vi_img" src="../../static/GRZY/manyi.png" @click="open"></image> -->
+					<!-- 不满意 -->
+					<!-- <image class="vi_img2" src="../../static/GRZY/bumanyi.png" @click="open"></image> -->
+				</view>
+			</view>
+
+			<!-- 满意弹出框 -->
+			<uni-popup ref="bottomPopup" type="bottom">
+				<form @submit="submit">
+					<view class="dt_view">
+						<view style="flex-direction: row;
+						justify-content: space-between; 
+						margin-top: 20rpx;">
+							<view>
+								<!-- 请勿删除 -->
+							</view>
+							<view>
+								<text style="font-size:38rpx;
+								font-family:Source Han Sans SC;
+								font-weight:400;color:#2C2D2D;">评价</text>
+							</view>
+							<view style="right: 30rpx;">
+								<uni-icons @click="close(1)" type="closeempty" size="30"></uni-icons>
+							</view>
+						</view>
+						<!-- 五角星 -->
+						<view style="margin-top: 60rpx; margin-left: 92rpx;">
+							<uni-rate size="28" margin="20" :value="num" @change="onchange" />
+						</view>
+						<!-- 评价框 -->
+						<view v-if="num>3" style="flex-direction: row; 
+						flex-wrap: wrap; 
+						justify-content: flex-start; 
+						margin-left: 40rpx; 
+						margin-top: 40rpx; 
+						margin-right: 20rpx;">
+							<view :class="[rSelect.indexOf(item)>-1?'cur':'unCur']" @tap="tapInfo(item)" v-for="(item,index) in evaluate"
+							 :key="index">
+								<text :class="[rSelect.indexOf(item)>-1?'color':'unColor']">{{item}}</text>
+							</view>
+						</view>
+						<view v-if="num<=3" style="flex-direction: row; 
+						flex-wrap: wrap; 
+						justify-content: flex-start; 
+						margin-left: 40rpx; 
+						margin-top: 40rpx; 
+						margin-right: 20rpx;">
+							<view :class="[rSelect1.indexOf(item)>-1?'cur':'unCur']" @tap="tapInfo1(item)" v-for="(item,index) in badevaluate"
+							 :key="index">
+								<text :class="[rSelect1.indexOf(item)>-1?'color':'unColor']">{{item}}</text>
+							</view>
+						</view>
+						<!-- 文本框 -->
+						<view>
+							<textarea placeholder="请提出您的宝贵意见！" style="width:648rpx;
+							height:164rpx;
+							border-width: 1px;
+							border-color: #AAAAAA;
+							border-radius:6rpx;
+							margin-top: 30rpx; 
+							margin-left: 40rpx;
+							font-size:28rpx;
+							font-family:Source Han Sans SC;
+							font-weight:300;
+							color:#999999; 
+							padding: 10rpx;"
+							 name="textareaValue" />
+						</view>
+					<!-- 提交按钮 -->
+					<view>
+						<button form-type="submit" style="width:648rpx;
+						height:84rpx; 
+						border-radius:12rpx; 
+						background-color: #FC4646;
+						border-color: #AAAAAA;
+						 margin-top: 30rpx; 
+						 margin-left: 40rpx;">
+							<text style="color: #FFFFFF;
+							align-items: center; 
+							font-size: 34rpx; 
+							font-weight:400; 
+							font-family:Source Han Sans SC;">提交</text>
+						</button>
+					</view>
+				</view>
+				</form>
+			</uni-popup>
+			
+			<view class="ct_state3">
+				<view></view>
+				<text class="sa_text5">骑行疑问？</text>
+				<view></view>
+
+				<view class="st_view2">
+					<view class="vi_view">
+						<text class="vi_text">报故障</text>
+					</view>
+					<view class="vi_view2">
+						<text class="vi_text2">联系客服</text>
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	import $bcfw from '@/common/BCFW/bcfw.js';
+	import uniPopup from '@/pages_DDQC/components/GRZY/uni-popup/uni-popup.vue';
+	import Map from '@/pages_DDQC/components/GRZY/my-openMap/openMap.js';
+	import uniIcons from "@/components/Order/uni-icons/uni-icons.vue";
+	import uniRate from '@/components/Order/StarJudge/uni-rate/uni-rate.vue';
+	export default {
+		components: {
+			uniPopup,
+			uniIcons,
+			uniRate,
+		},
+		data() {
+			return {
+				selectContent:'',
+				scale: 14,
+				longitude: "", //地图中心点经度
+				latitude: "", //地图中心点纬度
+				evaluate: ['单车外观好', '骑行舒适', '座椅舒适', '单车开锁快', '车辆上手快',],
+				badevaluate: ['外观不好', '骑行不舒适', '座椅不舒适', '开锁坏了',],
+				textareaValue:"",//意见信息
+				show:true,//满意或不满意状态  true为满意  false为不满意
+				rSelect:[],//高评星选择
+				rSelect1:[],//低评星选择
+				num:'5',//星星数量
+				points: [],
+				polyline: [],
+				markers: [],
+				mapHeight: '',
+				viewHeight: '',
+				time: 10,
+				minute: 26,
+				travelTime:'10分',
+				expenseDetail: '',
+				drivingRecord:'',
+				HireCoord:'',//租车经纬度
+				RestoreCoord:'',//还车经纬度
+				StartLon:'',//起点经度
+				StartLat:'',//起点纬度
+				EndLon:'',//终点经度
+				EndLat:'',//终点纬度
+				HireTime:'',
+				PayPrice:'',
+				RentType:'',
+			}
+		},
+		onLoad(param) {
+			var that = this;
+			uni.getSystemInfo({
+				//设置地图高度为可使用的高度
+				success: function(res) {
+					that.mapHeight = res.windowHeight + 'px';
+					that.viewHeight = (res.windowHeight * 0.4) + 'px'
+				}
+			});
+			that.orderData();
+			that.lunBoInit();
+			that.setMarkers();
+			// that.setMarker(1, that.StartLon, that.StartLat, '../../static/GRZY/start.png');
+			// that.setMarkers(2, that.EndLon, that.EndLat, '../../static/GRZY/end.png');
+			// that.getDirectionDriving();
+		},
+
+		methods: {
+			//--------------------------订单缓存--------------------------------
+			orderData:function(){
+				try {
+				    const res = uni.getStorageSync('bicycleOrderInfo');
+				    if (res) {
+				        // console.log('订单缓存数据',res)
+				        this.drivingRecord=res;
+						this.HireTime=res.HireTime;
+						this.PayPrice=res.PayPrice;
+						this.RentType=res.RentType;
+						// console.log(this.HireTime)
+						// console.log(this.PayPrice)
+						var HireCoord=this.drivingRecord.HireCoord;
+						var RestoreCoord=this.drivingRecord.RestoreCoord;
+						console.log('订单缓存数据2',this.drivingRecord)
+						
+						var arr = HireCoord.split(',');
+						for(var i=0;i< arr.length;i++){
+							this.StartLon=arr[0];
+							this.StartLat=arr[1];
+							this.longitude=arr[0];
+							this.latitude=arr[1]
+						}
+						
+						console.log(this.StartLon)
+						console.log(this.StartLat)
+						
+						var arr2 = RestoreCoord.split(',');
+						for(var i=0;i< arr2.length;i++){
+							this.EndLon = arr2[0];
+							this.EndLat = arr2[1]
+						}
+						
+						console.log(this.EndLon)
+						console.log(this.EndLat)
+				    }
+				} catch (e) {
+					
+				}
+			},
+			
+			//------------------------------规划路线-----------------------------
+			
+			setMarkers: function() { //设置始末标点
+				var that = this;
+				var startmarker = { //起点
+					id: 0,
+					latitude: that.StartLat,
+					longitude: that.StartLon,
+					iconPath: '../../../static/Home/Start.png',
+					width: 30,
+					height: 30,
+					anchor: {
+						x: 0.5,
+						y: 1
+					},
+					callout: {
+						content: '骑行时间:' + this.drivingRecord.TotalTime + '分钟',
+						color: '#fff',
+						fontSize: 13,
+						borderRadius: 5,
+						borderWidth: 1,
+						borderColor: '#000000',
+						bgColor: '#000000',
+						padding: '5',
+						display: 'ALWAYS'
+					}
+				};
+				var endmarker = {
+					id: 1,
+					latitude: that.EndLat,
+					longitude: that.EndLon,
+					iconPath: '../../../static/Order/End.png',
+					width: 30,
+					height: 30,
+				};
+				
+				that.markers = [];
+				that.startmarker = [];
+				that.endmarker = [];
+				console.log('1',that.StartLat)
+				console.log('2',that.StartLon)
+				console.log('3',that.EndLat)
+				console.log('4',that.EndLon)
+				that.markers.push(startmarker);
+				that.markers.push(endmarker);
+				that.showlocation = false;
+				that.getDirectionDriving(that.drivingRecord.HireCoord,that.drivingRecord.RestoreCoord);
+			},
+			
+			// setMarker: function(id, lon, lat, iconPath) {
+			// 	var width = 20;
+			// 	var height = 20;
+			// 	//描绘点的方法
+			// 	var that = this;
+			// 	var marker = new Object();
+			// 	//画起点经纬度
+			// 	marker = {
+			// 		id: id,
+			// 		latitude: lat,
+			// 		longitude: lon,
+			// 		iconPath: iconPath,
+			// 		width: width,
+			// 		height: height,
+			// 		anchor: {
+			// 		    x: 0.5,
+			// 		    y: 1
+			// 		},
+			// 		callout: {
+			// 		    content: '骑行时间:' + this.travelTime,
+			// 		    color: '#fff',
+			// 		    fontSize: 13,
+			// 		    borderRadius: 39,
+			// 		    borderWidth: 1,
+			// 		    borderColor: '#000000',
+			// 		    bgColor: '#000000',
+			// 		    padding: '5',
+			// 		    display: 'ALWAYS'
+			// 		}
+			// 	};
+			// 	console.log(lat)
+			// 	console.log(lon)
+			// 	var str = JSON.stringify(that.markers) ;
+			// 	var arr = JSON.parse(str);
+			// 	arr.push(marker);
+			// 	that.markers = arr;
+			// 	console.log(this.markers);
+			// 	//that.markers.push(marker);
+			// },
+			// setMarkers: function(id, lon, lat, iconPath) {
+			// 	var width = 20;
+			// 	var height = 20;
+			// 	//描绘点的方法
+			// 	var that = this;
+			// 	var marker = new Object();
+			// 	//画终点经纬度
+			// 	marker = {
+			// 		id: id,
+			// 		latitude: lat,
+			// 		longitude: lon,
+			// 		iconPath: iconPath,
+			// 		width: width,
+			// 		height: height,
+			// 	};
+			// 	that.markers.push(marker);
+			// },
+			getDirectionDriving: function(startLonLat,endLonLat) {
+				var that = this;
+				//调用高德api取得路径规划并绘制线路 
+				// var that = this;
+				// var obj = {
+				// 	points:[
+				// 		{
+				// 			latitude: that.StartLon,
+				// 			longitude: that.StartLat
+				// 		},
+				// 		{
+				// 			latitude: that.EndLon,
+				// 			longitude: that.EndLat
+				// 		}
+				// 	],
+				// 	color: "#4281FF",
+				// 	arrowLine: true,
+				// 	width: 5
+				// };
+				// that.polyline = [];
+				// that.obj=[];
+				// that.polyline.push(obj);
+				uni.request({
+					url: $bcfw.InterfaceAddress[0],
+					data: {
+						startLonLat: startLonLat,
+						endLonLat: endLonLat,
+					},
+					method: "GET",
+					success: function(res) {
+						//日后会加入定时，此处需清空
+						console.log(res)
+						that.points = [];
+						that.polyline = [];
+
+						var polylineArr = [];
+						var points = [];
+
+						polylineArr = res.data.Polyline;
+
+						for (var i = 0; i < polylineArr.length; i++) {
+							var arr = polylineArr[i].split(';');
+							for (var j = 0; j < arr.length; j++) {
+								points.push(arr[j]);
+							}
+						}
+						//根据文件建设对象经纬度数组
+						for (var i = 0; i < points.length; i++) {
+							var arr = points[i].split(',');
+							var obj = {
+								longitude: arr[0],
+								latitude: arr[1]
+							}
+							that.points.push(obj);
+						}
+						var obj = {
+							points: that.points,
+							color: "#4281FF",
+							arrowLine: true,
+							width: 5
+						};
+						that.polyline.push(obj);
+					},
+					fail: function(res) {
+						// console.log(res);
+					}
+				});
+			},
+
+			//------------------------------满意弹框事件-----------------------------------------
+
+			open() {
+				// 需要在 popup 组件，指定 ref 为 popup
+				this.$refs.bottomPopup.open();
+			},
+			//关闭
+			close(e) {
+				if (e == 1) {
+					this.$refs.bottomPopup.close();
+				}
+			},
+			
+			jump:function(){
+				uni.navigateTo({
+					url:'./zy_expenseDetails?HireTime=' + this.HireTime + '&PayPrice=' +this.PayPrice/100 + '&RentType=' +this.RentType
+				})
+			},
+
+			//------------------------模拟数据----------------------------------------------
+
+			async lunBoInit() {
+				let expenseDetail = await this.$api.lyfwcwd('expenseDetail');
+				this.expenseDetail = expenseDetail.data;
+			},
+			
+			//----------------------------------评星---------------------------------------
+			
+			onchange(e){
+				this.num = e.value;
+				if(this.num>3){
+					this.show=true;
+				}else{
+					this.show=false;
+				}
+			},
+			
+			//--------------------------------评星选择框事件----------------------------------
+			
+			 tapInfo:function(e) {
+						// console.log(e)
+				        if (this.rSelect.indexOf(e) == -1) {
+							this.rSelect.push(e);//选中添加到数组里
+							this.selectContent=e;
+							console.log(this.selectContent)
+				        } else {
+					        this.rSelect.splice(this.rSelect.indexOf(e), 1); //取消
+					    }
+			        },
+			tapInfo1:function(item,e) {
+						 if (this.rSelect1.indexOf(e) == -1) {
+							this.rSelect1.push(e);//选中添加到数组里
+							this.selectContent=e;
+							console.log(this.selectContent)
+							} else {
+							this.rSelect1.splice(this.rSelect1.indexOf(e), 1); //取消
+						}
+					},
+			
+			//-------------------------------@name 评价提交-----------------------------
+			submit(e){
+				var that = this;
+				this.textareaValue = e.detail.value.textareaValue;
+				that.close(1);
+				var value="是"
+				if(!that.show){
+					value="否"
+					}
+				that.getOrderValuate(that.orderNumber,value);
+				
+			},
+			
+		}
+	}
+</script>
+
+<style lang="scss">
+	.map {
+		width: 750rpx;
+	}
+
+	.ct_state {
+		flex-direction: row;
+		justify-content: space-between;
+		width: 698upx;
+		border-radius: 10px;
+		padding: 30upx;
+		background-color: #fff;
+		margin-bottom: 20upx;
+		font-weight: bold;
+		font-size: 34upx;
+		margin-left: 26upx;
+	}
+
+	.sa_text {
+		z-index:1;
+		font-size: 30upx;
+		text-align: left;
+	}
+
+	.sa_text2 {
+		z-index:2;
+		color: #E74246;
+		font-size: 30upx;
+		font-weight: 500;
+		margin-right: 335upx;
+	}
+
+	.sa_text3 {
+		font-weight: 500;
+		color: #4281FF;
+		font-size: 28upx;
+	}
+
+	// //顶部
+	// .po_boxVlew {
+	// 	z-index: 999;
+	// 	background-color: #FFFFFF;
+	// 	border-radius: 28upx;
+	// 	border-bottom-left-radius: 0;
+	// 	border-bottom-right-radius: 0;
+	// }
+
+	// .bv_topText {
+	// 	display: flex;
+	// 	position: relative;
+	// 	padding-top: 48upx;
+	// 	padding-left: 51upx;
+	// 	padding-right: 51upx;
+	// }
+	
+	// .tt_text {
+	// 	font-size: 28upx;
+	// 	margin: 0 auto;
+	// 	color: #333333;
+	// }
+	
+	// .tt_icon {
+	// 	position: absolute;
+	// 	font-size: 32upx;
+	// 	right: 0;
+	// 	padding-right: 42upx;
+	// }
+	
+	// .tt_view {
+	// 	padding-left: 42upx;
+	// 	padding-right: 42upx;
+	// 	padding-top: 20upx;
+	// }
+	
+	// .tt_tear {
+	// 	font-size: 30upx;
+	// 	text-align: justify;
+	// 	line-height: 47upx;
+	// 	color: #333333;
+	// }
+
+	// .vi_bottom {
+	// 	padding-top: 40upx;
+	// }
+
+	.sa_text4 {
+		font-size: 30upx;
+		text-align: center;
+		font-weight: 500;
+	}
+
+	.sa_text5 {
+		font-size: 30upx;
+		text-align: center;
+		font-weight: 500;
+	}
+
+	.ct_state2 {
+		width: 698upx;
+		border-radius: 10px;
+		padding: 30upx;
+		background-color: #fff;
+		margin-bottom: 20upx;
+		font-weight: bold;
+		font-size: 34upx;
+		margin-left: 26upx;
+	}
+
+	.st_view {
+		flex-direction: row;
+		justify-content: space-between;
+		padding-top: 50upx;
+		padding-bottom: 40upx;
+		padding-left: 83upx;
+		padding-right: 82upx;
+	}
+	
+	.vi_evaluate{
+		font-size: 35upx;
+		color: rgba(101, 195, 109, 1);
+	}
+	
+	.vi_img {
+		width: 180upx;
+		height: 72upx;
+	}
+
+	.vi_img2 {
+		width: 215upx;
+		height: 72upx;
+	}
+
+	.ct_state3 {
+		width: 698upx;
+		border-radius: 10px;
+		padding: 30upx;
+		background-color: #fff;
+		margin-bottom: 20upx;
+		font-weight: bold;
+		font-size: 30upx;
+		margin-left: 26upx;
+	}
+
+	.st_view2 {
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		padding-left: 35upx;
+		padding-right: 35upx;
+	}
+
+	.vi_view {
+		width: 259upx;
+		height: 85upx;
+		margin-top: 35upx;
+		align-items: center;
+		justify-content: center;
+		border-width: 1px;
+		border-color: rgba(101, 195, 109, 1);
+		border-radius: 69upx;
+	}
+
+	.vi_text {
+		font-size: 34upx;
+		font-weight: 400;
+		color: rgba(101, 195, 109, 1);
+	}
+
+	.vi_view2 {
+		width: 259upx;
+		height: 85upx;
+		margin-top: 35upx;
+		align-items: center;
+		justify-content: center;
+		background-color: rgba(101, 195, 109, 1);
+		border-radius: 69upx;
+	}
+
+	.vi_text2 {
+		font-size: 34upx;
+		font-weight: 400;
+		color: #FFFFFF;
+	}
+	
+	/* 点击文字框后样式 */
+	.cur {
+		height:54rpx;
+		border-width: 1px;
+		border-radius:8rpx; 
+		justify-content: center; 
+		padding: 8rpx; 
+		margin-top: 30rpx;
+		margin-right: 20rpx;
+		background-color: #FC4646;
+		border-color: #FC4646;
+	}
+	/* 点击文字后样式 */
+	.color{
+		color: #FFFFFF;
+		font-size:28rpx;
+		font-family:Source Han Sans SC;
+		font-weight:300;
+	}
+	.unCur{
+		height:54rpx;
+		border-width: 1px;
+		border-color: #AAAAAA;
+		border-radius:8rpx; 
+		justify-content: center; 
+		padding: 8rpx; 
+		margin-top: 30rpx;
+		margin-right: 20rpx;
+	}
+	.unColor{
+		color:#AAAAAA;
+		font-size:28rpx;
+		font-family:Source Han Sans SC;
+		font-weight:300;
+	}
+	.textArea{
+		height:164rpx;
+		border-width: 1px;
+		padding: 10rpx;
+		border-color: #AAAAAA;
+		border-radius:6rpx;
+		margin-top: 30rpx;
+		font-size:28rpx;
+		font-family:Source Han Sans SC;
+		font-weight:300;
+		color:#999999;
+	}
+	
+	.dt_view{
+		height: 860rpx;
+		background-color: #FFFFFF;
+		border-top-left-radius: 20rpx; 
+		border-top-right-radius: 20rpx;
+	}
+</style>

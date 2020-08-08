@@ -1,0 +1,462 @@
+<template>
+	<view>
+		<view v-if="IsShow">
+			<map id="map1" ref="map1" class="map" :style="{height:mapHeight}" :scale="scale" :longitude="longitude" :latitude="latitude"
+			 :polyline="polyline" :markers="markers" :show-location="true">
+			</map>
+			<view class="mainpage">
+				<view style=" background-color: #FFF;height: 180rpx;width: 690rpx;left: 30rpx;right: 30rpx;border-radius: 20rpx;padding: 30rpx;">
+					<view style="flex-direction: row;justify-content: space-between;">
+						<view style="flex-direction: row;">
+							<image src="../../static/CZC/HeadPhoto.png" style="width: 100rpx;height: 100rpx;">
+								<view style="justify-content: space-between;padding-left: 20rpx;">
+									<view>
+										<text style="color:#2C2D2D;font-size:34rpx;font-weight: bold;">{{driverName}}</text>
+									</view>
+									<view style="flex-direction: row;">
+										<text style="color:#2C2D2D;font-size:30rpx;font-weight: 300;">{{vehicleNumber}}</text>
+										<text style="color:#2C2D2D;font-size:28rpx;padding-left: 30rpx;font-weight: 300;">出行{{number}}人</text>
+									</view>
+								</view>
+						</view>
+						<view>
+							<text style="color: #FC4646;font-weight: bold;font-size: 28rpx;" v-if="state==2">等待司机到达</text>
+							<text style="color: #FC4646;font-weight: bold;font-size: 28rpx;" v-if="state==4">{{ShowTime}}&nbsp;确认上车</text>
+							<text style="color: #FC4646;font-weight: bold;font-size: 28rpx;" v-if="state==6||state==5">{{ShowTime}}&nbsp;到达目的地</text>
+						</view>
+					</view>
+				</view>
+				<view style=" background-color: #FFF;height: 180rpx;width: 690rpx;left: 30rpx;right: 30rpx;border-radius: 20rpx;padding: 30rpx;margin-top: 30rpx;justify-content: center;">
+					<view style="height: 100rpx;justify-content: space-between;">
+						<view style="flex-direction: row;align-items: center;">
+							<view class="bluering"></view>
+							<view style="padding-left: 20rpx;">
+								<text style="color:#2C2D2D;font-size:28rpx;font-weight: 300;">{{StartAddress}}</text>
+							</view>
+						</view>
+						<view style="flex-direction: row;align-items: center;">
+							<view class="redring"></view>
+							<view style="padding-left: 20rpx;">
+								<text style="color:#2C2D2D;font-size:28rpx;font-weight: 300;">{{EndAddress}}</text>
+							</view>
+						</view>
+					</view>
+				</view>
+			</view>
+			<view style="position: fixed;bottom: 40rpx;left: 30rpx;right: 30rpx;" @click="Execute">
+				<button style="background-color: #FC4646;width: 690rpx;">
+					<text style="color: #FFFFFF;">刷新</text>
+				</button>
+			</view>
+		</view>
+		<view v-if="!IsShow">
+			<view style="width: 750rpx;margin-top: 200px;align-items: center;">
+				<text style="color: #2C2D2D;font-size: 40rpx;">{{textvalue}}</text>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	import $privateTaxi from "@/common/Czcprivate.js"; //出租车专线
+	import $taxi from '@/common/Czc.js';
+	import $downwindCar from "@/common/downwindCar.js"; //顺风车
+	import uniPopup from "@/pages_CZC/components/CZC/uni-popup/uni-popup.vue";
+	import uniIcons from "@/pages_CZC/components/CZC/uni-icons/uni-icons.vue";
+	export default {
+		components: {
+			uniPopup,
+			uniIcons
+		},
+		data() {
+			var that = this;
+			return {
+				scale: 15,
+				IsShow: true,
+				longitude: "", //地图中心点经度
+				latitude: "", //地图中心点纬度
+				points: [],
+				polyline: [], //线
+				driverName: '张师傅', //司机姓名
+				totalPrice: 32.5,
+				driverPhone: '0', //司机电话号码
+				vehicleNumber: "闽CT2815", //车牌号
+				number: 0, //出行人数
+				StartAddress: '泉州茶叶大厦', //出发地点
+				EndAddress: '海丝景城', //出发地点
+				mapHeight: "", //地图高度
+				orderNumber: "", //订单号
+				ConfirmTime: "", //确认上车时间
+				EndTime: "", //到达目的地时间
+				markers: [],
+				Type: "出租车",
+				textvalue: "",
+				state: 0,
+				thisDriverLon: '', //司机
+				thisDriverLat: '',
+				ShowTime: '',
+			}
+		},
+		onLoad(option) {
+			let that = this;
+			that.orderNumber = option.orderNumber;
+			that.Type = option.type;
+			uni.getSystemInfo({
+				//设置地图高度为可使用的高度
+				success: function(res) {
+					that.mapHeight = res.windowHeight + 'px';
+				}
+			});
+			that.Execute();
+		},
+		onReady() {
+			let that = this;
+			that.mapContext = uni.createMapContext("map", this);
+		},
+		onUnload() {
+			let that = this;
+		},
+		methods: {
+			Execute: function() {
+				let that = this;
+				console.log(that.Type)
+				if (that.Type == "出租车") {
+					that.getOrder();
+				} else if (that.Type == "出租车_专线") {
+					console.log(that.Type)
+					that.getPrivateTaxiOrder();
+				} else if (that.Type == "出租车_顺风车") {
+					that.getDownwindCarOrder();
+				}
+			},
+			CheckTime: function(time) {
+				var date = new Date().getTime();
+				var OrderDate = new Date(time).getTime();
+				var t = (date - OrderDate) / 60 / 60 / 1000;
+				if (t > 24) {
+					return false;
+				} else {
+					return true;
+				}
+			},
+			getOrder: function() { //出租车
+				//上级页面统一返回订单编号。此处根据订单编号获取上下车点。
+				let that = this;
+				uni.showLoading({
+					title: '加载中'
+				})
+				uni.request({
+					url: $taxi.Interface.SearchExpressOrderByOrderNum_Passenger.value,
+					method: $taxi.Interface.SearchExpressOrderByOrderNum_Passenger.method,
+					data: {
+						OrderNumber: that.orderNumber
+					},
+					success: function(res) {
+						uni.hideLoading();
+						console.log(res.data);
+						let data = res.data.data;
+						//成功
+						if (res.data.status) {
+							//赋值结束点经纬度
+							if (that.CheckTime(data.orderTime)) {
+								that.IsShow = true;
+								that.startLon = data.startLon; //起点
+								that.startLat = data.startLat;
+								that.endLon = data.endLon; //终点
+								that.endLat = data.endLat;
+								that.thisDriverLon = data.thisDriverLon; //司机
+								that.thisDriverLat = data.thisDriverLat;
+								that.driverName = data.driverName.substring(0, 1) + "师傅";
+								that.vehicleNumber = data.vehicleNumber; //车牌号
+								that.state = data.state; //订单状态
+								that.StartAddress = data.startAddress;
+								that.EndAddress = data.endAddress;
+								that.AppointmentTime = data.appointmentTime.replace("T", " ");
+								that.longitude = data.startLon;
+								that.latitude = data.startLat;
+								that.number = JSON.parse(data.passengers).length
+								//绘制起终点标记
+								that.markers = [];
+								that.setMarker('start', that.startLon, that.startLat, '../../static/CZC/Start.png');
+								that.setMarker('end', that.endLon, that.endLat, '../../static/CZC/End.png');
+								that.getDirectionDriving(that.startLon + ',' + that.startLat, that.endLon + ',' + that.endLat);
+								if (that.state == 3 || that.state == 4) {
+									that.setMarker('taxi', that.thisDriverLon, that.thisDriverLat, '../../static/CZC/Car.png');
+									that.ShowTime = data.runTime.substring(11, 16);
+								}
+								if (that.state == 6) {
+									that.markers = that.markers.filter(res => res.id == 'start' || res.id == 'end');
+									that.ShowTime = data.finishTime.substring(11, 16);
+								}
+							} else {
+								that.IsShow = false;
+								that.textvalue = "订单已超过24小时，行程分享已结束";
+							}
+						} else {
+							uni.showToast({
+								title: res.data.msg,
+								icon: "none"
+							});
+						}
+					},
+					fail: function(res) {
+						uni.hideLoading();
+						uni.showToast({
+							title: '网络连接失败',
+							icon: 'none'
+						})
+					}
+				})
+			},
+			getDownwindCarOrder: function() { //顺风车
+				//上级页面统一返回订单编号。此处根据订单编号获取上下车点。
+				let that = this;
+				uni.showLoading({
+					title: '加载中'
+				})
+				uni.request({
+					url: $downwindCar.Interface.QueryHitchhikerOrder_Passenger.value,
+					method: $downwindCar.Interface.QueryHitchhikerOrder_Passenger.method,
+					data: {
+						OrderNumber: that.orderNumber
+					},
+					success: function(res) {
+						uni.hideLoading();
+						console.log(res.data);
+						let data = res.data.data;
+						//成功
+						// console.log(res);
+						if (res.data.status) {
+							//赋值结束点经纬度
+							if (that.CheckTime(data.OrderTime)) {
+								that.IsShow = true;
+								that.startLon = data.StartLon; //起点
+								that.startLat = data.StartLat;
+								that.endLon = data.EndLon; //终点
+								that.endLat = data.EndLat;
+								that.thisDriverLon = data.DriverLon; //司机
+								that.thisDriverLat = data.DriverLat;
+								that.driverName = data.DriverName.substring(0, 1) + "师傅";
+								that.vehicleNumber = data.VehicleNumber; //车牌号
+								that.state = data.State; //订单状态
+								that.StartAddress = data.StartAddress;
+								that.EndAddress = data.EndAddress;
+								that.AppointmentTime = data.AppointmentTime.replace("T", " ");
+								that.longitude = data.StartLon;
+								that.latitude = data.StartLat;
+								that.number = JSON.parse(data.Passengers).length
+								//绘制起终点标记
+								that.markers = [];
+								that.setMarker('start', that.startLon, that.startLat, '../../static/CZC/Start.png');
+								that.setMarker('end', that.endLon, that.endLat, '../../static/CZC/End.png');
+								that.getDirectionDriving(that.startLon + ',' + that.startLat, that.endLon + ',' + that.endLat);
+								if (that.state == 3 || that.state == 4) {
+									that.setMarker('taxi', that.thisDriverLon, that.thisDriverLat, '../../static/CZC/Car.png');
+									that.ShowTime = data.RunTime.substring(11, 16);
+								}
+								if (that.state == 6) {
+									that.markers = that.markers.filter(res => res.id == 'start' || res.id == 'end');
+									that.ShowTime = data.FinishTime.substring(11, 16);
+								}
+							} else {
+								that.IsShow = false;
+								that.textvalue = "订单已超过24小时，行程分享已结束";
+							}
+						} else {
+							uni.showToast({
+								title: res.data.msg,
+								icon: "none"
+							});
+						}
+					},
+					fail: function(res) {
+						uni.hideLoading();
+						uni.showToast({
+							title: '网络连接失败',
+							icon: 'none'
+						})
+					}
+				})
+			},
+			getPrivateTaxiOrder: function() { //专线车
+				//上级页面统一返回订单编号。此处根据订单编号获取上下车点。
+				let that = this;
+				uni.showLoading({
+					title: '加载中'
+				})
+				uni.request({
+					url: $privateTaxi.Interface.QuerySpecialLineOrder_Passenger.value,
+					method: $privateTaxi.Interface.QuerySpecialLineOrder_Passenger.method,
+					data: {
+						OrderNumber: that.orderNumber
+					},
+					success: function(res) {
+						uni.hideLoading();
+						let data = res.data.data;
+						//成功
+						console.log(res)
+						if (res.data.status) {
+							//赋值结束点经纬度
+							if (that.CheckTime(data.OrderTime)) {
+								that.IsShow = true;
+								that.startLon = data.StartLon; //起点
+								that.startLat = data.StartLat;
+								that.endLon = data.EndLon; //终点
+								that.endLat = data.EndLat;
+								that.thisDriverLon = data.DriverLon; //司机
+								that.thisDriverLat = data.DriverLat;
+								that.driverName = data.DriverName.substring(0, 1) + "师傅";
+								that.vehicleNumber = data.VehicleNumber; //车牌号
+								that.state = data.State; //订单状态
+								that.StartAddress = data.StartAddress;
+								that.EndAddress = data.EndAddress;
+								that.AppointmentTime = data.AppointmentTime.replace("T", " ");
+								that.longitude = data.StartLon;
+								that.latitude = data.StartLat;
+								that.number = JSON.parse(data.Passengers).length
+								//绘制起终点标记
+								that.markers = [];
+								that.setMarker('start', that.startLon, that.startLat, '../../static/CZC/Start.png');
+								that.setMarker('end', that.endLon, that.endLat, '../../static/CZC/End.png');
+								that.getDirectionDriving(that.startLon + ',' + that.startLat, that.endLon + ',' + that.endLat);
+								if (that.state == 3 || that.state == 4) {
+									that.setMarker('taxi', that.thisDriverLon, that.thisDriverLat, '../../static/CZC/Car.png');
+									that.ShowTime = data.RunTime.substring(11, 16);
+								}
+								if (that.state == 6) {
+									that.markers = that.markers.filter(res => res.id == 'start' || res.id == 'end');
+									that.ShowTime = data.FinishTime.substring(11, 16);
+								}
+							} else {
+								that.IsShow = false;
+								that.textvalue = "订单已超过24小时，行程分享已结束";
+							}
+						} else {
+							uni.showToast({
+								title: res.data.msg,
+								icon: "none"
+							});
+						}
+					},
+					fail: function(res) {
+						uni.hideLoading();
+						uni.showToast({
+							title: '网络连接失败',
+							icon: 'none'
+						})
+					}
+				})
+			},
+			setMarker: function(id, lon, lat, iconPath) {
+				let that = this;
+				var width = 20;
+				var height = 20;
+				// #ifdef MP-WEIXIN
+				width = 20;
+				height = 30;
+				// #endif
+				if (id == 'taxi') {
+					width = 40;
+					height = 40;
+					that.markers = that.markers.filter(res => res.id == 'start' || res.id == 'end');
+				}
+				//描绘点的方法
+				var marker = new Object();
+				marker = {
+					id: id,
+					latitude: lat,
+					longitude: lon,
+					iconPath: iconPath,
+					width: width,
+					height: height,
+				};
+				var json = JSON.stringify(that.markers);
+				var arr = JSON.parse(json);
+				arr.push(marker);
+				that.markers = arr;
+				console.log(that.markers)
+			},
+			getDirectionDriving: function(startLonLat, endLonLat) {
+				//调用高德api取得路径规划并绘制线路
+				let that = this;
+				uni.request({
+					url: $taxi.InterfaceAddress[0],
+					data: {
+						startLonLat: startLonLat,
+						endLonLat: endLonLat,
+					},
+					method: "GET",
+					success: function(res) {
+						//日后会加入定时，此处需清空
+						that.points = [];
+						that.polyline = [];
+						var polylineArr = [];
+						var points = [];
+
+						polylineArr = res.data.Polyline;
+
+						for (var i = 0; i < polylineArr.length; i++) {
+							var arr = polylineArr[i].split(';');
+							for (var j = 0; j < arr.length; j++) {
+								points.push(arr[j]);
+							}
+						}
+						//根据文件建设对象经纬度数组
+						for (var i = 0; i < points.length; i++) {
+							var arr = points[i].split(',');
+							var obj = {
+								longitude: arr[0],
+								latitude: arr[1]
+							}
+							that.points.push(obj);
+						}
+						var obj = {
+							points: that.points,
+							color: "#4bdc27",
+							arrowLine: true,
+							width: 6
+						};
+						that.polyline.push(obj);
+					},
+					fail: function(res) {
+						console.log(res);
+					}
+				});
+			},
+		}
+	}
+</script>
+
+<style>
+	.map {
+		width: 750rpx;
+	}
+	.mainpage{
+		position: fixed; 
+		/* #ifdef MP-WEIXIN */
+		top: 100px;
+		/* #endif */
+		/* #ifdef H5 */
+		top: 50px;
+		/* #endif */
+	}
+	.bluering {
+		width: 20rpx;
+		height: 20rpx;
+		border-width: 4rpx;
+		border-color: #309FF7;
+		border-style: solid;
+		background-color: #fff;
+		border-radius: 100px;
+	}
+
+	.redring {
+		width: 20rpx;
+		height: 20rpx;
+		border-width: 4rpx;
+		border-color: #E3424B;
+		border-style: solid;
+		background-color: #fff;
+		border-radius: 100px;
+	}
+</style>

@@ -1,0 +1,644 @@
+<template>
+	<view>
+		<map id="map" ref='map' class="map" :style="{height:mapHeight}" :latitude="centerLatitude" :longitude="centerLongitude"
+		 :markers="markers" :show-location="showLocation" :scale="scale" :polyline="polyline" :controls="controls">
+		</map>
+		<view style="position: fixed; bottom: 0;margin-left: 30rpx;margin-right: 30rpx;">
+			<view class="rule" @click="BillingRule">
+				<text style="font-size: 26rpx;font-weight: bold;">计费</text>
+				<text style="font-size: 26rpx;font-weight: bold;">规则</text>
+			</view>
+			<view style="flex-direction: row;justify-content: space-between;width: 690rpx;">
+				<image src="../../static/GRZY/Position.png" style="width: 120rpx;height: 120rpx;" @click="MoveToThisLocation"></image>
+				<image src="../../static/GRZY/personal.png" style="width: 120rpx;height: 120rpx;" @click="GotoHome"></image>
+			</view>
+			<view v-if="!Isreturn">
+				<view class="ridestate">
+					<text style="color:#333333;font-size: 36rpx;font-weight: 500;">骑行中</text>
+					<view style="flex-direction: row;">
+						<text style="color:#333;font-size: 30rpx;font-weight: 300;">如遇故障，请联系</text>
+						<text style="color:#F35A46;font-size: 30rpx;font-weight: 300;" @click="makePhone">客服</text>
+					</view>
+				</view>
+				<view class="detail">
+					<view style="align-items: center;justify-content: center;">
+						<view>
+							<text style="color: #666666;font-size: 32rpx;">骑行时间</text>
+						</view>
+						<view style="margin-top: 20rpx;">
+							<text style="color: #333;font-size: 50rpx;font-weight: 500;">{{minute}}:{{seconds}}</text>
+						</view>
+						<view style="margin-top: 30rpx;" v-if="!IsStake">
+							<!-- <text style="color: #999;font-size: 28rpx;font-weight: 300;">电量充足，可骑行59公里</text> -->
+						</view>
+						<view style="flex-direction: row;margin-top: 50rpx;justify-content: space-between;" v-if="!IsStake">
+							<!-- <button class="bt_lock" @click="Lock">
+								<text style="color: #FFF;font-size: 40rpx;">临时锁车</text>
+							</button> -->
+
+							<button class="bt_returnbike" @click="returnBike">
+								<text style="color: #FFF;font-size: 40rpx;">还车</text>
+							</button>
+						</view>
+					</view>
+				</view>
+			</view>
+			<view class="detail" v-if="Isreturn">
+				<view style="align-items: center;">
+					<image src="../../static/RentBike/arrive.png" style="width:183rpx;height: 129rpx;" mode="widthFix"></image>
+					<view style="margin-top: 50rpx;">
+						<text style="color: #65C36D;font-size: 38rpx;">已到达停车点</text>
+					</view>
+					<view style="margin-top: 30rpx;">
+						<text style="color: #999999;font-size: 32rpx;">感谢您的骑行体验～</text>
+					</view>
+				</view>
+				<view style="flex-direction: row;margin-top: 50rpx;justify-content: space-between;">
+					<!-- <button class="bt_continuebike" @click="continueRide">
+						<text style="color: #65C36D;font-size: 40rpx;">继续骑行</text>
+					</button> -->
+					<button class="bt_returnbike" @click="continueRide">
+						<text style="color: #FFF;font-size: 40rpx;">确认还车</text>
+					</button>
+				</view>
+				<view>
+
+				</view>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	import $DDTInterface from '@/common/DDT.js'
+	export default {
+		data() {
+			return {
+				mapHeight: '', //地图高度
+				scale: 15,
+				polyline: [],
+				centerLatitude: "23.931668",
+				centerLongitude: "117.636783",
+				markers: [],
+				showLocation: true,
+				Isreturn: false,
+				minute: "00", //分钟
+				seconds: "00", //秒
+				timeInterval: '',
+				credential: '',
+				id: '',
+				orderId: '', //订单id
+				order_no: '', //获取支付参数时返回
+				operatorId: '', //操作ID，用于还车
+				interval: '', //定时器
+				rentInfo: [], //保存租车信息
+				IsStake: true, //是否有桩
+				OrderNo: '', //行程ID
+				userInfo: '',
+				g_wakelock: null,
+				phoneNumber: '', //客服热线
+			}
+		},
+		mounted() {
+			var that = this;
+			//获取系统信息
+			uni.getSystemInfo({
+				success: function(res) {
+					//地图高度
+					that.mapHeight = res.windowHeight + 'px';
+				}
+			});
+		},
+		onLoad(item) {
+			var that = this;
+			// 获取自身位置
+			that.getMyLocation();
+			//将上一个页面传过来的参数转为数组
+			that.userInfo = uni.getStorageSync('userInfo') || '';
+			// that.getOrderInfo();
+			console.log(item)
+			if (item.responseArr) {
+				that.rentInfo = JSON.parse(item.responseArr);
+				console.log('传递数据结果', that.rentInfo);
+				if (that.rentInfo.bikeType == "有桩") {
+					setTimeout(function() {
+						that.getOrderInfo();
+					}, 2000)
+				} else {
+					that.IsStake = false;
+					setTimeout(function() {
+						that.getOrderInfo();
+					}, 2000)
+				}
+			} else {
+				setTimeout(function() {
+					that.GetOrderByUserID();
+				}, 2000)
+			}
+			//获取客服热线
+			uni.getStorage({
+				key: 'ConsumerHotline',
+				success(res) {
+					that.phoneNumber = res.data.Phone1
+				}
+			})
+		},
+		created() {
+			uni.setNavigationBarTitle({
+				title: "骑行中"
+			})
+		},
+		methods: {
+			makePhone: function() {
+				var that = this;
+				uni.makePhoneCall({
+					phoneNumber: that.phoneNumber
+				})
+			},
+			wakeLock: function() {
+				//Android  
+				console.log(66);
+				var main = plus.android.runtimeMainActivity();
+				var Context = plus.android.importClass("android.content.Context");
+				var PowerManager = plus.android.importClass("android.os.PowerManager");
+				var pm = main.getSystemService(Context.POWER_SERVICE);
+				this.g_wakelock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ANY_NAME");
+				this.g_wakelock.acquire();
+			},
+			//--------------------------计时--------------------------
+			countTime: function() {
+				var that = this;
+				clearInterval(that.timeInterval)
+				that.timeInterval = setInterval(function() {
+					if (that.seconds >= 59) {
+						that.seconds = "00";
+						that.minute++;
+						if (that.minute < 10) {
+							that.minute = "0" + that.minute;
+						}
+					} else {
+						that.seconds++;
+						if (that.seconds < 10) {
+							that.seconds = "0" + that.seconds;
+						}
+					}
+				}, 1000);
+			},
+			//获取开车时间
+			timeConcer: function(value) { //时间转换
+				var that = this;
+				var value = value.replace(" ", "T")
+				var begindate = new Date(value + "+08:00").getTime();
+				// var begindate = new Date(2020, 5, 17, 9, 51, 30, 0).getTime();
+				// console.log(begindate)
+				var enddate = new Date().getTime();
+				// console.log(enddate)
+				var date = parseInt((enddate - begindate) / 1000); //获取秒数
+				if (date > 60) {
+					that.minute = parseInt(date / 60)
+					that.seconds = date % 60;
+					that.seconds = that.seconds < 10 ? '0' + that.seconds : that.seconds;
+					that.countTime();
+				} else {
+					that.seconds = date;
+					that.countTime();
+				}
+			},
+			//--------------------------检测订单状态--------------------------
+			//自行车还车，定时器检索订单状态，直到订单结束-----每三秒检测一次
+			CheckOrderStatus: function() {
+				let that = this;
+				// clearInterval(that.interval);
+				that.interval = setInterval(function() {
+					uni.request({
+						url: $DDTInterface.DDTInterface.CheckOrderStatus.Url,
+						method: $DDTInterface.DDTInterface.CheckOrderStatus.method,
+						data: {
+							phoneNo: that.userInfo.phoneNumber,
+							orderId: that.orderId,
+						},
+						success(res) {
+							console.log('有桩还车订单状态结果', res)
+							if (res.data.status == true) {
+								if (res.data.data.bizStatus == 2) { //已还车
+									uni.showToast({
+										title: '还车成功',
+										icon: 'none',
+										success(res) {
+											that.UpdateOrder();
+											clearInterval(that.interval);
+											uni.redirectTo({
+												url: './Payment'
+											})
+										}
+									})
+								} else if (res.data.data.bizStatus == 6) {
+									//异常还车
+									uni.showModal({
+										content: '还车异常',
+										success(res) {
+											if (res.confirm) {
+												that.UpdateOrder();
+												clearInterval(that.interval);
+												uni.redirectTo({
+													url: './Payment'
+												})
+											}
+										}
+									})
+								}
+							} else {
+								clearInterval(that.interval);
+								uni.showToast({
+									title: res.data.msg,
+									icon: 'none'
+								})
+							}
+						},
+						fail(err) {
+							clearInterval(that.interval);
+							console.log('订单状态err', err)
+						}
+					})
+				}, 3000)
+			},
+			checkStatus: function() {
+				var that = this;
+				clearInterval(that.interval);
+				that.interval = setInterval(function() {
+					uni.request({
+						url: $DDTInterface.DDTInterface.GetOrder.Url,
+						method: $DDTInterface.DDTInterface.GetOrder.method,
+						data: {
+							phoneNo: that.userInfo.phoneNumber,
+							startIndex: 0,
+							retcount: 1,
+							userID: that.userInfo.userID,
+						},
+						success(res) {
+							console.log('还车结果', res)
+							that.OrderNo = res.data.data[0].OrderNo;
+							if (res.data.data[0].HireStatus == 2) {
+								uni.showToast({
+									title: '还车成功',
+									icon: 'none',
+									success() {
+										that.UpdateOrder();
+										clearInterval(that.timeInterval);
+										clearInterval(that.interval);
+										// uni.redirectTo({
+										// 	url: './Payment'
+										// })
+									}
+								})
+							}
+							//开始计时---显示当前骑行时间
+							that.timeConcer(res.data.data[0].HireAction.Time);
+						},
+						fail(err) {
+							clearInterval(that.interval);
+							console.log(err)
+						}
+					})
+				}, 3000)
+
+			},
+			GotoHome: function() { //前往个人中心
+				uni.navigateTo({
+					url: "../GRZY/zy_homepage"
+				})
+			},
+			MoveToThisLocation: function() { //移动到当前定位点
+				var maps = uni.createMapContext("map", this);
+				maps.moveToLocation()
+			},
+			getMyLocation: function() {
+				var that = this;
+				uni.getLocation({
+					type: "gcj02",
+					//是否解析地址信息，默认false
+					geocode: true,
+					success: function(res) {
+						that.centerLongitude = res.longitude;
+						that.centerLatitude = res.latitude;
+					}
+				});
+			},
+			//--------------------------助力车还车--------------------------
+			returnBike: function() {
+				var that = this;
+				uni.showModal({
+					content: "你确定要还车吗",
+					cancelText: "确定",
+					confirmText: "取消",
+					success(res) {
+						if (res.cancel) {
+							uni.setNavigationBarTitle({
+								title: "还车"
+							})
+							uni.showLoading({
+								title: '正在还车...'
+							})
+							console.log('请求参数', that.rentInfo)
+							uni.request({
+								url: $DDTInterface.DDTInterface.TransferHire.Url,
+								method: $DDTInterface.DDTInterface.TransferHire.method,
+								data: {
+									phoneNo: that.rentInfo.phoneNumber, //手机号
+									//经纬度可以不需要传，现在的业务没有用到这两个参数
+									lat: 0.1, //纬度
+									lng: 0.1, //经度
+									coordinateType: 2, //坐标类型   1:百度 2:高德 3:GPS坐标
+									operationId: that.rentInfo.operationId, //操作编号
+									bikeId: that.rentInfo.bikeId, //车辆编号
+								},
+								success(res) {
+									console.log('还车成功结果', res);
+									if (res.data.status == true) {
+										console.log('开始还车', res.data.data.retcode)
+										if (res.data.data.retcode == 0) { //返回编号（0代表完成）
+											//做五秒延迟，
+											setTimeout(function() {
+												uni.hideLoading()
+												that.isReturn();
+											}, 3000)
+										} else if (res.data.data.retcode == -1) {
+											console.log('还车失败')
+											uni.hideLoading()
+											uni.showToast({
+												title: '还车失败',
+												icon: 'none',
+												mask: true,
+											})
+										}
+									} else if (res.data.status == false) {
+										uni.hideLoading()
+										uni.showToast({
+											title: res.data.msg,
+											icon: 'none'
+										})
+									}
+								},
+								fail(err) {
+									uni.hideLoading()
+									console.log('还车失败结果', err)
+								}
+							})
+						}
+					}
+				})
+				// that.Isreturn = true;
+			},
+			//--------------------------还车时获取当前行程，判断是否可以还车--------------------------
+			isReturn: function() { //查询最后一条行程信息
+				var that = this;
+				uni.request({
+					url: $DDTInterface.DDTInterface.GetOrder.Url,
+					method: $DDTInterface.DDTInterface.GetOrder.method,
+					header: {
+						'content-type': 'application/json'
+					},
+					data: {
+						phoneNo: that.userInfo.phoneNumber,
+						startIndex: 0,
+						retcount: 1,
+						userID: that.userInfo.userID,
+					},
+					success(res) {
+						if (res.data.status == true) {
+							if (res.data.data[0].HireStatus == null) {
+								uni.showToast({
+									title: '还车异常，请重新还车',
+									icon: 'none'
+								})
+							} else if (res.data.data[0].HireStatus == 1) {
+								uni.showToast({
+									title: '还车失败',
+									icon: 'none',
+								})
+							} else if (res.data.data[0].HireStatus == 6) {
+								uni.showToast({
+									title: '还车失败',
+									icon: 'none',
+								})
+							} else if (res.data.data[0].HireStatus == 2) {
+								uni.showToast({
+									title: '还车成功',
+									icon: 'none',
+									success(res) {
+										that.UpdateOrder();
+									}
+								})
+							}
+						}
+						console.log(res)
+					},
+					fail(err) {
+						console.log(err);
+					}
+				})
+			},
+			//--------------------------获取行程--------------------------
+			getOrderInfo: function() {
+				var that = this;
+				uni.request({
+					url: $DDTInterface.DDTInterface.GetOrder.Url,
+					method: $DDTInterface.DDTInterface.GetOrder.method,
+					data: {
+						phoneNo: that.userInfo.phoneNumber,
+						startIndex: 0,
+						retcount: 1,
+						userID: that.userInfo.userID,
+					},
+					success(res) {
+						that.OrderNo = res.data.data[0].OrderNo;
+						console.log(res)
+						//判断是否有还车时间
+						console.log(that.rentInfo)
+						if (that.rentInfo.bikeType == "有桩") {
+							that.IsStake = true;
+						} else {
+							that.IsStake = false;
+						}
+						//---开启检测订单状态
+						that.checkStatus();
+						//开始计时---显示当前骑行时间
+						that.timeConcer(res.data.data[0].HireAction.Time);
+					},
+					fail(err) {
+						console.log(err)
+					}
+				})
+			},
+			UpdateOrder: function() {
+				var that = this;
+				console.log("订单号"+that.OrderNo)
+				uni.request({
+					url: $DDTInterface.DDTInterface.UpdateOrder.Url,
+					method: $DDTInterface.DDTInterface.UpdateOrder.method,
+					data: {
+						StrokeID: that.OrderNo,
+						PhoneNo: that.userInfo.phoneNumber,
+					},
+					success(res) {
+						console.log('更新订单信息', res);
+						uni.navigateTo({
+							url: './Payment'
+						})
+					},
+					fail(err) {
+						console.log('更新订单信息', res);
+					}
+				})
+			},
+			Lock: function() { //临时锁车
+				var that = this;
+				that.Isreturn = true;
+			},
+			continueRide: function() { //继续骑行
+				var that = this;
+				that.Isreturn = false;
+			},
+			comfirmReturn: function() { //确定还车
+
+			},
+			GetOrderByUserID: function() { //获取信息
+				var that = this;
+				uni.showLoading({
+					title: '加载中',
+					mask: true
+				})
+				uni.request({
+					url: $DDTInterface.DDTInterface.GetOrderByUserID.Url,
+					method: $DDTInterface.DDTInterface.GetOrderByUserID.method,
+					data: {
+						UserID: that.userInfo.userId,
+					},
+					success(res) {
+						console.log('获取订单数据成功', res);
+						uni.hideLoading();
+						if (res.data.status) {
+							if (res.data.data[0].PayState == 1) {
+								uni.showToast({
+									title: '订单已支付',
+									icon: 'none'
+								})
+								setTimeout(function() {
+									uni.redirectTo({
+										url: '../GRZY/zy_homepage'
+									})
+								}, 1500)
+							} else {
+								var bikeType = '有桩';
+								if (res.data.data[0].RentType == 1) {
+									bikeType = '无桩';
+								} else {
+									bikeType = '有桩';
+								}
+
+								that.rentInfo = {
+									bikeType: bikeType,
+									OrderId: res.data.data[0].OrderId, //订单ID
+									bikeId: res.data.data[0].BikeId, //车辆编号
+									operationId: res.data.data[0].OperationId, //操作编号
+									phoneNumber: that.userInfo.phoneNumber, //手机号
+								}
+								// console.log(that.rentInfo)
+								that.getOrderInfo();
+							}
+						}
+					},
+					fail() {
+						uni.hideLoading();
+						uni.showToast({
+							title: '网络连接失败',
+							icon: 'none'
+						})
+					}
+				})
+			},
+			BillingRule: function() {
+				uni.navigateTo({
+					url: "./BillingRule"
+				})
+			},
+		}
+	}
+</script>
+
+<style>
+	.content {
+		width: 750rpx;
+		background-color: #FFFFFF;
+	}
+
+	.map {
+		width: 750rpx;
+	}
+
+	.bt_lock {
+		/* 临时锁车 */
+		background-color: #BCBCBC;
+		border-radius: 50px;
+		width: 290rpx;
+		padding-top: 30rpx;
+		padding-bottom: 30rpx;
+		margin-right: 20rpx;
+		border-width: 0;
+	}
+
+	.bt_returnbike {
+		/* 还车 */
+		background-color: #65C36D;
+		border-radius: 50px;
+		width: 600rpx;
+		padding-top: 30rpx;
+		padding-bottom: 30rpx;
+		border-width: 0;
+	}
+
+	.ridestate {
+		width: 690rpx;
+		background-color: #FFF;
+		padding: 30rpx;
+		padding-top: 35rpx;
+		padding-bottom: 35rpx;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		border-radius: 20rpx;
+	}
+
+	.detail {
+		width: 690rpx;
+		padding: 30rpx;
+		padding-bottom: 50rpx;
+		padding-top: 60rpx;
+		background-color: #FFF;
+		margin-top: 20rpx;
+		border-top-left-radius: 20rpx;
+		border-top-right-radius: 20rpx;
+	}
+
+	.bt_continuebike {
+		/* 继续骑行 */
+		background-color: #FFF;
+		border-radius: 50px;
+		width: 290rpx;
+		padding-top: 30rpx;
+		padding-bottom: 30rpx;
+		border-width: 1rpx;
+		border-color: #65C36D;
+	}
+
+	.rule {
+		margin-left: 10rpx;
+		width: 85rpx;
+		height: 85rpx;
+		border-radius: 50px;
+		background-color: #FFF;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+	}
+</style>

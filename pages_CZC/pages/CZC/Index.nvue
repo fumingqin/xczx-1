@@ -1,0 +1,53 @@
+<template>
+	<view>
+		<map id='map' class="map" scale="13" :longitude="longitude" :latitude="latitude" :show-location="true" :polyline="polyline">
+		</map>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				longitude: 0, //精度
+				latitude: 0, //纬度
+				key: [],
+			}
+		},
+		onLoad() {
+			var that = this;
+			that.getKeyArr();
+			that.getMyLocation();
+		},
+		methods: {
+			getKeyArr :function() { 
+				var that = this; 
+			},
+			getMyLocation: function() {
+				var that = this;
+				var ojb = {
+					type: 'gcj02',
+					geocode: true,
+					success: function(res) {
+						that.longitude = res.longitude; 
+						that.latitude = res.latitude;
+					},
+					fail: function() {
+
+					},
+				}
+				uni.getLocation(ojb);
+			},
+			showRoutePlanning: function() {
+
+			}
+		}
+	}
+</script>
+
+<style>
+	.map {
+		width: 750rpx;
+		height: 1500rpx;
+	}
+</style>

@@ -1,0 +1,54 @@
+/* 红色按钮 */
+.btn_background{
+	background-color: #FC4646;
+}
+
+/* 白色字体 */
+.btn_fontColor{
+	color: #FFFFFF;
+}
+
+/* 个人中心重置按钮 */
+.btn_GRZX_CZ{
+	color: #FC4646; /* 红色字体 */
+	background-color: #FFFFFF; /* 白底 */
+}
+
+/* 个人中心顶部背景色 */
+.backImg::after{
+	background-color: #FFAF2A; 
+}
+
+/* 个人中心顶部背景色 */
+.bc_GRZX{
+	background-color: #FFAF2A; 
+}
+
+/* 个人中心顶部用户类型背景色 */
+.bc_GRZX_UserType{
+	background-color: #c38520; 
+}
+
+/* 按钮点击效果 */
+.btn_Click{
+	transition: all .3s; /*过渡 */ 
+	opacity: 0.9;
+	background-color:#E4E7ED;
+}
+
+/* 咨询动态顶部颜色 */
+.zxdt_topColor{
+	border-bottom: 1px solid #ff9012; 
+	color: #ff9012;
+}
+
+/* 咨询动态顶部线条颜色 */
+.TabClick{
+	color: #ff9012;
+}
+
+/* 咨询动态列表颜色 */
+.zxdt_color{
+	border: 4rpx solid #ff9012;
+	border-left-width: 20rpx;
+}

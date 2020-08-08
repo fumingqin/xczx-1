@@ -1,0 +1,532 @@
+<template>
+	<view>
+		<map id="map1" ref="map1" class="map" :style="{height:mapHeight}" :scale="scale" :longitude="longitude" :latitude="latitude"
+		 :polyline="polyline" :markers="markers" :show-location="true" :include-points="includepoints">
+		</map>
+		<image @click="back" src="../../static/Order/back.png" style="width: 120rpx;height: 120rpx;position: fixed;top: 50px;left: 10px;"></image>
+		<scroll-view style="position: fixed;bottom:0;left: 0;right: 0;align-items: center;" class="map" :style="{height:viewHeight}"
+		 scroll-y='true'>
+			<view style="width: 700rpx;margin-left: 25rpx;margin-right: 25rpx;">
+				<view style="flex-direction: row;background-color: #FFFFFF;width: 380rpx;border-radius: 48px;padding: 10rpx;align-items: center;">
+					<view>
+						<image src="../../static/Order/HeadPhoto.png" style="width: 84rpx;height: 84rpx;"></image>
+					</view>
+					<view style="margin-left: 10rpx;">
+						<view>
+							<text style="font-size:34rpx;font-family:Source Han Sans SC;font-weight:bold;color:#2C2D2D;">{{formatDriverName(driverName)}}</text>
+						</view>
+						<view style="flex-direction: row;margin-top: 10rpx;">
+							<view>
+								<text style="font-size:28rpx;font-family:Source Han Sans SC;font-weight:300;color:#2C2D2D;">{{orderInfo.VehicleNumber}}</text>
+							</view>
+							<view style="margin-left: 18rpx;">
+								<!-- <text style="font-size:28rpx;font-family:Source Han Sans SC;font-weight:300;color:#2C2D2D;">豪华SUV</text> -->
+							</view>
+						</view>
+					</view>
+				</view>
+
+				<view style="flex-direction: row;background-color: #FFFFFF;justify-content: space-between;align-items: center;padding: 20rpx;margin-top: 20rpx;border-radius: 20upx;box-shadow:0rpx 6rpx 20rpx 0rpx rgba(231,231,231,0.53);">
+					<view style="flex-direction: row;align-items: center;">
+						<text style="font-size:36rpx;font-family:Source Han Sans SC;font-weight:400;color:#2C2D2D;">总价：{{orderInfo.EstimatePrice}}元</text>
+						<!-- <text style="font-size:28rpx;font-family:Source Han Sans SC;font-weight:400;color:#2C2D2D;">元（已优惠9.45元）</text> -->
+					</view>
+					<!-- <view>
+						<text @click="payDetail" style="font-size:26rpx;font-family:Source Han Sans SC;font-weight:400;color:#4281FF;">费用明细></text>
+					</view> -->
+				</view>
+
+				<view v-if="!IsEvaluate" style="background-color: #FFFFFF;padding: 40rpx;margin-top: 20rpx;border-radius: 20upx;box-shadow:0rpx 6rpx 20rpx 0rpx rgba(231,231,231,0.53);">
+					<view style="align-items: center;">
+						<text style="font-size:32rpx;font-family:Source Han Sans SC;font-weight:400;color:#2C2D2D;">请对本次路程进行评价！</text>
+					</view>
+					<view style="flex-direction: row;margin-left: 30px;margin-right: 30px;justify-content: space-between;margin-top: 20rpx;">
+						<text style="font-size:32rpx;font-family:Source Han Sans SC;font-weight:400;color:#0055ff; margin-left: 180rpx;"
+						 @click="openPopup('bottomPopup')">去评价 ></text>
+						<!-- <image src="../../static/Order/Satisfy.png" @click="openPopup('bottomPopup')" style="width: 180rpx;height: 70rpx;"></image>
+						<image src="../../static/Order/Unsatisfy.png" @click="openPopup('bottomPopup1')" style="width: 215rpx;height: 70rpx;"></image> -->
+					</view>
+				</view>
+				<view v-if="IsEvaluate" style="background-color: #FFFFFF;padding: 40rpx;margin-top: 20rpx;border-radius: 20upx;box-shadow:0rpx 6rpx 20rpx 0rpx rgba(231,231,231,0.53);">
+					<view style="align-items: center;">
+						<text style="font-size:36rpx;font-family:Source Han Sans SC;font-weight:bold;color:#2C2D2D;">感谢您的评价！</text>
+					</view>
+					<view style="margin-top:20rpx;align-items: center;margin-right: 20px;padding-top: 20rpx;">
+						<uni-rate size="30" margin="20" :value="starNum" disabled="true" />
+						<view style="margin-top: 40rpx;">
+							<text style="font-size:32rpx;font-family:Source Han Sans SC;font-weight:400;color:#2C2D2D;" @click="openPopup('evaluatePopup')">评价详情</text>
+						</view>
+					</view>
+				</view>
+			</view>
+		</scroll-view>
+		<!-- 满意弹出框 -->
+		<uni-popup ref="bottomPopup" type="bottom">
+			<form @submit="submit">
+				<view style="height: 780rpx; background-color: #FFFFFF; border-top-left-radius: 20rpx; border-top-right-radius: 20rpx;">
+					<view style="flex-direction: row;justify-content: space-between; margin-top: 20rpx;">
+						<view>
+							<!-- 请勿删除 -->
+						</view>
+						<view>
+							<text style="font-size:38rpx;font-family:Source Han Sans SC;font-weight:400;color:#2C2D2D;">评价</text>
+						</view>
+						<view style="right: 30rpx;">
+							<uni-icons @click="closePopup('bottomPopup')" type="closeempty" size="30"></uni-icons>
+						</view>
+					</view>
+					<!-- 五角星 -->
+					<view style="margin-top: 60rpx; margin-left: 92rpx;">
+						<uni-rate size="28" margin="20" :value="num" @change="onchange" />
+					</view>
+					<!-- 评价框 -->
+					<view v-if="show" style="flex-direction: row; flex-wrap: wrap; justify-content: flex-start; margin-left: 40rpx; margin-top: 40rpx; margin-right: 20rpx;">
+						<view :class="[rSelect.indexOf(index)>-1?'cur':'unCur']" @tap="tapInfo(index)" v-for="(item,index) in evaluate"
+						 :key="index">
+							<text :class="[rSelect.indexOf(index)>-1?'color':'unColor']">{{item}}</text>
+						</view>
+					</view>
+					<view v-if="!show" style="flex-direction: row; flex-wrap: wrap; justify-content: flex-start; margin-left: 40rpx; margin-top: 40rpx; margin-right: 20rpx;">
+						<view :class="[rSelect1.indexOf(index)>-1?'cur':'unCur']"  @tap="tapInfo1(index)" v-for="(item,index) in badevaluate" :key="index">
+							<text :class="[rSelect1.indexOf(index)>-1?'color':'unColor']">{{item}}</text>
+						</view>
+					</view>
+					<!-- 文本框 -->
+					<view>
+						<textarea placeholder="请提出您的宝贵意见！" style="width:648rpx;height:164rpx;border-width: 1px;border-color: #AAAAAA;border-radius:6rpx;margin-top: 30rpx; margin-left: 40rpx;font-size:28rpx;font-family:Source Han Sans SC;font-weight:300;color:#999999; padding: 10rpx;"
+						 name="textareaValue" />
+						</view>
+				<!-- 提交按钮 -->
+				<view>
+					<button form-type="submit" style="width:648rpx;height:84rpx; border-radius:12rpx; background-color: #FC4646;border-color: #AAAAAA; margin-top: 30rpx; margin-left: 40rpx;">
+						<text style="color: #FFFFFF;align-items: center; font-size: 34rpx; font-weight:400; font-family:Source Han Sans SC;">提交</text>
+					</button>
+				</view>
+			</view>
+			</form>
+		</uni-popup>
+		<!-- 不满意弹出框 -->
+		<uni-popup ref="bottomPopup1" type="bottom">
+			<form @submit="submit1">
+			<view style="height: 780rpx; background-color: #FFFFFF; border-top-left-radius: 20rpx; border-top-right-radius: 20rpx;">
+				<view style="flex-direction: row;justify-content: space-between; margin-top: 20rpx;">
+					<view>
+						<!-- 请勿删除 -->
+					</view>
+					<view>
+						<text style="font-size:38rpx;font-family:Source Han Sans SC;font-weight:400;color:#2C2D2D;">评价</text>
+					</view>
+					<view style="right: 30rpx;">
+						<uni-icons @click="closePopup('bottomPopup1')" type="closeempty" size="30"></uni-icons>
+					</view>
+				</view>
+				<!-- 五角星 -->
+				<view style="margin-top: 60rpx; margin-left: 92rpx;">
+					<uni-rate size="28" margin="20" :value="num" @change="onchange"/>
+				</view>
+		        <!-- 评价框 -->
+				<view  style="flex-direction: row; flex-wrap: wrap; justify-content: flex-start; margin-left: 40rpx; margin-top: 40rpx; margin-right: 20rpx;"> 
+					<view :class="[rSelect1.indexOf(index)>-1?'cur':'unCur']"  @tap="tapInfo1(index)" v-for="(item,index) in badevaluate" :key="index">
+						<text :class="[rSelect1.indexOf(index)>-1?'color':'unColor']">{{item}}</text>
+					</view>
+				</view>
+				<!-- 文本框 -->
+				<view>
+					<textarea placeholder="请提出您的宝贵意见！" style="width:648rpx;height:164rpx;border-width: 1px;border-color: #AAAAAA;border-radius:6rpx;margin-top: 30rpx; margin-left: 40rpx;font-size:28rpx;font-family:Source Han Sans SC;font-weight:300;color:#999999; padding: 10rpx;" name="textareaValue" />
+				</view>
+				<!-- 提交按钮 -->
+				<view>
+					<button form-type="submit" style="width:648rpx;height:84rpx; border-radius:12rpx; background-color: #FC4646;border-color: #AAAAAA; margin-top: 30rpx; margin-left: 40rpx;">
+						<text style="color: #FFFFFF;align-items: center; font-size: 34rpx; font-weight:400; font-family:Source Han Sans SC;">提交</text>
+					</button>
+				</view>
+			</view>
+		    </form>
+		</uni-popup>
+		
+		<uni-popup ref="evaluatePopup" type="bottom">
+			<view style="background-color: #FFFFFF; border-top-left-radius: 20rpx; border-top-right-radius: 20rpx;padding: 40rpx;">
+				<view style="flex-direction: row;justify-content: space-between; margin-top: 20rpx;">
+					<view>
+						<!-- 请勿删除 -->
+					</view>
+					<view>
+						<text style="font-size:38rpx;font-family:Source Han Sans SC;font-weight:400;color:#2C2D2D;">评价</text>
+					</view>
+					<view style="right: 30rpx;">
+						<uni-icons @click="closePopup('evaluatePopup')" type="closeempty" size="30"></uni-icons>
+					</view>
+				</view>
+				<!-- 五角星 -->
+				<view style="margin-top: 20rpx; align-items: center;margin-right: 20px;">
+					<uni-rate size="28" margin="20" :value="starNum" disabled="true"/>
+				</view>
+		        <!-- 评价框 -->
+				<view  style="flex-direction: row; flex-wrap: wrap; justify-content: flex-start; margin-top: 20rpx; "> 
+					<view class="unCur" v-for="(item,index) in evaluateArr" :key="index">
+						<text class="unColor">{{item}}</text>
+					</view>
+				</view>
+				<!-- 文本框 -->
+				<view style="margin-bottom: 20rpx;"> 
+					<textarea  placeholder="您未填写评价"  class="textArea" :disabled="true" :value="evaluateContent"/>
+				</view>
+			</view>
+		</uni-popup>
+	</view>
+</template>
+
+<script>
+	import $downwindCar from "../../common/downwindCar.js"; //出租车专线
+	import $taxi from '../../common/Czc.js';//出租车
+	import uniPopup from "@/components/Order/uni-popup/uni-popup.vue";
+	import uniIcons from "@/components/Order/uni-icons/uni-icons.vue";
+	import uniRate from '@/components/Order/StarJudge/uni-rate/uni-rate.vue';
+	export default {
+		components: {
+			uniPopup,
+			uniIcons,
+			uniRate,
+		},
+		data() {
+			return {
+				IsEvaluate:false,//是否已经评价
+				starNum:1,//评价星数
+				evaluateArr:[],//评价内容
+				evaluateContent:"",
+				scale: 14,
+				longitude: "118.600608", //地图中心点经度
+				latitude: "24.889217", //地图中心点纬度
+				points: [],
+				polyline: [],
+				markers: [],
+				mapHeight: '',
+				viewHeight: '',
+				evaluate: ['动作娴熟', '服务态度好', '热情', '技术高超好', '绅士', '服务周到', '攀谈', '风度翩翩', '成熟稳重', '笑容满面','没有绕路',],
+				badevaluate: ['动作不熟', '服务态度差', '冷漠', '技术较差', '无情', '服务不周到', '不守时', '衣衫不整', '不严肃', '愁眉苦脸','司机绕路',],
+				textareaValue:"",
+				rSelect:[],
+				rSelect1:[],
+				orderInfo:[],//订单数据
+				userInfo:'',
+				num:'5',
+				show:true,
+				orderNumber:'',
+				includepoints:[],
+				driverName:'',
+			}
+		},
+		onLoad(option) {
+			let that=this;
+			that.userInfo = uni.getStorageSync('userInfo') || '';
+			that.getOrderDetailInfo(option.orderNumber);
+			that.orderNumber=option.orderNumber;
+		
+		},
+		mounted() {
+			let that=this;
+			uni.getSystemInfo({
+				//设置地图高度为可使用的高度
+				success: function(res) {
+					that.mapHeight = res.windowHeight + 'px';
+					that.viewHeight = (res.windowHeight * 0.4) + 'px'
+				}
+			});
+		},
+		methods: {
+			//-------------------------------顺风车请求订单详情数据-------------------------------
+			getOrderDetailInfo:function(orderNumber){
+				var that = this;
+				uni.request({
+					url: $downwindCar.Interface.QueryHitchhikerOrder_Passenger.value,
+					method: $downwindCar.Interface.QueryHitchhikerOrder_Passenger.method,
+					data: {
+						OrderNumber:orderNumber,
+						UserId: that.userInfo.userId,
+					},
+					success(res) {
+						console.log(orderNumber);
+						console.log(that.userInfo.userId);
+						console.log(res)
+						if(res.data.status){
+							that.orderInfo = res.data.data
+							that.driverName = res.data.data.DriverName;
+							that.includepoints=[{
+								longitude: that.orderInfo.StartLon,
+								latitude: that.orderInfo.StartLat,
+							},
+							{ 
+								longitude: that.orderInfo.EndLon,
+								latitude: that.orderInfo.EndLat,
+							}]
+							that.setMarker(1, that.orderInfo.StartLon, that.orderInfo.StartLat, '../../static/Order/Start.png');
+							that.setMarker(2, that.orderInfo.EndLon, that.orderInfo.EndLat, '../../static/Order/End.png');
+							// that.getDirectionDriving(that.orderInfo.startLon + ',' + that.orderInfo.startLat, that.orderInfo.endtLon + ',' + that.orderInfo.endLat);
+							if(that.orderInfo.Satisfied!=null){
+								var arr=[]
+								var str=that.orderInfo.SelectionTags
+								if(str.length>0){
+									str=str.substr(0,str.length-1);
+									arr=str.split(",");
+								}
+								that.IsEvaluate=false;
+								that.starNum=that.orderInfo.StarClass;
+								that.evaluateContent=that.orderInfo.EvaluateContent;
+								console.log(arr.length)
+								if(that.orderInfo.Satisfied=="是"){
+									for(var i=0;i< arr.length;i++){
+										var s=arr[i];
+										that.evaluateArr.push(that.evaluate[s])
+									}
+								}else if(that.orderInfo.Satisfied=="否"){
+									for(var i=0;i< arr.length;i++){
+										var s=arr[i];
+										that.evaluateArr.push(that.badevaluate[s])
+									}
+								}
+								that.IsEvaluate=true;//位置必须在最后
+							}else
+								{
+									that.openPopup('bottomPopup');//没有评价才自动弹出评价框
+								}
+						}else{
+							uni.showToast({
+								title:res.data.msg,
+								icon:"none"
+							})
+						}
+					},
+					fail(res) {
+						uni.showToast({
+							title:"网络连接失败",
+							icon:"none"
+						})
+					}
+				})
+			},
+			//-------------------------------订单评价-------------------------------
+			getOrderValuate:function(param,manyi){
+				var that = this;
+				var str = '';
+				for(let item of that.rSelect){
+					str += item + ',';
+				}
+				uni.request({
+					url: $taxi.Interface.addPassengerEvaluate_Passenger.value,
+					method: $taxi.Interface.addPassengerEvaluate_Passenger.method,
+					data: {
+						orderNumber:param,
+						userId: that.userInfo.userId,
+						satisfied :manyi,
+						starClass:that.num,
+					    selectionTags:str,
+						evaluateContent:that.textareaValue
+					},
+					success(res) {
+						uni.showToast({
+							title:res.data.msg,
+							icon:"none"
+						})
+						that.getOrderDetailInfo(that.orderNumber);
+					},
+					fail(res) {
+						uni.showToast({
+							title:"网络连接失败",
+							icon:"none"
+						})
+					}
+				})
+			},
+			onchange(e){
+				this.num = e.value;
+				if(this.num>3){
+					this.show=true;
+				}else{
+					this.show=false;
+				}
+			},
+			 tapInfo(e) {
+				        if (this.rSelect.indexOf(e) == -1) {
+					        this.rSelect.push(e);//选中添加到数组里
+				        } else {
+					        this.rSelect.splice(this.rSelect.indexOf(e), 1); //取消
+					    }
+			        },
+			tapInfo1(e) {
+						 if (this.rSelect1.indexOf(e) == -1) {
+							this.rSelect1.push(e);//选中添加到数组里
+							} else {
+								this.rSelect1.splice(this.rSelect1.indexOf(e), 1); //取消
+						}
+					},
+			/**
+			 * @name 满意评价提交
+			 */
+			submit(e){
+				var that = this;
+				this.textareaValue = e.detail.value.textareaValue;
+				that.closePopup("bottomPopup");
+				var value="是"
+				if(!that.show){
+					value="否"
+					}
+				that.getOrderValuate(that.orderNumber,value);
+				
+			},
+			/**
+			 * @name 不满意评价提交
+			 */
+			submit1(e){
+				var that = this;
+				this.textareaValue = e.detail.value.textareaValue;
+				that.closePopup("bottomPopup1");
+				that.getOrderValuate(that.orderNumber,'否');
+			},
+			back: function() {
+				var that = this;
+				uni.navigateBack({});
+			},
+			closePopup: function(value) {//关闭弹窗
+				this.$nextTick(function() {
+					this.$refs[value].close();
+				});
+			},
+			openPopup: function(value) {//开启弹窗
+			console.log(this.starNum);
+				this.$nextTick(function() {
+					this.$refs[value].open();
+				});
+			},
+			payDetail: function() {
+				//支付详情
+				uni.navigateTo({
+					url: '/pages/CZC/PriceDetail'
+				});
+			},
+			setMarker: function(id, lon, lat, iconPath) {
+				var width = 20;
+				var height = 20;
+				//描绘点的方法
+				var that = this;
+				var marker = new Object();
+				//画终点经纬度
+				marker = {
+					id: id,
+					latitude: lat,
+					longitude: lon,
+					iconPath: iconPath,
+					width: width,
+					height: height
+				};
+				var json = JSON.stringify(that.markers);
+				var arr = JSON.parse(json);
+				arr.push(marker);
+			    that.markers = arr;
+			},
+			formatDriverName:function(name){
+				return name.substring(0,1) + '师傅';
+			}
+			// getDirectionDriving: function(startLonLat, endLonLat) {
+			// 	//调用高德api取得路径规划并绘制线路 
+			// 	var that = this;
+			// 	uni.request({
+			// 		url: taxi.InterfaceAddress[0],
+			// 		data: {
+			// 			startLonLat: startLonLat,
+			// 			endLonLat: endLonLat,
+			// 		},
+			// 		method: "GET",
+			// 		success: function(res) {
+			// 			//日后会加入定时，此处需清空
+			// 			that.points = [];
+			// 			that.polyline = [];
+
+			// 			var polylineArr = [];
+			// 			var points = [];
+
+			// 			polylineArr = res.data.Polyline;
+			// 			for (var i = 0; i < polylineArr.length; i++) {
+			// 				var arr = polylineArr[i].split(';');
+			// 				for (var j = 0; j < arr.length; j++) {
+			// 					points.push(arr[j]);
+			// 				}
+			// 			}
+			// 			//根据文件建设对象经纬度数组
+			// 			for (var i = 0; i < points.length; i++) {
+			// 				var arr = points[i].split(',');
+			// 				var obj = {
+			// 					longitude: arr[0],
+			// 					latitude: arr[1]
+			// 				}
+			// 				that.points.push(obj);
+			// 			}
+			// 			var obj = {
+			// 				points: that.points,
+			// 				color: "#4BDD25",
+			// 				arrowLine: true,
+			// 				width: 5
+			// 			};
+			// 			that.polyline.push(obj);
+			// 		},
+			// 		fail: function(res) {
+			// 			console.log(res);
+			// 		}
+			// 	});
+			// },
+
+		}
+	}
+</script>
+
+<style>
+	.map {
+		width: 750rpx;
+	}
+	/* 点击文字框后样式 */
+	.cur {
+		height:54rpx;
+		border-width: 1px;
+		border-radius:8rpx; 
+		justify-content: center; 
+		padding: 8rpx; 
+		margin-top: 30rpx;
+		margin-right: 20rpx;
+		background-color: #FC4646;
+		border-color: #FC4646;
+	}
+	/* 点击文字后样式 */
+	.color{
+		color: #FFFFFF;
+		font-size:28rpx;
+		font-family:Source Han Sans SC;
+		font-weight:300;
+	}
+	.unCur{
+		height:54rpx;
+		border-width: 1px;
+		border-color: #AAAAAA;
+		border-radius:8rpx; 
+		justify-content: center; 
+		padding: 8rpx; 
+		margin-top: 30rpx;
+		margin-right: 20rpx;
+	}
+	.unColor{
+		color:#AAAAAA;
+		font-size:28rpx;
+		font-family:Source Han Sans SC;
+		font-weight:300;
+	}
+	.textArea{
+		height:164rpx;
+		border-width: 1px;
+		padding: 10rpx;
+		border-color: #AAAAAA;
+		border-radius:6rpx;
+		margin-top: 30rpx;
+		font-size:28rpx;
+		font-family:Source Han Sans SC;
+		font-weight:300;
+		color:#999999;
+	}
+</style>

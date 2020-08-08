@@ -1,0 +1,376 @@
+<template>
+	<view class="content">
+		<map id="map1" class="map" :style="{height:mapHeight}" :latitude="centerLatitude" :longitude="centerLongitude" :markers="markers" :show-location="showLocation"
+		:scale="scale" :polyline="polyline" :controls="controls">
+		</map>
+		
+		<view class="orderInfo">
+			<scroll-view scroll-y="true" class="orderInfo">
+				<view>
+					<text style="font-size:32rpx; margin-top: 20rpx; margin-left: 30rpx;">{{orderInfo.startStaion}} - {{orderInfo.endStation}}</text>
+					<text class="textView">出发时间: {{turnDate(orderInfo.setTime)}}出发</text>
+					<text class="textView">上车点：{{orderInfo.startStaion}}</text>
+					<text class="textView">下车点：{{orderInfo.endStation}}</text>
+				</view>
+				
+				<text style="font-size:28rpx; margin-top: 20rpx; margin-left: 30rpx;">途经站</text>
+				<!-- 站点 -->
+				<view class="stationList">
+					<view class="deSelect" :class="{'select':selectIndex == index}" @tap="stationClick(stationArray[index],index)" v-for="(item,index) in stationArray" :key="index">
+						<text class="deSelectColor" :class="{'selectColor' : selectIndex == index}">{{item.stationName}}</text>
+					</view>
+				</view>
+				<text style="font-size:28rpx; margin-top: 20rpx; margin-left: 30rpx;">站点图片</text>
+				<view class="imageView" v-if="arrayOrsingle == 'array'">
+					<block v-for="(item,index) in stationArray" :key="index">
+						<image :src="item.imageurl" lazy-load = "true" class="stationImage" @tap="picTap(index)"></image>
+					</block>
+					<!-- <image :src="imageURL" lazy-load = "true" class="stationImage" @tap="picTap"></image> -->
+				</view>
+				<view class="imageView" v-if="arrayOrsingle == 'single'">
+					<image :src="imageURL" lazy-load = "true" class="stationImage" @tap="picTap"></image>
+				</view>
+			</scroll-view>
+		</view>
+	</view>
+</template>
+
+<script>
+	import $taxi from '@/common/Czc.js';
+	import $KyInterface from "@/common/Ctky.js"
+	export default {
+		data() {
+			return {
+				//站点照片数组
+				imageArray:[
+					
+				],
+				//订单详情
+				orderInfo:[],
+				selectIndex:-1,//记录点击的下标
+				mapHeight:'',//地图高度
+				stationArray:[],//站点数组
+				scale:9,//地图缩放比例
+				centerLatitude:"",//地图中心点纬度
+				centerLongitude:"",//地图中心点经度
+				lon:0,//当前位置经度
+				lat:0,//当前位置纬度
+				points:[],
+				polyline:[],//线
+				//标识显示的图片
+				markerIconPath:'../../../../static/ZXGP/stationLocation.png',
+				//标识宽高
+				iconWidth:11,
+				iconHeight:13,
+				interval:0,//定时器值
+				markers: [], //标记点
+				showLocation:true,
+				mapContext: '', //mapContext对象
+				index: 0,
+				startArray:[],
+				endArray:[],
+				imageURL:'',//单个站点图片
+				arrayOrsingle:'array',
+			}
+		},
+		onLoad(param) {
+			var that = this;
+			//获取系统信息
+			uni.getSystemInfo({
+				success:function(res){
+					//地图高度
+					that.mapHeight = res.windowHeight + 'px';
+				}
+			});
+			that.orderInfo = JSON.parse(param.specialArray)
+			console.log('定制班车',that.orderInfo)
+			
+			that.startArray = that.orderInfo.starSiteArr[0]
+			that.endArray = that.orderInfo.endSiteArr[0]
+			var startLonLat = that.startArray.Longitude + ',' + that.startArray.Latitude
+			var endLonLat = that.endArray.Longitude + ',' + that.endArray.Latitude
+			
+			that.getStationInfo();
+			
+			// 获取自身位置
+			that.getMyLocation();
+		},
+		methods: {
+			//--------------------------------------规划路线--------------------------------------
+			//传进经纬度，规划路线
+			getDirectionDriving: function(startLonLat, endLonLat) {
+				//调用高德api取得路径规划并绘制线路
+				let that = this;
+				uni.request({
+					url: $taxi.InterfaceAddress[0],
+					data: {
+						startLonLat: startLonLat,
+						endLonLat: endLonLat,
+					},
+					method: "GET",
+					success: function(res) {
+						// console.log(startLonLat,endLonLat)
+						//日后会加入定时，此处需清空
+						that.points = [];
+						that.polyline = [];
+						that.distance = (res.data.Distance / 1000).toFixed(1);
+						that.duration = (res.data.Duration / 60).toFixed(0);
+						var polylineArr = [];
+						var points = [];
+			
+						polylineArr = res.data.Polyline;
+			
+						for (var i = 0; i < polylineArr.length; i++) {
+							var arr = polylineArr[i].split(';');
+							for (var j = 0; j < arr.length; j++) {
+								points.push(arr[j]);
+							}
+						}
+						//根据文件建设对象经纬度数组
+						for (var i = 0; i < points.length; i++) {
+							var arr = points[i].split(',');
+							var obj = {
+								longitude: arr[0],
+								latitude: arr[1]
+							}
+							that.points.push(obj);
+						}
+						var obj = {
+							points: that.points,
+							color: "#4bdc27",
+							arrowLine: true,
+							width: 6
+						};
+						that.polyline.push(obj);
+					},
+					fail: function(res) {
+						console.log(res);
+					}
+				});
+			},
+			//-------------------------------获取班次信息-------------------------------
+			getScheduleNum:function(param){
+				if(param.shuttleType != '定制巴士'){
+					var schedule = param.split('|');
+					return schedule[1];
+				}
+			},
+			//-------------------------------获取站点坐标和图片-------------------------------
+			getStationInfo() {
+				var that = this;
+				var scheduleCode = that.getScheduleNum(that.orderInfo.executeScheduleID);
+				console.log('班次编号',that.orderInfo.startStaion)
+				console.log('班次编号',that.orderInfo.endStation)
+				console.log('班次编号',that.orderInfo.executeScheduleID)
+				console.log('班次编号',scheduleCode)
+				// 获取站点数据
+				uni.request({
+					url:$KyInterface.KyInterface.Ky_getLineRouteStationImage.Url,
+					method:$KyInterface.KyInterface.Ky_getLineRouteStationImage.method,
+					data:{
+						startStation : that.orderInfo.startStaion,
+						endStation : that.orderInfo.endStation,
+						scheduleCode : scheduleCode,
+					},
+					success: (res) => {
+						console.log(res.data);
+						if(res.data.status == true) {
+							that.imageURL = res.data.data[0].imageurl;
+							
+							var length = res.data.data.length - 1;
+							var startLonLat = res.data.data[0].lon + ',' + res.data.data[0].lat;
+							var endLonLat = res.data.data[length].lon + ',' + res.data.data[length].lat;
+							//规划路线
+							that.getDirectionDriving(startLonLat,endLonLat);
+							
+							for (var i = 0; i < res.data.data.length; i++) {
+								var stationInfo = {
+									latitude : res.data.data[i].lat,
+									longitude : res.data.data[i].lon,
+									// 站点名称
+									stationName : res.data.data[i].stationName,
+									index : i,
+									imageurl : res.data.data[i].imageurl,
+								}
+								that.stationArray.push(stationInfo);
+								//---------------------华丽的分割线，分割线中为绘制坐标点的方法---------------------------
+								//创建绘制坐标点的对象marker
+								var marker = new Object();
+								marker = {
+									// id : res.data[i].AID,
+									latitude : res.data.data[i].lat,
+									longitude : res.data.data[i].lon,
+								    iconPath : that.markerIconPath,//标识显示的图片
+									width : that.iconWidth,
+									height : that.iconHeight,
+									callout : {
+										content: res.data.data[i].stationName, //文本
+										color: '#FC4646', //文字颜色
+										fontSize: 12, //文本大小
+										borderRadius: 4, //边框圆角
+										bgColor: '#FFFFFF', //背景颜色
+										display: 'ALWAYS', //常显
+										padding:3,
+									}
+								}
+								//将坐标集合添加到绘制坐标数组中
+								that.markers.push(marker);
+								//---------------------华丽的分割线--------------------------------------
+							}
+						}
+					},
+					fail:function(res){
+						console.log('请求失败',res);
+					},
+				})
+			},
+			//获取自身位置
+			getMyLocation:function() {
+				var that = this;
+				uni.getLocation({
+					//type默认为wgs84返回gps坐标,gcj02返回国测局坐标,可用于uni.openLocation的坐标
+					type:"gcj02",
+					//是否解析地址信息，默认false
+					geocode:true,
+					success:function(res) {
+						//获取当前位置信息成功后，给当前位置赋值
+						that.lon = res.longitude;
+						that.lat = res.latitude;
+						//如果地图中心位置坐标为空，将当前位置坐标设置为地图中心坐标
+						if(that.centerLatitude == "" && that.centerLongitude == ""){
+							that.centerLongitude = that.lon;
+							that.centerLatitude = that.lat;
+						}
+					}
+				});
+			},
+		    //选中站点
+			stationClick(e,index){
+				var that = this;
+				// console.log(e);
+				this.arrayOrsingle = 'single';
+				this.imageURL = this.stationArray[index].imageurl;
+				
+				//点击站点时将对应的站点坐标设置为地图中心位置，并放大地图
+				that.centerLatitude = e.latitude;
+				that.centerLongitude = e.longitude;
+				that.scale = 15;
+				that.selectIndex = e.index;
+			},
+			//点击站点图片
+			picTap(index) {
+				
+				//设置本地缓存
+				// uni.setStorageSync('imagePiclist', this.imageArray);
+				// uni.navigateTo({
+				// 	url: '/pages/LYFW/currency/imglist'
+				// })
+			},
+			//-------------------------------时间转换-------------------------------
+			turnDate(date) {
+				if(date) {
+					var setTime = date.replace('T',' ');
+					return setTime;
+				}
+			},
+		}
+	}
+</script>
+
+<style>
+	.content {
+		width: 750rpx;
+		background-color: #FFFFFF;
+	}
+	.map{
+		width: 750rpx;
+	}
+	.orderInfo {
+		background-color: #FFFFFF; 
+		position: fixed;
+		bottom: 20rpx;
+		left: 20rpx;
+		right: 20rpx;
+		border-radius: 20rpx;
+		height: 400rpx;
+		width: 94%;//如果视图发生位移就改这里
+	}
+	.textView {
+		font-size: 26rpx;
+		color: #666666;
+		font-weight: 300;
+		line-height: 26rpx;
+		margin-top: 10rpx;
+		margin-left: 30rpx;
+	}
+	/* 站点列表 */
+	.stationList {
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: flex-start;
+		margin-top: 10rpx;
+		margin-left: 30rpx;
+		margin-right: 20rpx;
+		margin-bottom: 20rpx;
+	}
+	/* 未选中样式 */
+	.deSelect {
+		border-width: 1rpx;
+		border-color: #AAAAAA;
+		border-radius: 8rpx;
+		justify-content: center;
+		padding-top: 10rpx;
+		padding-bottom: 10rpx;
+		padding-left: 15rpx;
+		padding-right: 15rpx;
+		margin-top: 10rpx;
+		margin-right: 20rpx;
+		background-color: #FFFFFF;
+	}
+	
+	/* 未选中文字样式 */
+	.deSelectColor {
+		color: #5C5C5C;
+		font-size: 26rpx;
+		font-weight: 300;
+		font-family:Source Han Sans SC;
+	}
+	/* 选中样式 */
+	.select {
+		border-width: 1rpx;
+		border-color: #FC4646;
+		border-radius: 8rpx;
+		justify-content: center;
+		padding-top: 10rpx;
+		padding-bottom: 10rpx;
+		padding-left: 15rpx;
+		padding-right: 15rpx;
+		margin-top: 10rpx;
+		margin-right: 20rpx;
+		background-color: #FFFFFF;
+	}
+	/* 选中文字样式 */
+	.selectColor {
+		color: #FC4646;
+		font-size: 26rpx;
+		font-weight: 300;
+		font-family:Source Han Sans SC;
+	}
+	/* 放置图片的view */
+	.imageView {
+		flex-direction: row;
+		background-color: #FFFFFF;
+		height: 120rpx;
+		margin-top: 10rpx;
+		margin-left: 30rpx;
+		margin-right: 30rpx;
+		margin-bottom: 30rpx;
+	}
+	/* 图片 */
+	.stationImage {
+		border-radius: 8rpx;
+		width: 204rpx;
+		height: 134rpx;
+		margin-right: 10rpx;
+	}
+</style>

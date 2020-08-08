@@ -1,0 +1,218 @@
+<template>
+	<view class="content">
+		<map id="map" ref='map' class="map" :style="{height:mapHeight}" :latitude="centerLatitude" :longitude="centerLongitude"
+		 :markers="markers" :show-location="showLocation" :scale="scale" :polyline="polyline" :controls="controls">
+		</map>
+
+		<view class="tipView">
+			<text style="color: #333333; font-size: 32rpx; font-weight: 300;margin-top: 20rpx;">骑行前请先检查刹车是否灵敏</text>
+			<view class="imageview">
+				<image src="../../static/GRZY/tipLeft.png" class="tipImage"></image>
+				<image src="../../static/GRZY/tipRight.png" class="tipImage" style="margin-left: 30rpx;"></image>
+			</view>
+		</view>
+
+		<image src="../../static/GRZY/Position.png" class="dingwei" @click="backToMyLocation"></image>
+
+		<view class="unLock">
+			<image class="scan" src="../../static/GRZY/unlocking.png"></image>
+			<view style="margin-left: 20rpx;">
+				<text style="color: #FFFFFF;">开锁中</text>
+			</view>
+		</view>
+		<!-- <image src="../../static/GRZY/personal.png" class="personal" @click="personalClick"></image> -->
+	</view>
+</template>
+
+<script>
+	const jyJPush = uni.requireNativePlugin('JY-JPush');
+	export default {
+		data() {
+			return {
+				mapHeight: '', //地图高度
+				centerLatitude: "", //地图中心点纬度
+				centerLongitude: "", //地图中心点经度
+				markers: [], //标记点坐标数组
+				showLocation: true,
+				scale: 11, //地图缩放比例,值越小地图可视范围越大
+				polyline: [], //画线数组
+				mapContext: '',
+			}
+		},
+		onLoad() {
+			var that = this;
+			//获取系统信息
+			uni.getSystemInfo({
+				success: function(res) {
+					//地图高度
+					that.mapHeight = res.windowHeight + 'px';
+				}
+			});
+			// 获取自身位置
+			that.setJYJPushAlias();
+			that.addJYJPushReceiveOpenNotificationListener();
+			that.addJYJPushReceiveNotificationListener();
+			that.getMyLocation();
+			// that.getJYJPushAlias();
+		},
+		onReady() {
+			var that = this;
+			that.mapContext = uni.createMapContext("map", this);
+		},
+		methods: {
+			//-------------------------------获取自身位置-------------------------------
+			getMyLocation: function() {
+				var that = this;
+				uni.getLocation({
+					//type默认为wgs84返回gps坐标,gcj02返回国测局坐标,可用于uni.openLocation的坐标
+					type: "gcj02",
+					//是否解析地址信息，默认false
+					geocode: true,
+					success: function(res) {
+						console.log(res)
+						//如果地图中心位置坐标为空，将当前位置坐标设置为地图中心坐标
+						that.centerLongitude = res.longitude;
+						that.centerLatitude = res.latitude;
+					}
+				});
+			},
+			//-------------------------------返回自身位置-------------------------------
+			backToMyLocation: function() {
+				var that = this;
+				//回到我的位置
+				that.mapContext.moveToLocation();
+			},
+			setJYJPushAlias: function() {
+				var that = this;
+				jyJPush.setJYJPushAlias({
+					userAlias: 'testAliasiOS123',
+					// userAlias: that.userInfo.phoneNumber,
+				}, result => {
+					//  设置成功或者失败，都会通过这个result回调返回数据；数据格式保持极光返回的安卓/iOS数据一致
+					//  注：若没有返回任何数据，考虑是否初始化完成
+					console.log(result);
+					jyJPush.getRegistrationID(
+					//  返回的数据会有registrationID，errorCode
+					result => {
+						console.log(result)
+					});
+				});
+			},
+			
+			addJYJPushReceiveOpenNotificationListener: function() { //监听通知被点击事件
+				jyJPush.addJYJPushReceiveOpenNotificationListener(result => {
+					//  监听成功后，若点击推送消息，会触发result；数据格式保持极光返回的安卓/iOS数据一致
+					plus.runtime.setBadgeNumber(0);
+					jyJPush.resetJYJPushBadge(result => {
+						console.log(JSON.stringify(result));
+					});
+					console.log(result);
+				});
+			},
+			addJYJPushReceiveNotificationListener: function() {
+				jyJPush.addJYJPushReceiveNotificationListener(result => {
+					//  监听成功后，若收到推送，会在result返回对应的数据；数据格式保持极光返回的安卓/iOS数据一致
+					console.log(result);
+				});
+			},
+			getJYJPushAlias: function() { //获取极光推送Alias值
+				jyJPush.getJYJPushAlias({
+					//  可以不用传值进去，但是需要配置这项数据
+				}, result => {
+					console.log(result);
+				});
+			}
+		}
+	}
+</script>
+
+<style>
+	.content {
+		width: 750rpx;
+		background-color: #FFFFFF;
+	}
+
+	,
+	.map {
+		width: 750rpx;
+	}
+
+	,
+	.tipView {
+		position: fixed;
+		background-color: #FFFFFF;
+		top: 20rpx;
+		left: 20rpx;
+		right: 20rpx;
+		border-radius: 20rpx;
+		align-items: center;
+	}
+
+	,
+	.imageview {
+		flex-direction: row;
+		/* app设置宽度会偏移，其他端需要加条件编译 */
+		/* #ifndef APP-NVUE */
+		width: 80%;
+		/* #endif */
+		margin-left: 30rpx;
+		margin-right: 30rpx;
+		margin-top: 20rpx;
+		margin-bottom: 40rpx;
+	}
+
+	,
+	.tipImage {
+		width: 272rpx;
+		height: 180rpx;
+	}
+
+	,
+	.bottomView {
+		background-color: #FFFFFF;
+		position: fixed;
+		flex-direction: row;
+		bottom: 20rpx;
+		left: 0rpx;
+		right: 0rpx;
+		width: 100%; //如果视图发生位移就改这里
+	}
+
+	,
+	.dingwei {
+		position: fixed;
+		bottom: 20rpx;
+		width: 120rpx;
+		height: 120rpx;
+		left: 20rpx;
+	}
+
+	,
+	.unLock {
+		position: fixed;
+		flex-direction: row;
+		background-color: #65C36D;
+		height: 100rpx;
+		width: 440rpx;
+		border-radius: 60rpx;
+		margin-left: 160rpx;
+		align-items: center;
+		font-size: 42rpx;
+		bottom: 30rpx;
+	}
+
+	,
+	.scan {
+		width: 50rpx;
+		height: 50rpx;
+		margin-left: 100rpx;
+	}
+
+	.personal {
+		position: fixed;
+		bottom: 19rpx;
+		width: 120rpx;
+		height: 120rpx;
+		right: 20rpx;
+	}
+</style>

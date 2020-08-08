@@ -1,0 +1,207 @@
+<template>
+	<view class="content">
+		<map id="map1" class="map" :style="{height:mapHeight}" :latitude="centerLatitude" :longitude="centerLongitude" :markers="markers" :show-location="showLocation"
+		:scale="scale" :polyline="polyline" :controls="controls">
+		</map>
+		<view class="orderInfo">
+			<text style="font-size:32rpx; margin-left: 30rpx; margin-top: 20rpx;">{{orderInfo.station}}</text>
+			<text class="textView">发车时间：{{orderInfo.time}}</text>
+			<!-- <text class="textView">司机姓名：{{(orderInfo.driverName.substr(0,1))+'师傅'}}</text> -->
+			<text class="textView">当前所在站点：{{orderInfo.currentStation}}</text>
+			<text class="textView">下一站：{{orderInfo.stationNum}}</text>
+			<text class="textView" style="margin-bottom: 20upx;">预计时间：{{orderInfo.dowStation}}</text>
+			<!-- <view class="buttonView">
+				<button class="button" style="background-color: #06B4FD;" @click="checkDriver">
+					<text class="butnText">查看司机</text>
+				</button>
+				<button class="button" style="background-color: #FC4646;" @click="contactDriver">
+					<text class="butnText">联系司机</text>
+				</button>
+			</view> -->
+		</view>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				orderInfo:{
+					station:'泉州客运中心 — 安溪',
+					driverName:'蔡大力',
+					time:'12:30',
+					currentStation:'茶叶大厦',
+					stationNum:'3个站点',
+					dowStation:'15分钟'
+				},
+				scale:9,
+				centerLatitude:"",//地图中心点纬度
+				centerLongitude:"",//地图中心点经度
+				lon:0,//当前位置经度
+				lat:0,//当前位置纬度
+				points:[],
+				polyline:[{
+					points:[],
+					color:"#669253",
+					width:2,
+					arrowLine: true,
+				}],//线
+				interval:0,//定时器值
+				markers: [], //标记点
+				showLocation:true,
+				mapContext: '', //mapContext对象
+				index: 0,
+				latLonArray:[],
+				busInfo:[],
+			}
+		},
+		onLoad(item) {
+			var that = this;
+			that.busInfo = JSON.parse(item.busInfo);
+			if(!that.busInfo.latitude && !that.busInfo.longitude) {
+				uni.showToast({
+					title: '该车未报班，暂无定位信息',
+					icon: 'none'
+				})
+			}
+			//获取系统信息
+			uni.getSystemInfo({
+				success:function(res){
+					that.mapHeight = res.windowHeight + 'px';
+				}
+			});
+			// 获取自身位置
+			that.getMyLocation();
+			// console.log('这是点的数组',pointArray);
+			//获取坐标，绘制路线
+			// that.getPoint();
+			//设置班车位置
+			that.getBusLocation(that.busInfo);
+		},
+		methods: {
+			//获取坐标，绘制路线
+			getPoint:function() {
+				var that = this;
+				var points = [];
+				points:[
+					{latitude:24.8998255600,longitude:118.6296674400},
+					{latitude:24.9088735900,longitude:118.5369914600},
+					{latitude:24.9512072300,longitude:118.4188855500},
+					{latitude:25.0395798900,longitude:118.1991594400}
+				];
+				var obj = {
+					points : points,
+					color:"#669253",
+					width:2,
+					arrowLine: true,
+				};
+				that.polyline.push(obj);//给线数组赋值
+			},
+			//-----------------------------获取自身位置-----------------------------
+			getMyLocation:function() {
+				console.log('自身定位');
+				
+				var that = this;
+				uni.getLocation({
+					//type默认为wgs84返回gps坐标,gcj02返回国测局坐标,可用于uni.openLocation的坐标
+					type:"gcj02",
+					//是否解析地址信息，默认false
+					geocode:true,
+					success:function(res) {
+						//获取当前位置信息成功后，给当前位置赋值
+						that.lon = res.longitude;
+						that.lat = res.latitude;
+						//如果地图中心位置坐标为空，将当前位置坐标设置为地图中心坐标
+						if(that.centerLatitude == "" && that.centerLongitude == ""){
+							that.centerLongitude = that.lon;
+							that.centerLatitude = that.lat;
+						}
+					}
+				});
+			},
+			//-----------------------------位置班车坐标点-----------------------------
+			getBusLocation:function(item){
+				var that = this;
+				//创建绘制坐标点的对象marker
+				var marker = new Object();
+				marker = {
+					// id : res.data[i].AID,
+					latitude : item.latitude,
+					longitude : item.longitude,
+				    iconPath : '',//标识显示的图片
+					width : that.iconWidth,
+					height : that.iconHeight,
+					callout : {
+						content: '班车位置', //文本
+						color: '#FC4646', //文字颜色
+						fontSize: 12, //文本大小
+						borderRadius: 4, //边框圆角
+						bgColor: '#FFFFFF', //背景颜色
+						display: 'ALWAYS', //常显
+						padding:3,
+						display: 'ALWAYS', //常显
+					}
+				}
+				//将坐标集合添加到绘制坐标数组中
+				that.markers.push(marker);
+			},
+			//-----------------------------查看司机-----------------------------
+			checkDriver:function(){
+				console.log('点击了查看司机');
+			},
+			//-----------------------------联系司机-----------------------------
+			contactDriver:function(){
+				console.log('点击了联系司机');
+			}
+		}
+	}
+</script>
+
+<style>
+	.content {
+		width: 750rpx;
+		height: 1624rpx;
+		background-color: #FFFFFF;
+	}
+	.map{
+		width: 750rpx;
+		height: 1624rpx;
+	}
+	.orderInfo {
+		background-color: #FFFFFF;
+		position: fixed;
+		border-radius: 20rpx;
+		bottom: 20rpx;
+		left: 20rpx;
+		right: 20rpx;
+	}
+	.textView {
+		font-size: 28rpx;
+		color: #666666;
+		font-weight: 300;
+		line-height: 26rpx;
+		margin-top: 20rpx;
+		margin-left: 30rpx;
+	}
+	.buttonView {
+		margin-top: 20rpx;
+		margin-bottom: 20rpx;
+		left: 20rpx;
+		right: 20rpx;
+		background-color: #FFFFFF;
+		flex-direction: row;
+		align-items: center;
+	}
+	.button {
+		border-radius: 12rpx;
+		height: 84rpx;
+		width: 300rpx;
+		margin-left: 20rpx;
+	}
+	.butnText {
+		font-size: 34rpx;
+		font-weight: 300;
+		color: #FFFFFF;
+	}
+
+</style>

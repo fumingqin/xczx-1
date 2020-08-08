@@ -1,0 +1,1417 @@
+<template>
+	<scroll-view style="background-color: #F5F7F9;" :style="{height:pageheight}" :scroll-y="true">
+		<!-- #ifdef APP-NVUE -->
+		<view id="ceshi" style="position: fixed;top: 0;right: 0;left: 0; z-index: 99999;overflow: hidden;background-color: #FFFFFF;padding-top: 40px;">
+			<!-- #endif -->
+			<!-- #ifdef MP-WEIXIN -->
+			<view id="ceshi" style="position: fixed;top: 0;right: 0;left: 0; z-index: 99999;overflow: hidden;background-color: #FFFFFF;padding-top: 40px;"
+			 :style="{'padding-top':TopHeight+'px'}">
+				<!-- #endif -->
+				<!-- <view class="status_bar"></view> -->
+				<view style="background-color: #FFF; ">
+					<view style="padding-bottom: 30rpx;">
+						<view style="flex-direction: row;justify-content: center;">
+							<view style="width: 60rpx;align-items: flex-start">
+								<uni-icons type="arrowleft" size="26" @click="goBack"></uni-icons>
+							</view>
+							<view style="width: 634rpx;background-color: #F7F7F7;flex-direction: row;align-items: center;border-radius: 11rpx;">
+								<view style="flex-grow:1">
+									<view>
+										<view style="flex-direction: row; align-items: center;padding-top: 15rpx;">
+											<view style="width: 60rpx;flex-direction: row;justify-content: center;align-items: center;">
+												<view class="bluering"></view>
+											</view>
+											<view>
+												<input placeholder="请输入起点" style="width: 450rpx;font-size: 30rpx;" :disabled="disabled" @click="selectInitial('qidian')"
+												 v-model="startAddress" />
+											</view>
+										</view>
+									</view>
+									<view style="border-bottom-width: 2rpx;border-color: #EAEAEA;border-style: solid;margin-top: 10rpx;margin-bottom: 10rpx;margin-left: 60rpx;margin-right: 30rpx;"></view>
+									<view style="flex-direction: row;align-items: center;padding-bottom: 10rpx;">
+										<view style="width: 60rpx;flex-direction: row;justify-content: center;align-items: center;">
+											<view class="redring"></view>
+										</view>
+										<view>
+											<input placeholder="请输入终点" style="width: 450rpx;font-size: 30rpx;" :disabled="disabled" @click="selectDestination('zhongdian')"
+											 v-model="endAddress" />
+										</view>
+									</view>
+								</view>
+								<view style="flex-direction: row;align-items: center;padding-right: 20rpx;">
+									<image src="../../static/Home/exchange.png" style="height: 40rpx;width: 40rpx;" @click="exchange"></image>
+								</view>
+								<view style="flex-direction: row;align-items: center;padding-right: 20rpx;">
+									<image src="../../static/Home/Search.png" style="height: 40rpx;width: 40rpx;" @click="search"></image>
+								</view>
+							</view>
+						</view>
+					</view>
+					<view class="tab">
+						<uni-segmented-control :current="current" :values="items" @clickItem="onClickItem" style-type="text" active-color="#FC4646"></uni-segmented-control>
+					</view>
+				</view>
+			</view>
+			<view :style="{height:winheight}"></view>
+			<view v-if="current === 0" style="margin-top: 20rpx;">
+				<view>
+					<image :src="imageIndex[0].imageUrl" style="width: 750rpx;height: 150rpx;"></image>
+				</view>
+				<view style="background-color: #F5F7F9;" v-if="!IsSearch">
+					<scroll-view class="history" :scroll-y="true" :style="{height:historyheight}">
+						<view style="margin-left: 30rpx;margin-right: 30rpx;">
+							<view style="border-style: solid;border-bottom-width: 1px;border-color: #EAEAEA;padding: 30rpx;">
+								<text style="text-align: center;font-size: 30rpx;">历史记录</text>
+							</view>
+							<view style="flex-direction: row;align-items: center;justify-content: space-between;padding-top: 30rpx;padding-bottom: 30rpx; border-bottom-width: 1px;border-color:#EAEAEA;;"
+							 v-for="(item,index) in historyAddress" :key="index" @click="getHistory(index)">
+								<view style="flex-direction: row;align-items: center;">
+									<view>
+										<image src="../../static/Home/position2.png" style="width: 37rpx;height: 37rpx;"></image>
+									</view>
+									<view style="padding-left: 20rpx;width: 560rpx;">
+										<view><text style="font-size: 30rpx;">{{item.addressName}}</text></view>
+										<view style="height: 10rpx;"></view>
+										<view><text style="color: #999999;font-size: 30rpx;">{{item.address}}</text></view>
+									</view>
+								</view>
+								<view>
+									<image src="../../static/Home/arrow.png" style="width: 30rpx;height: 30rpx;"></image>
+								</view>
+								<!-- <uni-icons type="arrowright" size="26"></uni-icons> -->
+							</view>
+							<view @click="clearHistpry" v-if="historyAddress.length>0">
+								<text style="padding: 20rpx;color: #999999;font-size: 24rpx;text-align: center;">清除历史记录</text>
+							</view>
+						</view>
+					</scroll-view>
+				</view>
+				<view v-if="IsSearch">
+					<!-- 	<view class="history">
+						<view style="height: 180rpx;justify-content: space-between;margin-left: 30rpx;margin-right: 30rpx;padding-top: 30rpx;padding-bottom: 20rpx;">
+							<view style="flex-direction: row;align-items: center;justify-content: space-between;">
+								<view style="flex-direction: row;align-items: center;">
+									<view><text style="font-size: 36rpx; font-weight: bold;">客运&nbsp;</text></view>
+									<view style="border-width: 1px;border-color: #FF5A00;border-radius: 6rpx;padding-left: 5rpx;padding-right: 5rpx; "><text
+										 style="font-size: 18rpx;color: #FF5A00;">舒适</text></view>
+								</view>
+								<view><text style="font-size: 28rpx;"> 约34元</text></view>
+								<view><text style="font-size: 28rpx;"> 1小时34分钟</text></view>
+							</view>
+							<view>
+								<text style="font-size: 28rpx;color: #666666;"> 2公里&nbsp;等待接驾4分钟&nbsp;步行30分钟</text>
+							</view>
+						</view>
+					</view> -->
+					<view class="history" @click="GotoTaxi">
+						<view style="height: 180rpx;justify-content: space-between;margin-left: 30rpx;margin-right: 30rpx;padding-top: 30rpx;padding-bottom: 20rpx;">
+							<view style="flex-direction: row;align-items: center;justify-content: space-between;">
+								<view style="flex-direction: row;align-items: center;">
+									<view><text style="font-size: 36rpx; font-weight: bold;">出租车&nbsp;</text></view>
+									<view style="border-width: 1px;border-color: #007AFF;border-radius: 6rpx;padding-left: 5rpx;padding-right: 5rpx; "><text
+										 style="font-size: 18rpx;color: #007AFF;">最快</text></view>
+								</view>
+								<view><text style="font-size: 28rpx;"> 约{{estimatePrice}}元</text></view>
+								<view><text style="font-size: 28rpx;"> {{Duration}}</text></view>
+							</view>
+							<view>
+								<text style="font-size: 28rpx;color: #666666;">{{Distance}}</text>
+							</view>
+						</view>
+					</view>
+					<!-- <view class="history">
+						<view style="height: 180rpx;justify-content: space-between;margin-left: 30rpx;margin-right: 30rpx;border-bottom-width: 1px;border-color:#EAEAEA;padding-top: 30rpx;padding-bottom: 20rpx;">
+							<view style="flex-direction: row;align-items: center;justify-content: space-between;">
+								<view style="flex-direction: row;align-items: center;">
+									<view><text style="font-size: 36rpx; font-weight: bold;">公交&nbsp;</text></view>
+									<view style="border-width: 1px;border-color: #007AFF;border-radius: 6rpx;padding-left: 5rpx;padding-right: 5rpx; ">
+										<text style="font-size: 18rpx;color: #007AFF;">k602</text></view>
+								</view>
+								<view><text style="font-size: 28rpx;"> 1小时34分钟</text></view>
+							</view>
+							<view>
+								<text style="font-size: 28rpx;color: #666666;"> 2公里&nbsp;等待接驾4分钟&nbsp;步行30分钟</text>
+							</view>
+						</view>
+						<view style="margin-left: 30rpx;margin-right: 30rpx;flex-direction: row;height: 70rpx;align-items: center;">
+							<view style="height: 30rpx;width: 30rpx;border-width: 1px;border-color: #007AFF;border-radius: 100px;"><text
+								 style="color: #007AFF;font-size: 24rpx;text-align: center;line-height: 24rpx;">!</text></view>
+							<view><text style="font-size: 28rpx;">&nbsp;k602路约8分钟/趟</text></view>
+						</view>
+					</view> -->
+				</view>
+			</view>
+			<!-- 客运弹框 -->
+			<popup ref="popup" type="center" maskClick="false" style="z-index:99999;">
+				<view style="flex-direction: column;position: relative;display: flex;justify-content: center;">
+					<image :src="kyPopImage" class="popupClass" style="height: 700rpx;width: 600rpx;"></image>
+					<view style="position: absolute; align-items: center;margin-top: 150rpx;">
+						<view class="popupTextContent" style="width: 600rpx;font-style:SourceHanSansSC-Bold;margin-bottom: 20rpx;">
+							<text class="popupText" style="text-align: center;font-size: 40rpx;font-weight: bold;">传统与定制班车的差异</text>
+						</view>
+						<view class="popupTextContent" style="width: 500rpx;font-style:SourceHanSansSC-Bold;margin-bottom: 20rpx;">
+							<text class="popupText">传统：只能在车票的起终点进行上车</text>
+						</view>
+						<view class="popupTextContent" style="width: 500rpx;font-style:SourceHanSansSC-Bold;margin-bottom: 20rpx;">
+							<text class="popupText" style="line-height: 50rpx;">定制：车票除起终点可以上车之外，还可以在定制线路途中的站点进行上车，详细可见班次详情对应的地</text>
+						</view>
+						<!-- #ifdef APP-PLUS -->
+						<text style="top: 5rpx;border-radius: 18upx;width: 350upx;height: 100upx;line-height:100upx;color: #7EC075;font-size: 38upx;text-align: center;align-items: center;background-color: #FFFFFF;"
+						 @click="noPupop">下次不弹出</text>
+						<!-- #endif -->
+						<!-- #ifdef MP-WEIXIN -->
+						<text style="margin-bottom: 80rpx; top: 10rpx;border-radius: 18upx;width: 350upx;height: 100upx;line-height:100upx;color: #7EC075;font-size: 38upx;text-align: center;align-items: center;background-color: #FFFFFF;z-index:10015"
+						 @click="noPupop">下次不弹出</text>
+						<!-- #endif -->
+
+					</view>
+				</view>
+				<view style="align-items: center;text-align: center;">
+					<image src="../../static/Home/close.png" style="width: 74upx;height: 74upx ;margin-top: 42upx;" @click="close"></image>
+				</view>
+			</popup>
+			<!-- 客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运开始 -->
+			<view v-if="current == 1" style="margin-top: 10upx;">
+				<view class="ctky_View" v-for="(item,index) in keYunList" :key="index" @click="queryTickets(keYunList[index])">
+					<view class="ctky_View_Left">
+						<view style="margin-left:25upx;margin-top: 28upx ;margin-bottom: 28upx;">
+							<text style="font-style: SourceHanSansSC-Regular; font-size:36upx ;color: #2C2D2D;padding: 0;">{{item.shuttleType}}</text>
+						</view>
+						<view style="margin-left: 25upx;flex-direction: row;align-items: center;margin-bottom: 18upx;">
+							<image src="../../static/Home/startDot.png" style="width: 10upx ;height: 10upx;"></image>
+							<text style="margin-left: 16upx; font-size: 30upx;font-style:SourceHanSansSC-Regular ;
+						color: #333333;">{{item.startStaion}}</text>
+						</view>
+						<view style="margin-left: 25upx;flex-direction: row;align-items: center;margin-bottom: 18upx;">
+							<image src="../../static/Home/endDot.png" style="width: 10upx ;height: 10upx;"></image>
+							<text style="margin-left: 16upx;font-size: 30upx;font-style:SourceHanSansSC-Regular ;
+						color: #333333;">{{item.endStation}}</text>
+						</view>
+						<text style="margin-left: 25upx;margin-bottom: 30upx;font-style: SourceHanSansSC-Light;
+					font-size: 28upx;color: #666666;">共{{item.Trips}}趟
+							{{utils.timeTodate('Y-m-d H:i:s',item.firstDepartureTime)}}发车</text>
+					</view>
+					<view class="ctky_View_Right">
+						<view style="text-align: right;">
+							<text style="margin-right: 28upx;font-size: 36upx;font-style:
+                       SourceHanSansSC-Regular; color: #FC4646;">￥{{item.fare}}</text>
+							<text style="margin-right: 28upx;font-size: 24upx;font-style:
+                       SourceHanSansSC-Light; color: #666666;margin-top: 18upx;">余{{item.remainingVotes}}张</text>
+						</view>
+					</view>
+				</view>
+				<empty-data :isShow="keYunList.length == 0" text="暂无车票数据" :image="kyNoDataImage" textColor="#999999"></empty-data>
+			</view>
+			<!-- 客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运结束 -->
+			<view v-if="current == 2">
+				<map id='map1' ref="map1" :style="{height:mapheight}" style="width: 750rpx;" :longitude="startLon" :latitude="startLat"
+				 :polyline="polyline" :show-location="showlocation" :markers="markers"></map>
+				<view style="width: 698rpx;background-color: #FFFFFF;position: fixed;bottom: 40rpx;left: 26rpx;right: 26rpx;border-radius: 12rpx;"
+				 v-if="IsSearch">
+					<view style="margin:20rpx;">
+						<view style="height: 80rpx;flex-direction: row;border-bottom-width: 1px;border-color: #EAEAEA;">
+							<button class="bt_now" @click="click_btnow"><text style="font-size: 30rpx;" :class="IsClick ? 'bt_text' : ''">现在</text></button>
+							<button class="bt_booking" @click="click_btbooking"><text style="font-size: 30rpx;" :class="IsClick ? '' : 'bt_text'">预约</text></button>
+						</view>
+						<view style="flex-direction: row;justify-content: space-between;margin-top: 30rpx;margin-bottom: 30rpx;" v-if="!IsClick">
+							<view style="flex-direction: row;justify-content: center;align-items: center;width: 329rpx;border-right-width: 1px;border-color: #EAEAEA;">
+								<!-- <text style="font-size: 28rpx;">预约时间</text> -->
+								<hTimePicker interval="5" @changeTime="changeTime">
+									<view slot="pCon" class="changeTime">
+										<text style="font-size: 28rpx;">{{selecttime}}</text>
+									</view>
+								</hTimePicker>
+								<uni-icons type="arrowright" size="19"></uni-icons>
+							</view>
+							<view style="flex-direction: row;justify-content: center;align-items: center;width: 329rpx;flex-wrap: wrap;"
+							 @click="selectPassenger">
+								<view style="flex-direction: row;align-items: center;justify-content: center;" v-for="(item,index) in Passenger"
+								 :key="index">
+									<text style="font-size: 28rpx;">{{item.userName}} </text>
+									<text v-if="index!=(Passenger.length-1)">,</text>
+								</view>
+								<uni-icons type="arrowright" size="19"></uni-icons>
+							</view>
+						</view>
+						<view style="height: 97rpx;flex-direction: row;justify-content: center;" v-if="IsClick" @click="selectPassenger">
+							<view style="flex-direction: row;justify-content: center;align-items: center;">
+								<view style="flex-direction: row;align-items: center;justify-content: center;" v-for="(item,index) in Passenger"
+								 :key="index">
+									<text style="font-size: 28rpx;">{{item.userName}} </text>
+									<text v-if="index!=(Passenger.length-1)">,</text>
+								</view>
+								<uni-icons type="arrowright" size="19"></uni-icons>
+							</view>
+						</view>
+						<view style="padding-top: 20rpx;flex-direction: row;justify-content: space-between;border-top-width: 1px;border-color:#EAEAEA;">
+							<view style="align-items: center;justify-content: center;flex-direction: row;">
+								<image src="../../static/Home/car1.png" style="width: 194rpx;height: 70rpx;"></image>
+								<view>
+									<text style="font-size: 28rpx;">{{vehicleType}}</text>
+								</view>
+							</view>
+							<view style="align-items: center;justify-content: center;flex-direction: row;">
+								<text style="font-size: 30rpx;font-weight: 300;">预估&nbsp;&nbsp;</text>
+								<text style="font-size: 36rpx;padding-right: 20rpx;font-weight: 300;">{{estimatePrice}}&nbsp;元</text>
+							</view>
+						</view>
+						<view style="margin-top: 40rpx;align-items: center;">
+							<button @click="promptlyCall" style="width: 640rpx;height: 84rpx;background-color:#FC4646;border-radius:12rpx;border-color:#FC4646;line-height: 84rpx;">
+								<text style="color: #FFFFFF;font-size: 34rpx;">立即呼叫</text>
+							</button>
+						</view>
+					</view>
+				</view>
+			</view>
+			<view v-if="current == 3" style="margin-top: 10rpx;">
+				<view class='privatetaxi' v-for="(item,index) in privateTaxi" :key="index" @click="privateTaxiClick(item)">
+					<text style="font-size: 36rpx;font-weight: bold;">{{item.SpecialLineName}}</text>
+					<view style="justify-content: space-between;padding-top: 20rpx;">
+						<view style="flex-direction: row;justify-content: space-between;">
+							<view style="flex-direction: row;align-items: center;">
+								<view style="border-radius: 100px;background-color: #309FF7;width: 10rpx;height: 10rpx;"></view>
+								<text style="font-size: 30rpx;padding-left: 10rpx;"> {{item.StartSiteName}}</text>
+							</view>
+							<text style="font-size: 36rpx;color: #FC4646;">￥{{item.EstimatePrice}}/人</text>
+						</view>
+						<view style="flex-direction: row;justify-content: space-between;padding-top: 10rpx;">
+							<view style=" flex-direction: row;align-items:center;">
+								<view style="border-radius: 100px;background-color: #E3424B;width: 10rpx;height: 10rpx;"></view>
+								<text style="font-size: 30rpx;padding-left: 10rpx;"> {{item.EndSiteName}}</text>
+							</view>
+						</view>
+					</view>
+					<view style="padding-top: 20rpx;flex-direction: row;">
+						<text style="font-size: 28rpx;color: #666666;" v-if="item.Distance>0">约{{item.Distance}}公里</text>
+						<text style="font-size: 28rpx;color: #666666;" v-if="item.EstimatedTime>0">，预计{{item.EstimatedTime}}分钟</text>
+					</view>
+				</view>
+			</view>
+			<view v-if="current == 4" style="margin-top: 10rpx;">
+				<view class='privatetaxi' v-for="(item,index) in downwindCar" :key="index" @click="downwindCarClick(item)">
+					<text style="font-size: 36rpx;font-weight: bold;">{{item.DepartureTime.replace("T"," ").substr(0,16)}}&nbsp;出发</text>
+					<view style="padding-top: 20rpx;flex-direction: row;justify-content: space-between;">
+						<text style="font-size: 30rpx;">&nbsp;&nbsp;&nbsp;司机：{{item.DriverName.substr(0,1)}}师傅</text>
+						<text style="font-size: 30rpx;">剩余{{item.Seat}}座</text>
+					</view>
+					<view style="justify-content: space-between;padding-top: 10rpx;">
+						<view style="flex-direction: row;justify-content: space-between;">
+							<view style="flex-direction: row;align-items: center;">
+								<view style="border-radius: 100px;background-color: #309FF7;width: 10rpx;height: 10rpx;"></view>
+								<text style="font-size: 30rpx;padding-left: 10rpx;"> {{item.StartSiteName}}</text>
+							</view>
+							<text style="font-size: 36rpx;color: #FC4646;">￥{{item.Price}}</text>
+						</view>
+						<view style="flex-direction: row;justify-content: space-between;padding-top: 10rpx;">
+							<view style=" flex-direction: row;align-items:center;">
+								<view style="border-radius: 100px;background-color: #E3424B;width: 10rpx;height: 10rpx;"></view>
+								<text style="font-size: 30rpx;padding-left: 10rpx;"> {{item.EndSiteName}}</text>
+							</view>
+						</view>
+					</view>
+					<!-- <view style="padding-top: 20rpx;flex-direction: row;">
+					<text style="font-size: 28rpx;color: #666666;" v-if="item.Distance>0">约{{item.Distance}}公里</text>
+					<text style="font-size: 28rpx;color: #666666;" v-if="item.EstimatedTime>0">，预计{{item.EstimatedTime}}分钟</text>
+				</view> -->
+				</view>
+			</view>
+	</scroll-view>
+</template>
+
+<script>
+	import $taxi from "@/common/Czc.js";
+	import $lyfw from '@/common/LYFW/LyfwFmq.js' //旅游服务
+	import $privateTaxi from "@/common/Czcprivate.js"; //出租车专线
+	import $downwindCar from "@/common/downwindCar.js"; //顺风车
+	import $KyInterface from "@/common/Ctky.js" //客运接口
+	import uniIcons from "@/components/HOME/uni-icons/uni-icons.vue";
+	import uniSegmentedControl from "@/components/HOME/uni-segmented-control/uni-segmented-control.vue";
+	import hTimePicker from "@/components/HOME/h-timePicker/h-timePicker.vue";
+	import popup from "@/components/HOME/uni-popup/uni-popup.vue"; //弹框组件
+	import utils from "@/components/HOME/shoyu-date/utils.filter.js"; //时间格式转换
+	import emptyData from "@/components/Order/emptyData/emptyData.vue"; //无数据时显示内容
+	export default {
+		components: {
+			uniIcons,
+			uniSegmentedControl,
+			hTimePicker,
+			popup,
+			emptyData
+		},
+		data() {
+			return {
+				utils: utils, //时间格式转换
+				selecttime: "点击选择时间",
+				county: '',
+				Passenger: [{
+					userName: "选择乘车人"
+				}],
+				downwindCar: [], //顺风车
+				privateTaxi: [],
+				polyline: [],
+				tabIndex: 0,
+				index: 1,
+				startAddress: "", //起点
+				endAddress: "", //终点
+				startlocation: {},
+				endlocation: {},
+				IsClick: true,
+				items: ['智能', '客运', '出租车', '专线车', '顺风车'],
+				points: [],
+				IsSearch: false,
+				markers: [],
+				showlocation: true,
+				Distance: '', //距离
+				Duration: '', //时间
+				historyAddress: [],
+				// query: '',
+				winheight: "",
+				current: 0,
+				mapheight: "", //地图高度
+				historyheight: "", //历史记录高度
+				pageheight: "", //页面高度
+				points: [],
+				polyline: [],
+				startLonLat: "", //起点经纬度组合(路线规划用到)
+				endLonLat: "", //终点点经纬度组合(路线规划用到)
+				startLon: "", //起点经度
+				startLat: "", //起点纬度
+				endLon: "", //终点经度
+				endLat: "", //终点纬度
+				estimatePrice: "", //预估价格
+				intervalAround: 0,
+				// map: '',
+				// tcky_selectStartStation: '泉州客运中心站',
+				// tcky_selectEndStation: '漳州客运站',
+				isPupop: true, //是否弹窗
+				keYunList: [],
+				disabled: true,
+				vehicleType: '出租车', //车辆类型
+				destinationArea: '', //目标区域
+				estimateTime: 0, //预计时长
+				estimateDistance: 0, //预计里程
+				kyPopImage: '', //客运弹框背景图
+				kyNoDataImage: '', //客运无数据图片
+				imageIndex: [{
+					imageUrl: ''
+				}], //banner图片
+				TopHeight: 0, //小程序距离顶部的距离
+				IsCallAgain:false,
+			}
+		},
+
+		onLoad(options) {
+			var that = this;
+			// console.log("onLoad")
+			uni.removeStorageSync("passengerList");
+			// #ifdef MP-WEIXIN
+			var MenuButton = uni.getMenuButtonBoundingClientRect(); //获取小程序胶囊按钮的信息
+			that.TopHeight = MenuButton.top + MenuButton.height;
+			// #endif
+			//获取客运弹框图片
+			uni.request({
+				url: $lyfw.Interface.qg_GetImage.value,
+				method: $lyfw.Interface.qg_GetImage.method,
+				data: {
+					model: 6,
+					type: '首页搜索栏banner'
+				},
+				success: (res) => {
+					// console.log(res)
+					this.imageIndex = res.data.data
+
+				},
+			})
+			that.getPicture();
+			uni.getStorage({ //获取历史记录
+				key: "historyAddress",
+				success: function(res) {
+					that.historyAddress = res.data;
+				}
+			});
+			uni.getLocation({ //获取当前定位
+				type: 'wgs84',
+				success: function(res) {
+					that.startLon = res.longitude;
+					that.startLat = res.latitude;
+				}
+			});
+			if (options.current) {
+				that.current = parseInt(options.current);
+			}
+			if(options.callagain==1){
+				that.IsCallAgain=true;
+			}
+			// that.intervalGet();
+		},
+		onUnload() {
+			uni.removeStorage({
+				key: "StartPoint"
+			})
+			uni.removeStorage({
+				key: "EndPoint"
+			})
+			uni.removeStorage({
+				key: "passengerList"
+			})
+			clearInterval(this.intervalAround);
+		},
+		onShow() {
+			var that = this;
+			uni.getStorage({ //获取起点
+				key: "StartPoint",
+				success: function(res) {
+					that.startAddress = res.data.addressName;
+					that.startLonLat = res.data.lng + "," + res.data.lat;
+					that.startLon = res.data.lng;
+					that.startLat = res.data.lat;
+					that.startlocation = res.data;
+					console.log(res.data);
+				}
+			});
+			uni.getStorage({ //获取终点
+				key: "EndPoint",
+				success: function(res) {
+					that.endAddress = res.data.addressName;
+					that.endLonLat = res.data.lng + "," + res.data.lat;
+					that.endLon = res.data.lng;
+					that.endLat = res.data.lat;
+					that.endlocation = res.data;
+					that.destinationArea = res.data.district; //目标区域
+					if(that.IsCallAgain){
+						that.search();
+					}
+				}
+			});
+			uni.getStorage({ //获取乘车人
+				key: "passengerList",
+				success: function(res) {
+					// console.log(res);
+					that.Passenger = res.data;
+				}
+			});
+			that.setHeight();
+		},
+		mounted() {
+			//动态设置高度
+			var that = this;
+			// that.map=uni.createMapContext("map555",this);
+			that.setHeight();
+
+		},
+		onReady: function() {
+
+		},
+		methods: {
+			//获取客运弹框背景图
+			getPicture() {
+				var that = this;
+				uni.request({
+					url: $KyInterface.KyInterface.Ky_AddPicture.Url,
+					method: $KyInterface.KyInterface.Ky_AddPicture.method,
+					header: $KyInterface.KyInterface.Ky_AddPicture.header,
+					data: {
+						model: 0,
+					},
+					success(res) {
+						if (res.data.status == true) {
+							that.kyNoDataImage = res.data.data[2].imageUrl
+							that.kyPopImage = res.data.data[1].imageUrl
+						} else {
+							console.log(res.data.status)
+						}
+					},
+					fail(res) {
+						console.log(res)
+					}
+				})
+			},
+			showToast: function(msg, icon = 'none') {
+				uni.showToast({
+					title: msg,
+					icon: icon
+				})
+			},
+			GotoTaxi: function() {
+				this.current = 2;
+			},
+			setHeight: function() {
+				var that = this;
+				setTimeout(function() {
+					let query = uni.createSelectorQuery().in(that).select("#ceshi");
+					query.fields({
+						size: true,
+						scrollOffset: true
+					}, data => {
+						that.winheight = data.height + 'px';
+						uni.getSystemInfo({ //设置地图高度为屏幕可使用的高度
+							success: function(res) {
+								that.historyheight = (res.windowHeight - data.height - 108) + "px";
+								that.pageheight = res.windowHeight + "px";
+								that.mapheight = (res.windowHeight - data.height) + "px";
+								if (res.platform == "ios") {
+									// that.historyheight = (res.windowHeight - data.height - 130) + "px";
+									// that.winheight=data.height+25+'px';
+									that.disabled = false;
+								}
+							}
+						})
+					}).exec();
+				}, 200)
+			},
+			onClickItem(e) { //tab点击事件
+				var that = this;
+				if (that.current !== e.currentIndex) {
+					that.current = e.currentIndex
+				}
+				if (that.current == 1 && this.isPupop) {
+					uni.removeStorage({
+						key: "StartPoint"
+					})
+					uni.removeStorage({
+						key: "EndPoint"
+					})
+					that.startAddress = '';
+					that.endAddress = '';
+					//客运弹框
+					that.open();
+				}
+				if (that.current == 3) {
+					that.getprivateTaxiLine();
+				}
+				if (that.current == 4) {
+					that.getDownwindCar();
+				}
+			},
+			goBack: function() { //返回上一页
+				uni.switchTab({
+					url: "/pages/Home/Index"
+				});
+				clearInterval(this.intervalAround);
+			},
+			clearHistpry: function() { //清除历史记录
+				uni.removeStorage({
+					key: "historyAddress"
+				})
+				this.historyAddress = [];
+			},
+			getHistory: function(index) { //获取历史信息
+				var that = this;
+				uni.setStorage({
+					key: 'endlocation',
+					data: that.historyAddress[index],
+					success: function(res) {
+						that.endAddress = that.historyAddress[index].addressName;
+						that.endLonLat = that.historyAddress[index].lng + "," + that.historyAddress[index].lat;
+						that.endLon = that.historyAddress[index].lng;
+						that.endLat = that.historyAddress[index].lat;
+						that.endlocation = that.historyAddress[index];
+						that.destinationArea = that.historyAddress[index].district;
+					}
+				});
+			},
+			promptlyCall: function() { //立即呼叫、生成订单
+				let that = this;
+				if (this.selecttime == "点击选择时间" && !this.IsClick) {
+					uni.showToast({
+						title: "请选择时间",
+						icon: "none"
+					})
+				} else {
+					if (this.Passenger[0].userName == '选择乘车人' || this.Passenger[0].userName == '') {
+						uni.showToast({
+							title: "请选择乘车人",
+							icon: "none"
+						})
+					} else {
+						uni.showLoading({
+							title: '加载中',
+							mask: true
+						})
+						let userInfo = uni.getStorageSync('userInfo') || '';
+						let orderNumber = '';
+						console.log(userInfo);
+						uni.request({
+							url: $taxi.Interface.AddExpressOrder_Passenger.value,
+							method: $taxi.Interface.AddExpressOrder_Passenger.method,
+							data: {
+								startLon: that.startLon,
+								startLat: that.startLat,
+								endLon: that.endLon,
+								endLat: that.endLat,
+								startAddress: that.startAddress, //起点
+								endAddress: that.endAddress, //终点
+								orderType: that.IsClick ? '实时' : '预约',
+								passengers: JSON.stringify(that.Passenger),
+								vehicleType: that.vehicleType, //现在暂时只有出租车
+								appointmentTime: that.selecttime === '点击选择时间' ? utils.timeTodate($taxi.dateFormat.dateformat, new Date().getTime()) :
+									that.selecttime, //预约时间
+								estimatePrice: that.estimatePrice, //预估价格
+								userId: userInfo.userId,
+								estimateDistance: that.estimateDistance, //预估里程
+								destinationArea: that.destinationArea, //目标区域
+								estimateTime: that.estimateTime, //预估时间
+								PassengersPhone: userInfo.phoneNumber,
+								userType: 0,
+							},
+							success: function(res) {
+								uni.hideLoading();
+								if (res.data.status) {
+									that.showToast(res.data.msg);
+									orderNumber = res.data.data.orderNumber;
+									setTimeout(function() {
+										if (that.IsClick) {
+											uni.navigateTo({
+												url: '/pages_CZC/pages/CZC/CallAndDrive?orderNumber=' + orderNumber,
+												animationType: 'pop-in',
+												animationDuration: 200,
+												success: function() {
+													uni.removeStorage({
+														key: "passengerList"
+													})
+													uni.removeStorage({
+														key: "StartPoint"
+													})
+													uni.removeStorage({
+														key: "EndPoint"
+													})
+												}
+											});
+										} else {
+											uni.switchTab({
+												url: "/pages/order/OrderList",
+											})
+										}
+									},2000)
+								} else if (!res.data.status && res.data.msg == "抱歉!下单失败,您当前有未完成的订单") {
+									that.showToast(res.data.msg);
+									setTimeout(function() {
+										uni.switchTab({
+											url: "../order/OrderList"
+										})
+									}, 2000)
+								}
+							},
+							fail: function(res) {
+								that.showToast('网络连接失败');
+							}
+						})
+
+					}
+				}
+			},
+			changeTime: function(e) { //选择预约时间 
+				this.selecttime = e; //预约时间 
+			},
+			selectPassenger: function() { //选择乘车人
+				uni.navigateTo({
+					url: '/pages/GRZX/passengerInfo?submitType=2&&limitNum=4',
+					animationType: 'pop-in',
+					animationDuration: 200
+				});
+			},
+			click_btnow: function() {
+				this.IsClick = true;
+			},
+			click_btbooking: function() {
+				this.IsClick = false;
+			},
+			selectInitial: function(name) {
+				//选择起点
+				var that = this;
+				if (that.current == 1) {
+					//当前选择的是客运
+					//监听事件,监听下个页面返回的值
+					uni.$on('startstaionChange', function(data) {
+						// data即为传过来的值，给上车点赋值
+						that.startAddress = data.data;
+						//清除监听，不清除会消耗资源
+						uni.$off('startstaionChange');
+					});
+					uni.navigateTo({
+						url: '../../pages_CTKY/pages/CTKY/TraditionSpecial/stationPicker/homeSattionPick?&station=' + 'qidian',
+					})
+				} else {
+					uni.navigateTo({
+						url: "./MapIndex?name=" + name
+					})
+				}
+			},
+			selectInitial1: function() { //选择起点
+				var that = this;
+				uni.chooseLocation({
+					success: function(res) {
+						uni.setStorage({
+							key: 'startlocation',
+							data: res,
+							success: function() {
+								that.startAddress = res.name;
+								that.startLonLat = res.longitude + "," + res.latitude;
+								that.startLon = res.longitude;
+								that.startLat = res.latitude;
+								that.startlocation = res;
+							}
+						});
+					}
+				});
+			},
+			selectDestination: function(name) {
+				//选择终点
+				var that = this;
+				if (that.current == 1) {
+					//当前选择的是客运
+					//监听事件,监听下个页面返回的值，给下车点赋值
+					uni.$on('endStaionChange', function(data) {
+						// data即为传过来的值
+						that.endAddress = data.data;
+						//清除监听，不清除会消耗资源
+						uni.$off('endStaionChange');
+					});
+					uni.navigateTo({
+						url: '../../pages_CTKY/pages/CTKY/TraditionSpecial/stationPicker/homeSattionPick?&station=' + 'zhongdian'
+					})
+				} else {
+					uni.navigateTo({
+						url: "./MapIndex?name=" + name
+					})
+				}
+			},
+			selectDestination1: function() { //选择终点
+				var that = this;
+				uni.chooseLocation({
+					success: function(res) {
+						uni.setStorage({
+							key: 'endlocation',
+							data: res,
+							success: function() {
+								that.endAddress = res.name;
+								that.endLonLat = res.longitude + "," + res.latitude;
+								that.endLon = res.longitude;
+								that.endLat = res.latitude;
+								that.endlocation = res;
+							}
+						});
+					}
+				});
+			},
+			exchange: function() { //始末位置交换
+				var that = this;
+				var newstartAddress = that.startAddress;
+				var newstartlocation = that.startlocation;
+				var newstartLat = that.startLat;
+				var newstartLon = that.startLon;
+				var newstartLonLat = that.startLonLat;
+				that.startLonLat = that.endLonLat;
+				that.endLonLat = newstartLonLat;
+				uni.setStorage({
+					key: 'startlocation',
+					data: that.endlocation,
+					success: function() {
+						that.startAddress = that.endAddress;
+						that.startlocation = that.endlocation;
+						that.startLat = that.endLat;
+						that.startLon = that.endLon;
+					}
+				});
+				uni.setStorage({
+					key: 'endlocation',
+					data: newstartlocation,
+					success: function() {
+						that.endAddress = newstartAddress;
+						that.endlocation = newstartlocation;
+						that.endLat = newstartLat;
+						that.endLon = newstartLon
+					}
+				});
+			},
+			search: function() { //搜索
+				var that = this;
+				that.markers = [];
+				clearInterval(that.intervalAround);
+				var Isrepeat = true;
+				if (that.startAddress == '' || that.endAddress == '') {
+					uni.showToast({
+						title: "请输入起点或终点",
+						icon: 'none',
+						duration: 2000,
+					})
+				} else {
+					for (var i = 0; i < that.historyAddress.length; i++) {
+						if (that.endlocation.addressName == that.historyAddress[i].addressName) {
+							Isrepeat = false;
+						}
+					}
+					if (Isrepeat) {
+						that.historyAddress.unshift(that.endlocation);
+						uni.setStorage({
+							key: "historyAddress",
+							data: that.historyAddress,
+						})
+					}
+					that.setMarkers();
+					uni.showLoading({
+						title: "正在查询",
+						mask: true,
+					});
+					//获取数据,传入当前选择的模块index
+					that.getmessengeInfo(that.current);
+					// console.log(that.current);
+					that.IsSearch = true;
+				}
+			},
+			//------------------------------------------------获取数据----------------------------------------
+			getmessengeInfo(param) {
+				// console.log(param)
+				switch (param) {
+					case 0:
+						{ //智能
+
+							break;
+						}
+					case 1:
+						{
+							//---------------------------------------获取客运数据----------------------------------------
+							var that = this;
+							var date = that.getTime();
+							uni.showLoading();
+							uni.request({
+								url: $KyInterface.KyInterface.Ky_getHomeSchedulesInfo.Url,
+								method: $KyInterface.KyInterface.Ky_getHomeSchedulesInfo.method,
+								header: $KyInterface.KyInterface.Ky_getHomeSchedulesInfo.header,
+								// url: 'http://27.148.155.9:9055/CTKY/getHomeSchedulesInfo',
+								data: {
+									systemName: '泉运公司综合出行',
+									startPosition: this.startAddress,
+									endPosition: this.endAddress,
+									date: date,
+								},
+								success: (res) => {
+									console.log(res)
+									uni.hideLoading();
+									//非空判断
+									if (res.data.data.length != 0) {
+										this.keYunList = res.data.data
+									} else {
+										this.keYunList = res.data.data
+										uni.showToast({
+											title: '暂无班次信息',
+											icon: 'none'
+										})
+									}
+								},
+								fail(res) {
+									uni.hideLoading();
+								}
+							})
+							break;
+						}
+					case 2:
+						{ //出租车
+
+							break;
+						}
+					case 3:
+						{ //公交
+
+							break;
+						}
+					case 4:
+						{ //专线车
+
+							break;
+						}
+					default:
+						break;
+				}
+			},
+			getTime: function() {
+				var date = new Date(),
+					year = date.getFullYear(),
+					month = date.getMonth() + 1,
+					day = date.getDate(),
+					hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours(),
+					minute = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes(),
+					second = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+				month >= 1 && month <= 9 ? (month = "0" + month) : "";
+				day >= 0 && day <= 9 ? (day = "0" + day) : "";
+				var timer = year + '-' + month + '-' + day;
+				return timer;
+			},
+			setMarkers: function() { //设置始末标点
+				var that = this;
+				var startmarker = { //起点
+					id: 0,
+					latitude: that.startLat,
+					longitude: that.startLon,
+					title: '在这上车',
+					zIndex: '1',
+					iconPath: '../../static/Home/Start.png',
+					rotate: 0,
+					width: 20,
+					height: 20,
+					anchor: {
+						x: 0.5,
+						y: 1
+					},
+					callout: {
+						content: '在这上车',
+						color: '#000000',
+						fontSize: 10,
+						borderRadius: 4,
+						borderWidth: 1,
+						borderColor: '#333300',
+						bgColor: '#FFFFFF',
+						padding: '5',
+						display: 'ALWAYS'
+					}
+				};
+				var endmarker = {
+					id: 1,
+					latitude: that.endLat,
+					longitude: that.endLon,
+					title: '在这下车',
+					zIndex: '1',
+					iconPath: '../../static/Home/End.png',
+					rotate: 0,
+					width: 20,
+					height: 20,
+					anchor: {
+						x: 0.5,
+						y: 1
+					},
+					callout: {
+						content: '在这下车',
+						color: '#000000',
+						fontSize: 10,
+						borderRadius: 4,
+						borderWidth: 1,
+						borderColor: '#333300',
+						bgColor: '#FFFFFF',
+						padding: '5',
+						display: 'ALWAYS'
+					}
+				};
+				that.markers = [];
+				that.startmarker = [];
+				that.endmarker = [];
+				that.markers.push(startmarker);
+				that.markers.push(endmarker);
+				that.showlocation = false;
+				that.getDirectionDriving(that.startLonLat, that.endLonLat);
+			},
+			SecondToMinutes: function(time) {
+				var that = this;
+				return Math.ceil(time / 60);
+			},
+			Timechange: function(time) { //时间转换
+				var that = this;
+				var date = parseInt(time / 3600 / 24);
+				var hours = 0;
+				var minutes = 0;
+				var seconds = 0;
+				if (date >= 1) {
+					hours = parseInt((time - date * 24 * 3600) / 3600);
+					if (hours >= 1) {
+						minutes = Math.ceil((time - date * 24 * 3600 - hours * 3600) / 60);
+						if (minutes >= 1) {
+							// seconds = time -date*24*3600-  hours * 3600 - minutes * 60
+							return date + "天" + hours + "小时" + minutes + "分钟";
+						} else {
+							return date + "天" + hours + "小时";
+							// seconds = time -date*24*3600-  hours * 3600;
+						}
+					} else {
+						minutes = Math.ceil(time / 60);
+						if (minutes >= 1) {
+							return date + "天" + minutes + "分钟";
+							// seconds = time -date*24*3600-minutes * 60
+						} else {
+							return date + "天";
+							// seconds = time-date*24*3600;
+						}
+					}
+				} else {
+					hours = parseInt(time / 3600)
+					if (hours >= 1) {
+						minutes = Math.ceil((time - hours * 3600) / 60);
+						if (minutes >= 1) {
+							// seconds = time - hours * 3600 - minutes * 60
+							return hours + "小时" + minutes + "分钟";
+						} else {
+							return hours + "小时";
+							// seconds = time - hours * 3600;
+						}
+					} else {
+						minutes = Math.ceil(time / 60);
+						if (minutes >= 1) {
+							return minutes + "分钟";
+							// seconds = time - minutes * 60
+						} else {
+							// seconds = time;
+						}
+					}
+				}
+			},
+			getDirectionDriving: function(startLonLat, endLonLat) {
+				//调用高德api取得路径规划并绘制线路
+				// console.log(startLonLat);
+				var that = this;
+				uni.request({
+					url: $taxi.InterfaceAddress[0],
+					data: {
+						startLonLat: startLonLat,
+						endLonLat: endLonLat,
+					},
+					method: "GET",
+					success: function(res) {
+						//日后会加入定时，此处需清空
+						that.points = [];
+						that.polyline = [];
+
+						var polylineArr = [];
+						var points = [];
+						that.estimatePrice = res.data.TaxiCost;
+						if ((res.data.Distance / 1000) > 1) {
+							that.Distance = res.data.Distance / 1000 + "公里";
+						} else {
+							that.Distance = res.data.Distance + "米";
+						}
+						that.estimateDistance = res.data.Distance / 1000;
+						that.estimateTime = that.SecondToMinutes(res.data.Duration);
+						that.Duration = that.Timechange(res.data.Duration);
+						polylineArr = res.data.Polyline;
+
+						for (var i = 0; i < polylineArr.length; i++) {
+							var arr = polylineArr[i].split(';');
+							for (var j = 0; j < arr.length; j++) {
+								points.push(arr[j]);
+							}
+						}
+						//根据文件建设对象经纬度数组
+						for (var i = 0; i < points.length; i++) {
+							var arr = points[i].split(',');
+							var obj = {
+								longitude: arr[0],
+								latitude: arr[1]
+							}
+							that.points.push(obj);
+						}
+						var obj = {
+							points: that.points,
+							width: 6,
+							arrowLine: true,
+							// arrowIconPath:'../../static/CZC/jiantou.png',
+							color: '#4bdc27',
+							borderColor: "#8c918b",
+						};
+						that.polyline.push(obj);
+						uni.hideLoading();
+					},
+					fail: function(res) {
+						uni.hideLoading();
+						uni.showToast({
+							title: "查询失败"
+						})
+						that.markers = [];
+						console.log(res);
+					}
+				});
+			},
+			queryTickets: function(param) {
+				//分割时间为数组
+				let dateArray = param.firstDepartureTime.split('T');
+				let date = dateArray[0];
+				//页面传参通过地址后面添加参数 shuttleType="直达班车"是普通购票1是定制班车
+				var params = '../CTKY/TraditionSpecial/Order/selectTickets?&startStation=' + param.startStaion + '&endStation=' +
+					param.endStation + '&date=' + date + '&isNormal=' + param.shuttleType;
+				uni.navigateTo({
+					url: params
+				})
+			},
+			//传统客运弹窗
+			open() {
+				this.$refs.popup.open();
+			},
+			close() {
+				this.$refs.popup.close();
+			},
+			noPupop() {
+				this.isPupop = false;
+				this.close();
+			},
+			setMarker: function(id, lon, lat, iconPath) {
+				let that = this;
+				var width = 40;
+				var height = 40;
+				//描绘点的方法
+				var marker = new Object();
+				marker = {
+					id: id,
+					latitude: lat,
+					longitude: lon,
+					iconPath: iconPath,
+					width: width,
+					height: height,
+				}
+				var json = JSON.stringify(that.markers);
+				var arr = JSON.parse(json);
+				arr.push(marker);
+				that.markers = arr;
+			},
+			selectCarAroung: function() {
+				let that = this;
+				that.markers = [];
+				uni.getLocation({
+					type: 'gcj02',
+					success: function(res) {
+						uni.request({
+							url: $taxi.InterfaceAddress[2],
+							data: {
+								lon: res.longitude,
+								lat: res.latitude,
+								DistanceRange: 1000
+							},
+							method: 'GET',
+							success: function(res) {
+								var carArr = res.data;
+								//console.log(res.data);
+								for (var i = 0; i < carArr.length; i++) {
+									that.setMarker('car_' + i, carArr[i].longitude, carArr[i].latitude,
+										'../../pages_CZC/static/CZC/Car.png');
+								}
+								// console.log(that.markers);
+								// console.log(carArr.length + '-' + that.markers.length);
+							},
+						});
+					}
+				});
+			},
+			intervalGet: function() {
+				var that = this;
+				that.intervalAround = setInterval(function() {
+					that.selectCarAroung();
+				}, 10000);
+			},
+			///////////////////////////专线出租车代码开始/////////////////////////////////////////////////////
+			getprivateTaxiLine: function() {
+				let that = this;
+				uni.showLoading({
+					mask: true
+				})
+				uni.request({
+					url: $privateTaxi.Interface.GetSpecialLine.value,
+					method: $privateTaxi.Interface.GetSpecialLine.method,
+					header: {
+						'Content-Type': 'application/x-www-form-urlencoded'
+					},
+					success(res) {
+						console.log(res)
+						if (res.data.status) {
+							uni.hideLoading();
+							that.privateTaxi = res.data.data;
+						} else {
+							uni.hideLoading();
+							console.log(res)
+						}
+					},
+					fail() {
+						uni.hideLoading();
+						that.showToast('网络连接失败');
+					}
+				})
+			},
+			privateTaxiClick: function(value) { //点击专线车 
+				uni.setStorage({ //专线车信息
+					key: "SpecialLineInf",
+					data: value,
+					success() {
+						uni.removeStorage({
+							key: "passengerList"
+						})
+						uni.navigateTo({
+							url: '/pages_CZC/pages/CZC/PrivateTaxi',
+							animationType: 'pop-in',
+							animationDuration: 200,
+						});
+					}
+				})
+			},
+			///////////////////////////专线出租车代码结束/////////////////////////////////////////////////////
+			///////////////////////////顺风车开始/////////////////////////////////////////////////////
+			getDownwindCar: function() {
+				let that = this;
+				uni.showLoading({
+					mask: true
+				})
+				uni.request({
+					url: $downwindCar.Interface.GetHitchhiker_Passenger.value,
+					method: $downwindCar.Interface.GetHitchhiker_Passenger.method,
+					header: {
+						'Content-Type': 'application/x-www-form-urlencoded'
+					},
+					success(res) {
+						console.log(res)
+						if (res.data.status) {
+							uni.hideLoading();
+							that.downwindCar = res.data.data;
+						} else {
+							uni.hideLoading();
+							console.log(res)
+						}
+					},
+					fail(res) {
+						console.log(res)
+						uni.hideLoading();
+						that.showToast('网络连接失败');
+					}
+				})
+			},
+			downwindCarClick: function(value) { //点击顺风车 
+				console.log(value)
+				var that = this;
+				if (that.startAddress == '' || that.endAddress == '') {
+					uni.showToast({
+						title: "请输入起点或终点",
+						icon: 'none',
+						duration: 2000,
+					})
+				} else {
+					uni.setStorage({ //顺风车信息
+						key: "downwindCarstartlocation",
+						data: that.startlocation,
+					})
+					uni.setStorage({ //顺风车信息
+						key: "downwindCarendlocation",
+						data: that.endlocation,
+						success() {
+							uni.navigateTo({
+								url: "../../pages_CZC/pages/CZC/DownwindCar?seat=" + value.Seat + "&driverID=" + value.DriverID +
+									"&lineID=" + value.AID + "&departureTime=" + value.DepartureTime + "&Price=" + value.Price +
+									"&vehicleNumber=" + value.VehicleNumber,
+							})
+						}
+					})
+				}
+			}
+			///////////////////////////顺风车结束/////////////////////////////////////////////////////
+		}
+	}
+</script>
+
+<style>
+	/* .status_bar {
+		height: var(--status-bar-height);
+		width: 100%;
+		box-sizing: content-box;
+		background-color: #FFF;
+	} */
+	/* #ifndef APP-PLUS */
+	page {
+		background-color: #F5F7F9;
+	}
+
+	button::after {
+		border: none;
+	}
+
+	/* #endif */
+	.bt_now {
+		width: 329rpx;
+		height: 60rpx;
+		border-width: 0;
+		background-color: #FFF;
+		border-right-width: 1px;
+		line-height: 60rpx;
+		border-color: #EAEAEA;
+		border-radius: 0;
+	}
+
+	/* 客运弹框 */
+	.popupTextContent {
+		margin-left: 20rpx;
+		margin-right: 20rpx;
+
+	}
+
+	.popupText {
+		color: #FFFFFF;
+		font-size: 30upx;
+	}
+
+	.bt_booking {
+		width: 329rpx;
+		height: 60rpx;
+		border-width: 0;
+		line-height: 60rpx;
+		background-color: #FFF;
+	}
+
+	.bt_text {
+		color: #FC4646;
+	}
+
+	.bluering {
+		width: 20rpx;
+		height: 20rpx;
+		border-width: 4rpx;
+		border-color: #309FF7;
+		border-style: solid;
+		background-color: #fff;
+		border-radius: 100px;
+	}
+
+	.redring {
+		width: 20rpx;
+		height: 20rpx;
+		border-width: 4rpx;
+		border-color: #E3424B;
+		border-style: solid;
+		background-color: #fff;
+		border-radius: 100px;
+	}
+
+	.history {
+		width: 690rpx;
+		background-color: #FFFFFF;
+		margin: 20rpx 30rpx;
+		border-radius: 12rpx;
+		/* box-shadow: 0px 6rpx 20rpx 0px rgba(231, 231, 231, 0.53); */
+	}
+
+	.tabs {
+		background-color: #ffffff;
+		margin-top: 40rpx;
+		/* #ifdef MP-ALIPAY || MP-BAIDU */
+		height: 100vh;
+		/* #endif */
+	}
+
+	.privatetaxi {
+		margin: 15rpx;
+		margin-left: 30rpx;
+		margin-right: 30rpx;
+		padding: 20rpx 40rpx;
+		background-color: #FFFFFF;
+		border-radius: 20rpx;
+		box-shadow: 0px 6px 20px 0px rgba(231, 231, 231, 0.53);
+	}
+
+	.ctky_View {
+		width: 698upx;
+		background-color: #FFFFFF;
+		margin: 10upx 26upx;
+		border-radius: 20upx;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+	.ctky_View_Left {
+		text-align: left;
+	}
+
+	.ctky_View_Right {
+		flex-direction: row;
+		text-align: right;
+		align-items: center;
+	}
+</style>
