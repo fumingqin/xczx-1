@@ -1,6 +1,6 @@
 {
     "name" : "乡村振兴",
-    "appid" : "__UNI__53BE883",
+    "appid" : "__UNI__506FF45",
     "description" : "",
     "versionName" : "1.0.0",
     "versionCode" : "100",
@@ -18,9 +18,9 @@
         /* 模块配置 */
         "modules" : {
             "Maps" : {},
+            "OAuth" : {},
             "Share" : {},
-            "Payment" : {},
-            "OAuth" : {}
+            "Payment" : {}
         },
         /* 应用发布信息 */
         "distribute" : {
@@ -52,8 +52,7 @@
                     "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>",
                     "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>"
                 ],
-                "autoSdkPermissions" : false,
-                "abiFilters" : [ "armeabi-v7a", "arm64-v8a", "x86" ]
+                "autoSdkPermissions" : false
             },
             /* ios打包配置 */
             "ios" : {
@@ -79,28 +78,21 @@
                 "ad" : {},
                 "payment" : {
                     "weixin" : {
-                        "appid" : "wx4394e02214803063",
+                        "appid" : "wxb6e7a1abe313216a",
                         "UniversalLinks" : "https://zntc.145u.net/ulink/"
                     }
                 },
                 "oauth" : {
                     "qq" : {
                         "appid" : "1110314303"
-                    },
-                    "weixin" : {
-                        "appid" : "wx4394e02214803063",
-                        "appsecret" : "b3eefe07d67874ce91ab50a22bea8bb6",
-                        "UniversalLinks" : "https://zntc.145u.net/ulink/"
-                    },
-                    "apple" : {}
+                    }
                 },
                 "share" : {
                     "weixin" : {
-                        "appid" : "wx4394e02214803063",
+                        "appid" : "wxb6e7a1abe313216a",
                         "UniversalLinks" : "https://zntc.145u.net/ulink/"
                     }
-                },
-                "push" : {}
+                }
             },
             "icons" : {
                 "android" : {
@@ -150,7 +142,7 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "wxb9df0ad8d98f94a1",
+        "appid" : "wx37b8f978e30050e4",
         "setting" : {
             "es6" : false,
             "postcss" : true,
