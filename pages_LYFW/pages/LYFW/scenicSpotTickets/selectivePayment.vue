@@ -653,7 +653,7 @@
 						},
 						header: {'content-type': 'application/json'},
 						success: function(e) {
-							// console.log(e.data.data)
+							console.log('支付参数',e)
 							uni.hideLoading()
 							uni.requestPayment({
 								provider: 'wxpay',
