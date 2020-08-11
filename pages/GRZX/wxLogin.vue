@@ -324,9 +324,7 @@
 				//#endif
 				// #ifndef H5
 					if (that.urlData == 2) {
-						uni.switchTab({ //返回订单页
-							url: '/pages/order/OrderList',
-						})
+						that.$GrzxInter.navToOrderList();
 					} else if (that.urlData == 1) {
 						that.$GrzxInter.navToHome();//返回首页
 					} else {

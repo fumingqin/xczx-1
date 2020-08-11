@@ -40,7 +40,7 @@
 			</view>
 			
 			<view class="queryView2">
-				<button class="queryButton2" @click="queryClick">议价叫车</button>
+				<button class="queryButton2" @click="queryClick2">议价叫车</button>
 			</view>
 			
 			<view class="historyView">
@@ -248,6 +248,14 @@
 					}
 				}
 			},
+			
+			//---------------------------------点击查询---------------------------------
+			queryClick2: function() {
+				uni.navigateTo({
+					url:'../../../../../pages/Home/ChooseSite'
+				})
+			},
+			
 			onSelected(e) { //选择
 				this.showPicker = false;
 				if (e) {

@@ -96,25 +96,25 @@
 					<view style="display: flex;width: 25%;justify-content: center;margin-bottom: 12upx;" v-for="(ArrItem,index1) in item.ItemArr"
 					 :key="index1">
 						<view style="display: flex;justify-content: center;flex-direction: column;align-items: center;" @click="TitleJump(ArrItem.IsUse,ArrItem.clickURL)">
-							<image v-if="ArrItem.ItemTitle =='达达骑车'" style="width: 90upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							<image v-if="ArrItem.ItemTitle =='达达骑车'" style="width: 86upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='公交刷码'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							<image v-if="ArrItem.ItemTitle =='公交刷码'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='达达钱包'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							<image v-if="ArrItem.ItemTitle =='达达钱包'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='公交查询'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							<image v-if="ArrItem.ItemTitle =='公交查询'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='车票订购'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							<image v-if="ArrItem.ItemTitle =='车票订购'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='包车服务'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
-							 lazy-load="true"></image>	
-							<image v-if="ArrItem.ItemTitle =='景区门票'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							<image v-if="ArrItem.ItemTitle =='包车服务'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='旅游产品'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							<image v-if="ArrItem.ItemTitle =='景区门票'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='预约检测'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							<image v-if="ArrItem.ItemTitle =='旅游产品'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='自由行'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							<image v-if="ArrItem.ItemTitle =='检测预约'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='自由行'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
 							<image v-if="ArrItem.ItemTitle =='武夷新区'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
@@ -256,6 +256,7 @@
 		<uni-popup ref="centerPopup" type="center">
 			<view class="centerClass">
 				<view class="pTitleClass">服务协议和隐私政策</view>
+				<image src="../../static/Home/serve/cun"></image>
 				<view class="pTextClass">
 					<text>请你务必审慎阅读，充分理解“软件许可及服务协议”和“隐私政策”各条款。</br>你可阅读</text>
 					<text style="color: #2F9BFE;" @click="agreementClick">《软件许可及服务协议》</text>
@@ -330,20 +331,18 @@
 				swiperItem: [ //菜单栏
 					{
 						ItemArr: [{
-								IsUse: true,
-								clickURL: "",
-								// ImageURL: "../../static/Home/CCT2.png", //暗
-								ImageURL: "../../static/Home/CCT.png", //亮
-								ItemTitle: "村村通"
-							},
-							{
-								IsUse: true,
-								clickURL: "",
-								// ImageURL: "../../static/Home/serve/jqgoupiao2.png", //暗
-								ImageURL: "../../static/Home/serve/jqgoupiao.png", //亮
-								ItemTitle: "景区门票"
-							}
-						]
+							IsUse: true,
+							clickURL: "../../pages_CTKY/pages/CTKY/TraditionSpecial/Home/ctkyIndex",
+							ImageURL: "../../static/Home/serve/cuncuntong.png",
+							// ImageURL: "../../static/Home/serve/cuncuntong.png",
+							ItemTitle: "村村通"
+						}, {
+							IsUse: true,
+							clickURL: "",
+							ImageURL: "../../static/Home/serve/jqgoupiao.png",
+							// ImageURL: "../../static/Home/serve/jqgoupiao2.png",
+							ItemTitle: "景区门票"
+						}]
 					},
 				],
 				// swiperItem: [ //菜单栏
@@ -432,6 +431,21 @@
 			}
 		},
 		onLoad() {
+			// #ifdef APP-PLUS
+			const value = uni.getStorageSync('launchFlag');
+			console.log(value)
+			if (value !== true) {
+				uni.setStorage({
+					key: 'launchFlag',
+					data: true,
+					success: function() {
+						uni.redirectTo({
+							url: 'guidePage'
+						})
+					}
+				})
+			}
+			// #endif
 			// var a = this.$oSit.Interface.address.Url;
 			// console.log(a)
 			//加载应用名称
@@ -458,7 +472,7 @@
 			// this.GetRotationChart();
 			this.loadData();
 			//#ifdef APP-PLUS
-			this.loadService();
+			// this.loadService();
 			this.checkLogin(); //登录是否过期
 			//#endif
 

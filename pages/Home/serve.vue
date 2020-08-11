@@ -292,7 +292,7 @@
 					
 					{
 						IsUse: true,
-						clickURL: "../../pages_CZC/pages/CZC/Index",
+						clickURL: "./ChooseSite",
 						// ImageURL: "../../static/Home/serve/hwlyueche.png",//暗
 						ImageURL: "../../static/Home/serve/wlyueche.png",//亮
 						ItemTitle: "网络约车"

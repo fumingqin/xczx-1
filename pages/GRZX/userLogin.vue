@@ -25,14 +25,14 @@
 		<image :src="logo" class="logoClass"></image>
 
 		<!-- 第三方登录 -->
-		<view class="loginMode">第三方登录</view>
+		<!-- <view class="loginMode">第三方登录</view>
 		<view class="leftLine"></view>
-		<view class="rightLine"></view>
+		<view class="rightLine"></view> -->
 		<!-- <image src="../../static/GRZX/qqLogo.png" class="qqClass" @click="qqLogin"></image> -->
 		<!-- 苹果登录 -->
-		<image src="../../static/GRZX/appleLogo.png" class="appleClass" @click="appleLogin" v-if="platform=='ios'"></image>
+		<!-- <image src="../../static/GRZX/appleLogo.png" class="appleClass" @click="appleLogin" v-if="platform=='ios'"></image>
 		<image src="../../static/GRZX/wxLogo.png" class="wxClass" @click="wxLogin" v-if="platform=='ios'"></image>
-		<image src="../../static/GRZX/wxLogo.png" class="wxClass1" v-if="platform!='ios'" @click="wxLogin" ></image>
+		<image src="../../static/GRZX/wxLogo.png" class="wxClass1" v-if="platform!='ios'" @click="wxLogin" ></image> -->
 	</view>
 </template>
 
@@ -219,13 +219,9 @@
 				})
 				setTimeout(function(){
 					if (that.urlData == 1) {
-						uni.switchTab({ //返回首页zy_zhcx
-							url: '/pages/Home/zxgpHomePage',
-						})
+						that.$GrzxInter.navToHome();//返回首页
 					} else if (that.urlData == 2) {
-						uni.switchTab({ //返回订单页
-							url: '/pages/order/OrderList',
-						})
+						that.$GrzxInter.navToOrderList();
 					} else {
 						console.log("返回上一页")
 						uni.navigateBack(); //返回上一页
@@ -309,30 +305,44 @@
 						title:'授权登录中...',
 						mask:true,
 					})
-					uni.login({
-						provider: 'weixin',
-						success: function(loginRes) {
-							uni.getUserInfo({
-								provider: 'weixin',
-								success: function(res) {
-									that.requestInterface(res.userInfo,"wx");
-								},
-								fail: function() {
-									uni.hideLoading();
-									uni.showToast({
-										title: '获取用户信息失败',
-										icon: "none"
-									});
-								}
-							})
+					uni.getProvider({
+					    service: 'oauth',
+					    success: function(oauthRes) {
+					        console.log(oauthRes,"授权1");
+							if(~oauthRes.provider.indexOf('weixin')){
+								uni.login({
+									provider: 'weixin',
+									success: function(loginRes) {
+										console.log(loginRes,"授权2");
+										uni.getUserInfo({
+											provider: 'weixin',
+											success: function(res) {
+												that.requestInterface(res.userInfo,"wx");
+											},
+											fail: function() {
+												uni.hideLoading();
+												uni.showToast({
+													title: '获取用户信息失败',
+													icon: "none"
+												});
+											}
+										})
+									},
+									fail(err) {
+										uni.hideLoading();
+										console.log(err,"获取失败");
+										// uni.showToast({
+										// 	title: '获取失败'+err,
+										// 	icon: "none"
+										// });
+										uni.showModal({  
+											title: '获取失败',  
+											content: JSON.stringify(err)  
+										}) 
+									}
+								})
+							}
 						},
-						fail() {
-							uni.hideLoading();
-							uni.showToast({
-								title: '获取失败',
-								icon: "none"
-							});
-						}
 					})
 				}
 			},
@@ -744,8 +754,8 @@
 	.inputContent {
 		//登录区域的样式
 		width: 90.4%;
-		//height: 874upx;
-		height: 800upx;
+		//height: 874upx;800upx
+		height: 650upx;
 		position: absolute;
 		top: 324upx;
 		left: 4.8%;
