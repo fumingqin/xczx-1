@@ -200,9 +200,10 @@
 				let that = this
 				// console.log(this.mapStatus);
 				clearTimeout(this.timer)
+				console.log(e);
 				this.timer = setTimeout(() => {
 					if (e.type == 'regionchange' || e.type == 'end') {
-						//#ifdef APP-PLUS
+						//#ifndef APP-PLUS
 						that.setData({
 							position: {
 								latitude: e.detail.center.latitude,
@@ -215,7 +216,7 @@
 							that.mapStatus = 1
 						}
 						//#endif
-						//#ifndef APP-PLUS
+						//#ifdef APP-PLUS
 						that.mapCtx = uni.createMapContext('map')
 						that.mapCtx.getCenterLocation({
 							success: res => {

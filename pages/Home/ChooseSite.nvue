@@ -48,12 +48,12 @@
 						</view>
 					</view>
 					<view class="tab">
-						<uni-segmented-control :current="current" :values="items" @clickItem="onClickItem" style-type="text" active-color="#FC4646"></uni-segmented-control>
+						<!-- <uni-segmented-control :current="current" :values="items" @clickItem="onClickItem" style-type="text" active-color="#FC4646"></uni-segmented-control> -->
 					</view>
 				</view>
 			</view>
 			<view :style="{height:winheight}"></view>
-			<view v-if="current === 0" style="margin-top: 20rpx;">
+			<!-- <view v-if="current === 0" style="margin-top: 20rpx;">
 				<view>
 					<image :src="imageIndex[0].imageUrl" style="width: 750rpx;height: 150rpx;"></image>
 				</view>
@@ -78,15 +78,15 @@
 								<view>
 									<image src="../../static/Home/arrow.png" style="width: 30rpx;height: 30rpx;"></image>
 								</view>
-								<!-- <uni-icons type="arrowright" size="26"></uni-icons> -->
-							</view>
+								<uni-icons type="arrowright" size="26"></uni-icons> -->
+							<!-- </view>
 							<view @click="clearHistpry" v-if="historyAddress.length>0">
 								<text style="padding: 20rpx;color: #999999;font-size: 24rpx;text-align: center;">清除历史记录</text>
 							</view>
 						</view>
 					</scroll-view>
 				</view>
-				<view v-if="IsSearch">
+				<view v-if="IsSearch">  -->
 					<!-- 	<view class="history">
 						<view style="height: 180rpx;justify-content: space-between;margin-left: 30rpx;margin-right: 30rpx;padding-top: 30rpx;padding-bottom: 20rpx;">
 							<view style="flex-direction: row;align-items: center;justify-content: space-between;">
@@ -103,7 +103,7 @@
 							</view>
 						</view>
 					</view> -->
-					<view class="history" @click="GotoTaxi">
+					<!-- <view class="history" @click="GotoTaxi">
 						<view style="height: 180rpx;justify-content: space-between;margin-left: 30rpx;margin-right: 30rpx;padding-top: 30rpx;padding-bottom: 20rpx;">
 							<view style="flex-direction: row;align-items: center;justify-content: space-between;">
 								<view style="flex-direction: row;align-items: center;">
@@ -118,7 +118,7 @@
 								<text style="font-size: 28rpx;color: #666666;">{{Distance}}</text>
 							</view>
 						</view>
-					</view>
+					</view> -->
 					<!-- <view class="history">
 						<view style="height: 180rpx;justify-content: space-between;margin-left: 30rpx;margin-right: 30rpx;border-bottom-width: 1px;border-color:#EAEAEA;padding-top: 30rpx;padding-bottom: 20rpx;">
 							<view style="flex-direction: row;align-items: center;justify-content: space-between;">
@@ -139,10 +139,10 @@
 							<view><text style="font-size: 28rpx;">&nbsp;k602路约8分钟/趟</text></view>
 						</view>
 					</view> -->
-				</view>
-			</view>
+			<!-- 	</view>
+			</view> -->
 			<!-- 客运弹框 -->
-			<popup ref="popup" type="center" maskClick="false" style="z-index:99999;">
+			<!-- <popup ref="popup" type="center" maskClick="false" style="z-index:99999;">
 				<view style="flex-direction: column;position: relative;display: flex;justify-content: center;">
 					<image :src="kyPopImage" class="popupClass" style="height: 700rpx;width: 600rpx;"></image>
 					<view style="position: absolute; align-items: center;margin-top: 150rpx;">
@@ -154,24 +154,24 @@
 						</view>
 						<view class="popupTextContent" style="width: 500rpx;font-style:SourceHanSansSC-Bold;margin-bottom: 20rpx;">
 							<text class="popupText" style="line-height: 50rpx;">定制：车票除起终点可以上车之外，还可以在定制线路途中的站点进行上车，详细可见班次详情对应的地</text>
-						</view>
+						</view> -->
 						<!-- #ifdef APP-PLUS -->
-						<text style="top: 5rpx;border-radius: 18upx;width: 350upx;height: 100upx;line-height:100upx;color: #7EC075;font-size: 38upx;text-align: center;align-items: center;background-color: #FFFFFF;"
-						 @click="noPupop">下次不弹出</text>
+						<!-- <text style="top: 5rpx;border-radius: 18upx;width: 350upx;height: 100upx;line-height:100upx;color: #7EC075;font-size: 38upx;text-align: center;align-items: center;background-color: #FFFFFF;"
+						 @click="noPupop">下次不弹出</text> -->
 						<!-- #endif -->
 						<!-- #ifdef MP-WEIXIN -->
-						<text style="margin-bottom: 80rpx; top: 10rpx;border-radius: 18upx;width: 350upx;height: 100upx;line-height:100upx;color: #7EC075;font-size: 38upx;text-align: center;align-items: center;background-color: #FFFFFF;z-index:10015"
-						 @click="noPupop">下次不弹出</text>
+						<!-- <text style="margin-bottom: 80rpx; top: 10rpx;border-radius: 18upx;width: 350upx;height: 100upx;line-height:100upx;color: #7EC075;font-size: 38upx;text-align: center;align-items: center;background-color: #FFFFFF;z-index:10015"
+						 @click="noPupop">下次不弹出</text> -->
 						<!-- #endif -->
 
-					</view>
+					<!-- </view>
 				</view>
 				<view style="align-items: center;text-align: center;">
 					<image src="../../static/Home/close.png" style="width: 74upx;height: 74upx ;margin-top: 42upx;" @click="close"></image>
 				</view>
-			</popup>
+			</popup> -->
 			<!-- 客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运开始 -->
-			<view v-if="current == 1" style="margin-top: 10upx;">
+			<!-- <view v-if="current == 1" style="margin-top: 10upx;">
 				<view class="ctky_View" v-for="(item,index) in keYunList" :key="index" @click="queryTickets(keYunList[index])">
 					<view class="ctky_View_Left">
 						<view style="margin-left:25upx;margin-top: 28upx ;margin-bottom: 28upx;">
@@ -201,7 +201,7 @@
 					</view>
 				</view>
 				<empty-data :isShow="keYunList.length == 0" text="暂无车票数据" :image="kyNoDataImage" textColor="#999999"></empty-data>
-			</view>
+			</view> -->
 			<!-- 客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运客运结束 -->
 			<view v-if="current == 2">
 				<map id='map1' ref="map1" :style="{height:mapheight}" style="width: 750rpx;" :longitude="startLon" :latitude="startLat"
@@ -263,7 +263,7 @@
 					</view>
 				</view>
 			</view>
-			<view v-if="current == 3" style="margin-top: 10rpx;">
+			<!-- <view v-if="current == 3" style="margin-top: 10rpx;">
 				<view class='privatetaxi' v-for="(item,index) in privateTaxi" :key="index" @click="privateTaxiClick(item)">
 					<text style="font-size: 36rpx;font-weight: bold;">{{item.SpecialLineName}}</text>
 					<view style="justify-content: space-between;padding-top: 20rpx;">
@@ -286,8 +286,8 @@
 						<text style="font-size: 28rpx;color: #666666;" v-if="item.EstimatedTime>0">，预计{{item.EstimatedTime}}分钟</text>
 					</view>
 				</view>
-			</view>
-			<view v-if="current == 4" style="margin-top: 10rpx;">
+			</view> -->
+			<!-- <view v-if="current == 4" style="margin-top: 10rpx;">
 				<view class='privatetaxi' v-for="(item,index) in downwindCar" :key="index" @click="downwindCarClick(item)">
 					<text style="font-size: 36rpx;font-weight: bold;">{{item.DepartureTime.replace("T"," ").substr(0,16)}}&nbsp;出发</text>
 					<view style="padding-top: 20rpx;flex-direction: row;justify-content: space-between;">
@@ -308,13 +308,14 @@
 								<text style="font-size: 30rpx;padding-left: 10rpx;"> {{item.EndSiteName}}</text>
 							</view>
 						</view>
-					</view>
+					</view> -->
 					<!-- <view style="padding-top: 20rpx;flex-direction: row;">
 					<text style="font-size: 28rpx;color: #666666;" v-if="item.Distance>0">约{{item.Distance}}公里</text>
 					<text style="font-size: 28rpx;color: #666666;" v-if="item.EstimatedTime>0">，预计{{item.EstimatedTime}}分钟</text>
 				</view> -->
-				</view>
-			</view>
+				<!-- </view>
+			</view> -->
+	
 	</scroll-view>
 </template>
 
@@ -366,7 +367,7 @@
 				historyAddress: [],
 				// query: '',
 				winheight: "",
-				current: 0,
+				current: 2,
 				mapheight: "", //地图高度
 				historyheight: "", //历史记录高度
 				pageheight: "", //页面高度
@@ -422,7 +423,7 @@
 
 				},
 			})
-			that.getPicture();
+			//that.getPicture();
 			uni.getStorage({ //获取历史记录
 				key: "historyAddress",
 				success: function(res) {
@@ -585,7 +586,7 @@
 			},
 			goBack: function() { //返回上一页
 				uni.switchTab({
-					url: "/pages/Home/Index"
+					url: "/pages/Home/zy_zhcx"
 				});
 				clearInterval(this.intervalAround);
 			},

@@ -292,7 +292,7 @@
 					
 					{
 						IsUse: true,
-						clickURL: "../../pages/Home/ChooseSite?current=2",
+						clickURL: "./ChooseSite",
 						// ImageURL: "../../static/Home/serve/hwlyueche.png",//暗
 						ImageURL: "../../static/Home/serve/wlyueche.png",//亮
 						ItemTitle: "网络约车"
