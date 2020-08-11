@@ -1,3 +1,4 @@
+<!-- 乡村振兴  第一版 -->
 <template>
 	<view class="content" v-bind:style="{height:imgHeight+'px'}">
 		<!-- 背景图 -->
@@ -18,7 +19,6 @@
 			<!-- 按钮颜色和发送验证码的样式 -->
 			<view class="getCode style1" @click="getCodeClick" id="Code">{{textCode}}</view>
 			<text class="fontStyle" @click="loginClick">确定</text>
-			<!-- <text class="fontStyle" @click="checkRealName('1000067')">确定</text> -->
 		</view>
 
 		<!-- logo -->

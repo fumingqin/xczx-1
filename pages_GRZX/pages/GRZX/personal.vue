@@ -1,3 +1,4 @@
+<!-- 乡村振兴  第一版 -->
 <template>
 	<view class="Cr_background">
 		<form @submit="formSubmit" >

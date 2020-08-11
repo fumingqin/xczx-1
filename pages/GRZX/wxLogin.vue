@@ -1,3 +1,4 @@
+<!-- 乡村振兴  第一版 -->
 <template>
     <view class="content">
 		<!-- <image src="../../static/GRZX/btnReturn.png" class="returnClass" @click="returnClick"></image> -->
