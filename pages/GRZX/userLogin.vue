@@ -1,4 +1,3 @@
-<!-- 乡村振兴  第一版 -->
 <template>
 	<view class="content" v-bind:style="{height:imgHeight+'px'}">
 		<!-- 背景图 -->
@@ -19,20 +18,21 @@
 			<!-- 按钮颜色和发送验证码的样式 -->
 			<view class="getCode style1" @click="getCodeClick" id="Code">{{textCode}}</view>
 			<text class="fontStyle" @click="loginClick">确定</text>
+			<!-- <text class="fontStyle" @click="checkRealName('1000067')">确定</text> -->
 		</view>
 
 		<!-- logo -->
 		<image :src="logo" class="logoClass"></image>
 
 		<!-- 第三方登录 -->
-		<!-- <view class="loginMode">第三方登录</view>
+		<view class="loginMode">第三方登录</view>
 		<view class="leftLine"></view>
-		<view class="rightLine"></view> -->
+		<view class="rightLine"></view>
 		<!-- <image src="../../static/GRZX/qqLogo.png" class="qqClass" @click="qqLogin"></image> -->
 		<!-- 苹果登录 -->
-		<!-- <image src="../../static/GRZX/appleLogo.png" class="appleClass" @click="appleLogin" v-if="platform=='ios'"></image>
+		<image src="../../static/GRZX/appleLogo.png" class="appleClass" @click="appleLogin" v-if="platform=='ios'"></image>
 		<image src="../../static/GRZX/wxLogo.png" class="wxClass" @click="wxLogin" v-if="platform=='ios'"></image>
-		<image src="../../static/GRZX/wxLogo.png" class="wxClass1" v-if="platform!='ios'" @click="wxLogin" ></image> -->
+		<image src="../../static/GRZX/wxLogo.png" class="wxClass1" v-if="platform!='ios'" @click="wxLogin" ></image>
 	</view>
 </template>
 
@@ -182,6 +182,8 @@
 								url: that.$GrzxInter.Interface.login.value,
 								data: {
 									phoneNumber: phone,
+									systemname:that.$GrzxInter.systemConfig.appName,//应用名称
+									openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
 								},
 								method: that.$GrzxInter.Interface.login.method,
 								success(res) {
@@ -319,11 +321,12 @@
 											success: function(res) {
 												that.requestInterface(res.userInfo,"wx");
 											},
-											fail: function() {
+											fail: function(err1) {
 												uni.hideLoading();
-												uni.showToast({
+												console.log(err1,'获取用户信息失败');
+												uni.showModal({
 													title: '获取用户信息失败',
-													icon: "none"
+													content: JSON.stringify(err1)
 												});
 											}
 										})
@@ -331,10 +334,6 @@
 									fail(err) {
 										uni.hideLoading();
 										console.log(err,"获取失败");
-										// uni.showToast({
-										// 	title: '获取失败'+err,
-										// 	icon: "none"
-										// });
 										uni.showModal({  
 											title: '获取失败',  
 											content: JSON.stringify(err)  
@@ -352,13 +351,16 @@
 				var that=this;
 				if(type=="wx"){ //微信授权登录
 					uni.request({
-						url:that.$GrzxInter.Interface.GetUserInfoByOpenId_app.value,
+						url:that.$GrzxInter.Interface.GetUserInfoByOpenId_xcx.value,
 						data:{
-							openId_app:userInfo.openId,
+							openid:userInfo.openId,
+							systemname:that.$GrzxInter.systemConfig.appName,//应用名称
+							openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
 						},
-						method:that.$GrzxInter.Interface.GetUserInfoByOpenId_app.method,
+						method:that.$GrzxInter.Interface.GetUserInfoByOpenId_xcx.method,
 						success(res) {
 							uni.hideLoading();
+							console.log(res,"提示！！！！");
 							if(!res.data.status&&res.data.msg=="获取用户信息失败,不存在该openID用户信息"){
 								uni.setStorageSync('appUserInfo',userInfo);
 								uni.navigateTo({
@@ -377,11 +379,13 @@
 					})
 				}else if(type=="qq"){  //QQ授权登录
 					uni.request({
-						url:that.$GrzxInter.Interface.GetUserInfoByOpenId_qq.value,
+						url:that.$GrzxInter.Interface.GetUserInfoByOpenId_xcx.value,
 						data:{
-							openId_qq:userInfo.openId,
+							openid:userInfo.openId,
+							systemname:that.$GrzxInter.systemConfig.appName,//应用名称
+							openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
 						},
-						method:that.$GrzxInter.Interface.GetUserInfoByOpenId_qq.method,
+						method:that.$GrzxInter.Interface.GetUserInfoByOpenId_xcx.method,
 						success(res) {
 							uni.hideLoading();
 							if(!res.data.status&&res.data.msg=="获取用户信息失败,不存在该openID用户信息"){
@@ -400,11 +404,13 @@
 					})
 				}else if(type=="apple"){  //苹果授权登录
 					uni.request({
-						url:that.$GrzxInter.Interface.GetUserInfoByOpenId_app.value,
+						url:that.$GrzxInter.Interface.GetUserInfoByOpenId_xcx.value,
 						data:{
-							openId_ios:userInfo.openId,
+							openid:userInfo.openId,
+							systemname:that.$GrzxInter.systemConfig.appName,//应用名称
+							openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
 						},
-						method:that.$GrzxInter.Interface.GetUserInfoByOpenId_app.method,
+						method:that.$GrzxInter.Interface.GetUserInfoByOpenId_xcx.method,
 						success(res) {
 							uni.hideLoading();
 							if(!res.data.status&&res.data.msg=="获取用户信息失败,不存在该openID用户信息"){
@@ -754,8 +760,8 @@
 	.inputContent {
 		//登录区域的样式
 		width: 90.4%;
-		//height: 874upx;800upx
-		height: 650upx;
+		//height: 874upx;
+		height: 800upx;
 		position: absolute;
 		top: 324upx;
 		left: 4.8%;
