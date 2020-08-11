@@ -20,7 +20,7 @@
 					<!-- <navigator url="homeSattionPick" hover-class="hover"> -->
 						<view class="start" @tap="startStationTap">{{departure}}</view>
 					<!-- </navigator> -->
-					<image src="../../../../static/CTKY/change.png" mode="aspectFill" class="changeImage" @click="changeClick"></image>
+					<image src="../../static/change.png" mode="aspectFill" class="changeImage" @click="changeClick"></image>
 					<!-- 终点站 -->
 					<!-- <navigator url="homeSattionPick" hover-class="hover"> -->
 						<view class="start" style="text-align: right;" @tap="endStationTap">{{destination}}</view>
@@ -35,12 +35,12 @@
 				<mx-date-picker :show="showPicker" :type="type" :value="value" :show-tips="true" :begin-text="'入住'" :end-text="'离店'"
 				 :show-seconds="true" @confirm="onSelected" @cancel="onSelected" />
 				<view class="queryView">
-					<button class="queryButton" @click="queryClick">固定班次查询</button>
+					<button class="queryButton" @click="queryClick">查 询</button>
 				</view>
 			</view>
 			
-			<view class="queryView2">
-				<button class="queryButton2" @click="queryClick">议价叫车</button>
+			<view class="queryView">
+				<button class="queryButton" @click="queryClick">议价叫车</button>
 			</view>
 			
 			<view class="historyView">
@@ -60,7 +60,7 @@
 
 <script>
 	import $KyInterface from "@/common/Ctky.js"
-    import MxDatePicker from "@/pages_CTKY/components/CTKY/mx-datepicker/mx-datepicker.vue";
+    import MxDatePicker from "@/pages_CCT/components/mx-datepicker/mx-datepicker.vue";
 
 	export default {
 		components: {
@@ -422,23 +422,6 @@
 
 	//查询
 	.queryButton {
-		width: 100%;
-		height: 96upx;
-		background: #FC4646;
-		color: #FFFFFF;
-		font-size: 38upx;
-		border-radius: 10upx;
-	}
-	
-	//查询视图
-	.queryView2 {
-		margin-top: 20upx;
-		margin-left: 29upx;
-		margin-right: 29upx;
-	}
-	
-	//查询
-	.queryButton2 {
 		width: 100%;
 		height: 96upx;
 		background: #FC4646;

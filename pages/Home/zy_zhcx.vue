@@ -13,81 +13,120 @@
 				<swiper-item class="swiItem" style="display: flex;align-items: center;" v-for="(item,index) in swiperItem" :key="index">
 					<!-- 	<swiper-item class="swiItem" style="display: flex;align-items: center;">
 					<view style="display: flex;justify-content: space-around;align-items: center;"> -->
-					<view style="display: flex;width: 25%;justify-content: center;margin-bottom: 12upx;" v-for="(ArrItem,index1) in item.ItemArr" :key="index1">
+					<view style="display: flex;width: 25%;justify-content: center;margin-bottom: 12upx;" v-for="(ArrItem,index1) in item.ItemArr"
+					 :key="index1">
 						<view style="display: flex;justify-content: center;flex-direction: column;align-items: center;" @click="TitleJump(ArrItem.IsUse,ArrItem.clickURL)">
-							<image v-if="ArrItem.ItemTitle =='达达骑车'" style="width: 90upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='公交刷码'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='达达钱包'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='公交查询'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='车票订购'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='包车服务'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='景区门票'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='旅游产品'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='预约检测'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='自由行'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='武夷新区'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='村村通'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='达达骑车'" style="width: 90upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='公交刷码'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='达达钱包'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='公交查询'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='车票订购'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='包车服务'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='景区门票'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='旅游产品'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='预约检测'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='自由行'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='武夷新区'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='村村通'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
 							<text class="itemText">{{ArrItem.ItemTitle}}</text>
 						</view>
 					</view>
 				</swiper-item>
 			</swiper>
 			<!-- #endif -->
-			
+
 			<!-- h5 -->
 			<!-- #ifdef H5 -->
 			<swiper class="zl_swi " circular @change="swiperChange">
 				<swiper-item class="swiItem" style="display: flex;align-items: center;" v-for="(item,index) in swiperItem" :key="index">
 					<!-- 	<swiper-item class="swiItem" style="display: flex;align-items: center;">
 					<view style="display: flex;justify-content: space-around;align-items: center;"> -->
-					<view style="display: flex;width: 25%;justify-content: center;margin-bottom: 12upx;" v-for="(ArrItem,index1) in item.ItemArr" :key="index1">
+					<view style="display: flex;width: 25%;justify-content: center;margin-bottom: 12upx;" v-for="(ArrItem,index1) in item.ItemArr"
+					 :key="index1">
 						<view style="display: flex;justify-content: center;flex-direction: column;align-items: center;" @click="TitleJump(ArrItem.IsUse,ArrItem.clickURL)">
-							<image v-if="ArrItem.ItemTitle =='达达骑车'" style="width: 90upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='公交刷码'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='达达钱包'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='公交查询'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='车票订购'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='包车服务'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='景区门票'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='旅游产品'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='预约检测'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='自由行'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='武夷新区'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='村村通'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='达达骑车'" style="width: 90upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='公交刷码'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='达达钱包'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='公交查询'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='车票订购'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='包车服务'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='景区门票'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='旅游产品'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='预约检测'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='自由行'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='武夷新区'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='村村通'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
 							<text class="itemText">{{ArrItem.ItemTitle}}</text>
 						</view>
 					</view>
 				</swiper-item>
 			</swiper>
 			<!-- #endif -->
-			
+
 			<!-- 微信 -->
 			<!-- #ifdef MP-WEIXIN -->
 			<swiper class="zl_swi " circular @change="swiperChange">
 				<swiper-item class="swiItem" style="display: flex;align-items: center;" v-for="(item,index) in swiperItem" :key="index">
 					<!-- 	<swiper-item class="swiItem" style="display: flex;align-items: center;">
 					<view style="display: flex;justify-content: space-around;align-items: center;"> -->
-					<view style="display: flex;width: 25%;justify-content: center;margin-bottom: 12upx;" v-for="(ArrItem,index1) in item.ItemArr" :key="index1">
+					<view style="display: flex;width: 25%;justify-content: center;margin-bottom: 12upx;" v-for="(ArrItem,index1) in item.ItemArr"
+					 :key="index1">
 						<view style="display: flex;justify-content: center;flex-direction: column;align-items: center;" @click="TitleJump(ArrItem.IsUse,ArrItem.clickURL)">
-							<image v-if="ArrItem.ItemTitle =='达达骑车'" style="width: 86upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='公交刷码'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='达达钱包'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='公交查询'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='车票订购'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='包车服务'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='景区门票'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='旅游产品'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='检测预约'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='自由行'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='武夷新区'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='村村通'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL" lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='达达骑车'" style="width: 90upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='公交刷码'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='达达钱包'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='公交查询'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='车票订购'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='包车服务'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>	
+							<image v-if="ArrItem.ItemTitle =='景区门票'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='旅游产品'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='预约检测'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='自由行'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='武夷新区'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
+							<image v-if="ArrItem.ItemTitle =='村村通'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							 lazy-load="true"></image>
 							<text class="itemText">{{ArrItem.ItemTitle}}</text>
 						</view>
 					</view>
 				</swiper-item>
 			</swiper>
 			<!-- #endif -->
-			
+
 			<!-- 自定义swiper指示器 -->
 			<view class="dots">
 				<block v-for="(item,index) in swiperItem.length" :key="item">
@@ -95,7 +134,7 @@
 				</block>
 			</view>
 		</view>
-		
+
 		<!-- 咨询动态 -->
 		<view class="notice">
 			<view class="zl_content">
@@ -116,7 +155,7 @@
 				</view>
 			</view>
 		</view>
-		
+
 		<!-- 旅游推荐 -->
 		<view class="zl_recommend">
 			<view>
@@ -249,21 +288,22 @@
 					imageUrl: '',
 				}], //咨询动态
 				NanpingStyle: [{
-					imageUrl: '',
-				},
-				{
-					imageUrl: '',
-				},
-				{
-					imageUrl: '',
-				},
-				{
-					imageUrl: '',
-				},
-				{
-					imageUrl: '',
-				}], //咨询动态
-				background:[{
+						imageUrl: '',
+					},
+					{
+						imageUrl: '',
+					},
+					{
+						imageUrl: '',
+					},
+					{
+						imageUrl: '',
+					},
+					{
+						imageUrl: '',
+					}
+				], //咨询动态
+				background: [{
 					imageUrl: '',
 				}], //背景图
 				homePage: [{
@@ -291,33 +331,18 @@
 					{
 						ItemArr: [{
 								IsUse: true,
-								clickURL: "../../pages_CTKY/pages/CTKY/TraditionSpecial/Home/ctkyIndex",
-								ImageURL: "../../static/Home/CPDG.png",
-								ItemTitle: "车票订购"
-							},{
-								IsUse: true,
-								clickURL: "../../pages_DDQC/pages/Bus/BusSeach",
-								ImageURL: "../../static/Home/GJCX.png",
-								ItemTitle: "公交查询"
-							},{
-								IsUse: false,
 								clickURL: "",
-								ImageURL: "../../static/Home/hxqzhuanxian.png",//暗
-								// ImageURL: "../../static/Home/serve/xqzhuanxian.png",//亮
-								ItemTitle: "武夷新区"
-							},{
-								IsUse: false,
-								clickURL: "",
-								ImageURL: "../../static/Home/CCT2.png",//暗
-								// ImageURL: "../../static/Home/serve/cuncuntong.png",//亮
+								// ImageURL: "../../static/Home/CCT2.png", //暗
+								ImageURL: "../../static/Home/CCT.png", //亮
 								ItemTitle: "村村通"
-							},{
-								IsUse: false,
-								clickURL: "",
-								ImageURL: "../../static/Home/YYJC2.png",//暗
-								// ImageURL: "../../static/Home/YYJC.png",//亮
-								ItemTitle: "检测预约"
 							},
+							{
+								IsUse: true,
+								clickURL: "",
+								// ImageURL: "../../static/Home/serve/jqgoupiao2.png", //暗
+								ImageURL: "../../static/Home/serve/jqgoupiao.png", //亮
+								ItemTitle: "景区门票"
+							}
 						]
 					},
 				],
@@ -392,25 +417,25 @@
 				// 		]
 				// 	}
 				// ],
-				applyName:'',
+				applyName: '',
 				type2: 0,
-				departure:'',
+				departure: '',
 				datestring: '',
 				Week: '',
 				type: 'rangetime',
 				value: '',
 				showPicker: false,
 				date: '',
-				destination:'',
-				historyLines:'',//历史
-				way:'根据交通运输部令 2016年第82 相关规定，网购票需要旅客提供姓名、身份证号码信息，有关信息将用于旅客进站身份核验、行前取票、验票乘车等环节。身份信息不符将无法进站和乘车。 <p></p> 13328513020（ 时间：9:00-19:30 ） <p></p> 13365957285（ 时间：9:00-18:30 ）',
+				destination: '',
+				historyLines: '', //历史
+				way: '根据交通运输部令 2016年第82 相关规定，网购票需要旅客提供姓名、身份证号码信息，有关信息将用于旅客进站身份核验、行前取票、验票乘车等环节。身份信息不符将无法进站和乘车。 <p></p> 13328513020（ 时间：9:00-19:30 ） <p></p> 13365957285（ 时间：9:00-18:30 ）',
 			}
 		},
 		onLoad() {
 			// var a = this.$oSit.Interface.address.Url;
 			// console.log(a)
 			//加载应用名称
-			this.applyName=this.$oSit.Interface.system.applyName;
+			this.applyName = this.$oSit.Interface.system.applyName;
 			var that = this;
 			// #ifdef APP-PLUS
 			//获取系统信息
@@ -434,18 +459,18 @@
 			this.loadData();
 			//#ifdef APP-PLUS
 			this.loadService();
-			this.checkLogin();//登录是否过期
+			this.checkLogin(); //登录是否过期
 			//#endif
 
 			//获取新闻数据
 			that.GetNews();
 			//获取客服热线
 			that.ConsumerHotline();
-			
-			if(that.departure == '' || that.destination == '' || that.type2==0) {
+
+			if (that.departure == '' || that.destination == '' || that.type2 == 0) {
 				that.departure = '请选择起点';
 				that.destination = '请选择终点';
-			}else{
+			} else {
 				that.departure = '请选择终点';
 				that.destination = '请选择起点';
 			}
@@ -483,10 +508,10 @@
 				const index = e.detail.current;
 				this.swiperCurrent = index;
 			},
-			
+
 			TitleJump: function(e, Url) {
-				if(Url=="../../pages_DDQC/pages/Bus/TicketPurchase"){
-					Url="../../pages_DDQC/pages/Bus/TicketPurchase?id="+this.userInfo.userId;
+				if (Url == "../../pages_DDQC/pages/Bus/TicketPurchase") {
+					Url = "../../pages_DDQC/pages/Bus/TicketPurchase?id=" + this.userInfo.userId;
 				}
 				if (e) {
 					this.natTo2(Url);
@@ -519,7 +544,7 @@
 										complete(res) {
 											if (res.confirm) {
 
-												let appleId=1466344848 //应用的appId
+												let appleId = 1466344848 //应用的appId
 												plus.runtime.launchApplication({
 													action: `itms-apps://itunes.apple.com/cn/app/id${appleId}?mt=8`
 												}, function(e) {
@@ -644,9 +669,9 @@
 					url: $lyfw.Interface.qg_GetImage.value,
 					method: $lyfw.Interface.qg_GetImage.method,
 					data: {
-						model:9, //模块名称
-						systemtype:'XCX',//应用类型
-						companyid:this.applyName, //公司名称
+						model: 9, //模块名称
+						systemtype: 'XCX', //应用类型
+						companyid: this.applyName, //公司名称
 						// type:'背景图', //图片类型
 					},
 					header: {
@@ -712,9 +737,9 @@
 			natTo2: function(e) {
 				var that = this;
 				// #ifdef H5
-					uni.navigateTo({
-						url: e,
-					})
+				uni.navigateTo({
+					url: e,
+				})
 				// #endif
 				// #ifndef H5
 				if (that.userInfo !== '') {
@@ -757,15 +782,15 @@
 						"&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";
 				} else {
 					// 存在则通过code传向后台调用接口返回微信的个人信息
-					uni.request({ 
-						url:that.$GrzxInter.Interface.getWxUserinfo.value+'?code='+ code
-						+ '&Appid=' + Appid + '&Appsecret='+AppSecret,
+					uni.request({
+						url: that.$GrzxInter.Interface.getWxUserinfo.value + '?code=' + code +
+							'&Appid=' + Appid + '&Appsecret=' + AppSecret,
 						// url：: 'http://27.148.155.9:9056/CTKY/getWxUserinfo?code=' + code + '&Appid=' + Appid +
 						// 	'&Appsecret='+AppSecre,
 						header: {
 							'content-type': 'application/x-www-form-urlencoded'
 						},
-						method:that.$GrzxInter.Interface.getWxUserinfo.method,
+						method: that.$GrzxInter.Interface.getWxUserinfo.method,
 						success(res) {
 							console.log(res, "res")
 							if (res.data.openid != "" && res.data.openid != null) {
@@ -775,15 +800,15 @@
 							let openid = uni.getStorageSync('scenicSpotOpenId') || '';
 							console.log(openid, "openid")
 							if (openid != "" && openid != null && openid != undefined) {
-								console.log("访问地址",that.$GrzxInter.Interface.GetUserInfoByOpenId_wx.value)
-								console.log("应用名称",that.$GrzxInter.systemConfig.applyName)
-								console.log("应用类型",that.$GrzxInter.systemConfig.openidtype)
+								console.log("访问地址", that.$GrzxInter.Interface.GetUserInfoByOpenId_wx.value)
+								console.log("应用名称", that.$GrzxInter.systemConfig.applyName)
+								console.log("应用类型", that.$GrzxInter.systemConfig.openidtype)
 								uni.request({
 									url: that.$GrzxInter.Interface.GetUserInfoByOpenId_wx.value,
 									data: {
 										openId_wx: openid,
-										systemname:that.$GrzxInter.systemConfig.applyName,//应用名称
-										openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
+										systemname: that.$GrzxInter.systemConfig.applyName, //应用名称
+										openidtype: that.$GrzxInter.systemConfig.openidtype, //应用类型
 									},
 									method: that.$GrzxInter.Interface.GetUserInfoByOpenId_wx.method,
 									success(res1) {
@@ -810,7 +835,7 @@
 											})
 										}
 										console.log(openid, 'openid1')
-										if (openid == res1.data.data.openId_wx && openid != ""&&res1.data.status) {
+										if (openid == res1.data.data.openId_wx && openid != "" && res1.data.status) {
 											uni.setStorageSync('userInfo', res1.data.data)
 										}
 									}
@@ -954,89 +979,89 @@
 				})
 			},
 			//-------------弹窗结束--------------------
-			
+
 			//-------------登录过期开始--------------------
-			checkLogin(){
-				var that=this;
+			checkLogin() {
+				var that = this;
 				uni.getStorage({
-					key:'userInfo',
+					key: 'userInfo',
 					success: (res) => {
-						if(res.data.phoneNumber!=""){
+						if (res.data.phoneNumber != "") {
 							that.GetUserLastLoginTime(res.data.phoneNumber);
 						}
 					}
-				})				
+				})
 			},
-			GetUserLastLoginTime(e){
-				var that=this;
+			GetUserLastLoginTime(e) {
+				var that = this;
 				uni.request({
-					url:that.$GrzxInter.Interface.GetUserLastLoginTime.value,
-					data:{
-						phoneNumber:e,
+					url: that.$GrzxInter.Interface.GetUserLastLoginTime.value,
+					data: {
+						phoneNumber: e,
 					},
-					method:that.$GrzxInter.Interface.GetUserLastLoginTime.method,
+					method: that.$GrzxInter.Interface.GetUserLastLoginTime.method,
 					success(res) {
-						var time=that.getSpecifiedTime(90,res.data.data.lastLogintime);
-						if(that.checkDate(time)=="已过期"){
+						var time = that.getSpecifiedTime(90, res.data.data.lastLogintime);
+						if (that.checkDate(time) == "已过期") {
 							uni.navigateTo({
-								url:that.$GrzxInter.Route.verificateName.url+'?type=login',
+								url: that.$GrzxInter.Route.verificateName.url + '?type=login',
 							})
 						}
 					}
 				})
 			},
 			//--------------获取指定的时间-------------
-			getSpecifiedTime:function(e,date){
-				var num  = parseInt(e,10); //90天过期
-				if(date==0){
-					var date=new Date();
-					var currentDate=JSON.stringify(date).substring(1,11);
-					var arry  = currentDate.split("-");
-					
-				}else{
-					var currentDate=JSON.stringify(date).substring(1,9);
-					var arry  = currentDate.split("/");
+			getSpecifiedTime: function(e, date) {
+				var num = parseInt(e, 10); //90天过期
+				if (date == 0) {
+					var date = new Date();
+					var currentDate = JSON.stringify(date).substring(1, 11);
+					var arry = currentDate.split("-");
+
+				} else {
+					var currentDate = JSON.stringify(date).substring(1, 9);
+					var arry = currentDate.split("/");
 				}
-				var year = parseInt(arry[0],10);
-				var month = parseInt(arry[1],10);
-				var day = parseInt(arry[2],10); 
+				var year = parseInt(arry[0], 10);
+				var month = parseInt(arry[1], 10);
+				var day = parseInt(arry[2], 10);
 				//月份的方法：getMonth()从 Date 对象返回月份 (0 ~ 11)。
-				var structDate = new Date(year , month - 1, day);
+				var structDate = new Date(year, month - 1, day);
 				//setDate增减天数
-				structDate.setDate(structDate.getDate()+num); 
-				 //如果月份长度少于2，则前加 0 补位   
-				 if((structDate.getMonth() + 1).toString().length == 1) {  
-					month = 0 + "" + (structDate.getMonth() + 1).toString();  
-				 } else {    
-					 month = (structDate.getMonth() + 1).toString();  
-				 }   
-				 //如果天数长度少于2，则前加 0 补位   
-				 if (structDate.getDate().toString().length == 1) {   
-					day = 0 + "" + structDate.getDate().toString();   
-				 } else {    
-					 day = structDate.getDate().toString();   
-				 }    
-				 var newDate = structDate.getFullYear() + "-" + month + "-" + day;
-				 return newDate;
+				structDate.setDate(structDate.getDate() + num);
+				//如果月份长度少于2，则前加 0 补位   
+				if ((structDate.getMonth() + 1).toString().length == 1) {
+					month = 0 + "" + (structDate.getMonth() + 1).toString();
+				} else {
+					month = (structDate.getMonth() + 1).toString();
+				}
+				//如果天数长度少于2，则前加 0 补位   
+				if (structDate.getDate().toString().length == 1) {
+					day = 0 + "" + structDate.getDate().toString();
+				} else {
+					day = structDate.getDate().toString();
+				}
+				var newDate = structDate.getFullYear() + "-" + month + "-" + day;
+				return newDate;
 			},
 			//--------------检查日期-------------
-			checkDate:function(date1){
-				var date2=this.getSpecifiedTime(0,0); 
+			checkDate: function(date1) {
+				var date2 = this.getSpecifiedTime(0, 0);
 				// console.log(date1,"登录过期时间")
 				// console.log(date2,"当前时间")
-				var arry1  = date1.split("-");
-				var arry2  = date2.split("-");
-				var time1=parseInt(arry1[0]+arry1[1]+arry1[2],10);
-				var time2=parseInt(arry2[0]+arry2[1]+arry2[2],10);
+				var arry1 = date1.split("-");
+				var arry2 = date2.split("-");
+				var time1 = parseInt(arry1[0] + arry1[1] + arry1[2], 10);
+				var time2 = parseInt(arry2[0] + arry2[1] + arry2[2], 10);
 				// console.log(time1-time2)
-				if(time1>=time2){
+				if (time1 >= time2) {
 					return "未过期";
-				}else{
+				} else {
 					return "已过期";
 				}
 			},
 			//-------------登录过期结束--------------------
-			
+
 		},
 	}
 </script>
@@ -1694,7 +1719,7 @@
 	}
 
 	//弹框end
-	
+
 	//指示点
 	.dots {
 		position: relative;
@@ -1723,7 +1748,7 @@
 			background: #65C36D;
 		}
 	}
-	
+
 	//兴业银行
 	//顶部筛选样式
 	.screen {
@@ -1731,7 +1756,7 @@
 		position: sticky;
 		top: 0;
 		z-index: 1;
-	
+
 		.screenView {
 			left: 0;
 			display: flex;
@@ -1742,7 +1767,7 @@
 			top: 0;
 			// background-color: #F5F5F5;
 			margin-top: 20upx;
-	
+
 			.screenText {
 				flex: 1;
 				display: flex;
@@ -1752,15 +1777,15 @@
 				font-size: 34upx;
 				color: #FFFFFF;
 				position: relative;
-	
-	
-	
+
+
+
 				&.current {
 					color: #FFFFFF;
 					font-size: 34upx;
 					font-weight: bold;
 					// background-color: #FFFFFF;
-	
+
 					&:after {
 						content: '';
 						position: absolute;
@@ -1775,34 +1800,34 @@
 			}
 		}
 	}
-	
+
 	//顶部
-	.zh_top{
+	.zh_top {
 		position: relative;
 		width: 100%;
 		height: 100%;
-		
+
 		//选择路线
-		.top_chooseTheRoute{
+		.top_chooseTheRoute {
 			position: absolute;
 			// display: flex;
-			width:342upx;
-			height:70upx;
+			width: 342upx;
+			height: 70upx;
 			// overflow: hidden;
 			left: 6%;
 			padding: 20upx 28upx;
-			border-radius:22upx;
+			border-radius: 22upx;
 			background-color: #FFFFFF;
 			z-index: 99;
 			top: 232upx;
-			
-			.top_text{
+
+			.top_text {
 				// display: block;
 				font-size: 20upx;
 				color: #999999;
 				// padding-bottom: 6upx;
 			}
-			
+
 			//出发点
 			.setOut {
 				font-size: 32upx;
@@ -1815,37 +1840,37 @@
 				left: 0;
 				text-align: left;
 			}
-			
-			.jdticon{
+
+			.jdticon {
 				position: absolute;
 				right: 0;
 				top: 58upx;
-				height:14px;
+				height: 14px;
 				padding-right: 28upx;
 			}
 		}
-		
-		.top_destination{
+
+		.top_destination {
 			position: absolute;
 			// display: flex;
-			width:192upx;
-			height:70upx;
+			width: 192upx;
+			height: 70upx;
 			// overflow: hidden;
 			left: 61%;
 			padding: 20upx 28upx;
-			border-radius:22upx;
+			border-radius: 22upx;
 			background-color: #FFFFFF;
 			z-index: 99;
 			top: 232upx;
-			
-			.top_text2{
+
+			.top_text2 {
 				// display: block;
 				font-size: 20upx;
 				color: #999999;
 				// padding-bottom: 6upx;
 			}
-			
-			.destination{
+
+			.destination {
 				font-size: 32upx;
 				font-weight: 400;
 				color: #333333;
@@ -1857,29 +1882,29 @@
 				text-align: left;
 			}
 		}
-		
+
 		//选择到达起点
-		.top_startingPoint{
+		.top_startingPoint {
 			position: absolute;
 			// display: flex;
-			width:192upx;
-			height:70upx;
+			width: 192upx;
+			height: 70upx;
 			// overflow: hidden;
 			left: 6%;
 			padding: 20upx 28upx;
-			border-radius:22upx;
+			border-radius: 22upx;
 			background-color: #FFFFFF;
 			z-index: 99;
 			top: 232upx;
-			
-			.top_text3{
+
+			.top_text3 {
 				// display: block;
 				font-size: 20upx;
 				color: #999999;
 				// padding-bottom: 6upx;
 			}
-			
-			.startingPoint{
+
+			.startingPoint {
 				font-size: 32upx;
 				font-weight: 400;
 				color: #333333;
@@ -1891,28 +1916,28 @@
 				text-align: left;
 			}
 		}
-		
+
 		//选择到达终点
-		.top_chooseEnd{
+		.top_chooseEnd {
 			position: absolute;
 			// display: flex;
-			width:342upx;
-			height:70upx;
+			width: 342upx;
+			height: 70upx;
 			// overflow: hidden;
 			left: 41%;
 			padding: 20upx 28upx;
-			border-radius:22upx;
+			border-radius: 22upx;
 			background-color: #FFFFFF;
 			z-index: 99;
 			top: 232upx;
-			
-			.top_text4{
+
+			.top_text4 {
 				// display: block;
 				font-size: 20upx;
 				color: #999999;
 				// padding-bottom: 6upx;
 			}
-			
+
 			//出发点
 			.setEnd {
 				font-size: 32upx;
@@ -1925,32 +1950,32 @@
 				left: 0;
 				text-align: left;
 			}
-			
-			.jdticon{
+
+			.jdticon {
 				position: absolute;
 				right: 0;
 				top: 58upx;
-				height:14px;
+				height: 14px;
 				padding-right: 28upx;
 			}
 		}
-		
+
 		//选择时间
-		.top_chooseTime{
+		.top_chooseTime {
 			position: absolute;
 			display: flex;
-			width:604upx;
+			width: 604upx;
 			// height:100%;
 			overflow: hidden;
 			left: 6%;
 			padding: 28upx;
-			border-radius:22upx;
+			border-radius: 22upx;
 			background-color: #FFFFFF;
 			z-index: 99;
 			top: 366upx;
-			
+
 			//出发点
-			.dateClass{
+			.dateClass {
 				display: flex;
 				font-size: 32upx;
 				font-weight: 400;
@@ -1960,26 +1985,26 @@
 				text-align: left;
 			}
 		}
-		
-		.top_image{
+
+		.top_image {
 			width: 750upx;
 			height: 712upx;
 			overflow: hidden;
 			margin: 0 auto;
 		}
 	}
-	
+
 	//弹框样式
 	.te_boxVlew {
 		width: 90%;
 		padding: 16upx 40upx;
 		padding-bottom: 92upx;
 		background: #FFFFFF;
-	
+
 		.bv_titleView {
 			display: flex;
 			margin: 24upx 0;
-	
+
 			//弹框标题
 			.tv_text1 {
 				// position: relative;
@@ -1989,7 +2014,7 @@
 				margin-bottom: 16upx;
 				margin: 0 auto;
 			}
-		
+
 			.tv_text2 {
 				margin-top: 8upx;
 				float: right;
@@ -1997,11 +2022,11 @@
 				font-size: 32upx;
 			}
 		}
-	
+
 		.bv_content {
 			height: 100%;
 			line-height: 32upx;
-	
+
 			.ct_noticeText {
 				color: #5E5E60;
 				text-align: justify;
@@ -2011,24 +2036,24 @@
 			}
 		}
 	}
-	
+
 	//点击态
-	.ve_hover{
-		transition: all .3s;//过度
+	.ve_hover {
+		transition: all .3s; //过度
 		border-top-left-radius: 22rpx;
 		border-bottom-left-radius: 22rpx;
 		opacity: 0.9;
 		background: #E4E7ED;
 	}
-	
+
 	//查询点击态
-	.ve_hover2{
-		transition: all .3s;//过度
+	.ve_hover2 {
+		transition: all .3s; //过度
 		border-radius: 64upx;
 		opacity: 0.8;
 		background: #F0AD4E;
 	}
-	
+
 	//底部按钮
 	.tjButton {
 		position: absolute;
@@ -2042,16 +2067,16 @@
 		color: #FFFFFF;
 		font-size: 34upx;
 		font-weight: 400;
-		box-shadow:0px 20px 81px 0px rgba(184,99,0,0.6);
+		box-shadow: 0px 20px 81px 0px rgba(184, 99, 0, 0.6);
 		z-index: 99;
 	}
-	
-	.top_popup{
+
+	.top_popup {
 		position: absolute;
 		width: 100%;
 		text-align: center;
-		font-size:28upx;
-		color:#FFFFFF;
+		font-size: 28upx;
+		color: #FFFFFF;
 		z-index: 99;
 		top: 636upx;
 	}

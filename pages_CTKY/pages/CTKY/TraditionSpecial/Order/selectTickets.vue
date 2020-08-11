@@ -18,7 +18,7 @@
 			<mx-date-picker :show="showPicker" :type="type" :value="value" :show-tips="true" :begin-text="'入住'" :end-text="'离店'"
 			 :show-seconds="true" @confirm="onSelected" @cancel="onSelected" />
 		</view>
-
+		
 		<!-- 车票内容部分 -->
 		<view class="ctky_View" v-for="(item,index) in allTicketsList" :key="index" @click="ticketDetail(allTicketsList[index])">
 			<view class="ctky_View_Left">
@@ -69,18 +69,10 @@
 				 v-if="item.shuttleType == '定制巴士'">{{item.SetoutTimeDesc}}</view>
 
 				<!-- 途径站点 -->
-				<view class="st_routeSite" v-if="item.shuttleType == '定制班车'">
+				<view class="st_routeSite">
 					<view style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
 						<text>途径站点:</text>
-						<text v-for="(item2,index2) in item.starSiteArr" :key="index2" v-if="index2<4">{{item2.SiteName}}<text v-if="index2<3 && item2.length<3">/</text></text>
-						<text v-if="item2.length<3">...</text>
-					</view>
-				</view>
-				<view class="st_routeSite" v-if="item.shuttleType == '普通班车'">
-					<view style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
-						<text>途径站点:</text>
-						<text v-for="(item2,index2) in item.endSiteArr" :key="index2" v-if="index2<4">{{item2.SiteName}}<text v-if="index2<3 && item2.length<3">/</text></text>
-						<text v-if="item2.length<3">...</text>
+						<text>{{turnValue(item.lineViaSiteDesc)}}</text>
 					</view>
 				</view>
 			</view>
@@ -91,7 +83,7 @@
 <script>
 	import $KyInterface from "@/common/Ctky.js"
 	import MxDatePicker from "@/pages_CTKY/components/CTKY/mx-datepicker/mx-datepicker.vue";
-	import utils from "@/pages_CTKY/components/CTKY/shoyu-date/utils.filter.js";
+	import utils from "@/pages_ZXGP/components/ZXGP/shoyu-date/utils.filter.js";
 	export default {
 		components: {
 			MxDatePicker
@@ -200,14 +192,16 @@
 				that.allTicketsList = [];
 				var systemName = '';
 				// #ifdef H5
-				systemName = $KyInterface.KyInterface.systemName.systemNameNPH5;;
+				systemName = $KyInterface.KyInterface.systemName.systemNameXYYHH5;;
 				// #endif
 				// #ifdef APP-PLUS
-				systemName = $KyInterface.KyInterface.systemName.systemNameNPAPP;
+				systemName = $KyInterface.KyInterface.systemName.systemNameXYYHAPP;
 				// #endif
 				// #ifdef MP-WEIXIN
-				systemName = $KyInterface.KyInterface.systemName.systemNameNPWeiXin;
+				systemName = $KyInterface.KyInterface.systemName.systemNameXYYHWeiXin;
 				// #endif
+				console.log(that.startStation)
+				console.log(that.endStation)
 				uni.request({
 					url: $KyInterface.KyInterface.Ky_getListSchedulesInfo.Url,
 					method: $KyInterface.KyInterface.Ky_getListSchedulesInfo.method,
@@ -220,14 +214,15 @@
 					},
 					success: (res) => {
 						// uni.hideLoading();
-						console.log('客运班次信息', res);
 						//非空判断
 						if (res.data.status == true) {
 							if (res.data.data) {
 								that.departureData = res.data.data;
 								let i = 0;
 								for (i; i < res.data.data.length; i++) {
-									that.allTicketsList.push(res.data.data[i])
+									if(res.data.data[i].startStaion == that.startStation && res.data.data[i].endStation == that.endStation){
+										that.allTicketsList.push(res.data.data[i])
+									}
 								}
 								console.log('客运班次信息2', that.allTicketsList)
 								//加载定制巴士班次列表数据
@@ -728,6 +723,14 @@
 				}
 			},
 			//#endif  
+			
+			//-------------------------------转换-------------------------------
+			turnValue(value) {
+				if(value) {
+					var setValue = value.replace(/,/g,'、');
+					return setValue;
+				}
+			},
 		}
 	}
 </script>
@@ -849,8 +852,8 @@
 		width: 100%;
 		padding: 0;
 	}
-
-	.st_routeSite {
+	
+	.st_routeSite{
 		margin-left: 25upx;
 		margin-bottom: 20upx;
 		font-style: SourceHanSansSC-Light;
