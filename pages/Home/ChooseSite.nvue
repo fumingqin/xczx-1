@@ -154,7 +154,7 @@
 						</view>
 						<view class="popupTextContent" style="width: 500rpx;font-style:SourceHanSansSC-Bold;margin-bottom: 20rpx;">
 							<text class="popupText" style="line-height: 50rpx;">定制：车票除起终点可以上车之外，还可以在定制线路途中的站点进行上车，详细可见班次详情对应的地</text>
-						</view>
+						</view> -->
 						<!-- #ifdef APP-PLUS -->
 						<!-- <text style="top: 5rpx;border-radius: 18upx;width: 350upx;height: 100upx;line-height:100upx;color: #7EC075;font-size: 38upx;text-align: center;align-items: center;background-color: #FFFFFF;"
 						 @click="noPupop">下次不弹出</text> -->
@@ -423,7 +423,7 @@
 
 				},
 			})
-			that.getPicture();
+			//that.getPicture();
 			uni.getStorage({ //获取历史记录
 				key: "historyAddress",
 				success: function(res) {
@@ -586,7 +586,7 @@
 			},
 			goBack: function() { //返回上一页
 				uni.switchTab({
-					url: "/pages/Home/Index"
+					url: "/pages/Home/zy_zhcx"
 				});
 				clearInterval(this.intervalAround);
 			},
