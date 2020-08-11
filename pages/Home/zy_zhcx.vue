@@ -336,7 +336,7 @@
 							ItemTitle: "村村通"
 						}, {
 							IsUse: true,
-							clickURL: "",
+							clickURL: "../../pages_LYFW/pages/LYFW/scenicSpotTickets/ticketsList",
 							ImageURL: "../../static/Home/serve/jqgoupiao.png",
 							// ImageURL: "../../static/Home/serve/jqgoupiao2.png",
 							ItemTitle: "景区门票"
