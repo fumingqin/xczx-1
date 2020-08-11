@@ -437,7 +437,7 @@
 					key: 'launchFlag',
 					data: true,
 					success: function() {
-						uni.redirectTo({
+						uni.navigateTo({
 							url: 'guidePage'
 						})
 					}
