@@ -256,7 +256,6 @@
 		<uni-popup ref="centerPopup" type="center">
 			<view class="centerClass">
 				<view class="pTitleClass">服务协议和隐私政策</view>
-				<image src="../../static/Home/serve/cun"></image>
 				<view class="pTextClass">
 					<text>请你务必审慎阅读，充分理解“软件许可及服务协议”和“隐私政策”各条款。</br>你可阅读</text>
 					<text style="color: #2F9BFE;" @click="agreementClick">《软件许可及服务协议》</text>
@@ -267,7 +266,6 @@
 				<view class="btnBox">
 					<view class="btnClass1" @click="closePopup('centerPopup')">暂不使用</view>
 					<view class="btnClass2" @click="confirm">同意</view>
-					<image src=""></image>
 				</view>
 			</view>
 		</uni-popup>
