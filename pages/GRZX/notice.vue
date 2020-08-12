@@ -43,7 +43,7 @@
 					url:that.$GrzxInter.Interface.getallMsg.value,
 					method:that.$GrzxInter.Interface.getallMsg.method,
 					data:{
-						SystemName:'南平综合出行',
+						SystemName:'乡村振兴1',
 					},
 					success(res) {
 						console.log(res)
