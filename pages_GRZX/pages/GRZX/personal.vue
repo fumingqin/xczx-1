@@ -126,7 +126,7 @@
 								url:that.$GrzxInter.Interface.login.value,
 								data:{
 									phoneNumber:res.data.phoneNumber,
-									systemname:that.$GrzxInter.systemConfig.applyName,//应用名称
+									systemname:that.$GrzxInter.systemConfig.appName,//应用名称
 									openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
 								},
 								method:that.$GrzxInter.Interface.login.method,
@@ -316,7 +316,7 @@
 							birthday:that.birthday,
 							autograph:that.autograph,
 							phoneNumber:that.phoneNumber,
-							systemname:that.$GrzxInter.systemConfig.applyName,//应用名称
+							systemname:that.$GrzxInter.systemConfig.appName,//应用名称
 							openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
 						},
 						method:that.$GrzxInter.Interface.changeInfo.method,

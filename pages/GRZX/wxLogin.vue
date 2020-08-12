@@ -187,7 +187,7 @@
 					url:that.$GrzxInter.Interface.login.value,
 					data:{
 						phoneNumber:phone,
-						systemname:that.$GrzxInter.systemConfig.applyName,//应用名称
+						systemname:that.$GrzxInter.systemConfig.appName,//应用名称
 						openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
 					},
 					method:that.$GrzxInter.Interface.login.method,
@@ -276,7 +276,7 @@
 						openId_app:userInfo.openId_app, //微信oenid
 						birthday:userInfo.birthday,
 						autograph:userInfo.autograph,
-						systemname:that.$GrzxInter.systemConfig.applyName,//应用名称
+						systemname:that.$GrzxInter.systemConfig.appName,//应用名称
 						openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
 					},
 					method:that.$GrzxInter.Interface.changeInfo.method,

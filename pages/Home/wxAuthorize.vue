@@ -105,13 +105,16 @@ export default{
 					uni.request({
 						url: that.$GrzxInter.Interface.GetUserInfoByOpenId_xcx.value,
 						data:{
-							openId_xcx:openid,
+							openid:openid,
+							systemname:that.$GrzxInter.systemConfig.appName,//应用名称
+							openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
 						},
 						method:that.$GrzxInter.Interface.GetUserInfoByOpenId_xcx.method,
 						success(res){
 							setTimeout(function(){
 								uni.hideLoading();
 							},1000);
+							console.log(res,"提示什么？");
 							if(!res.data.status || res.data.data.phoneNumber=="" || res.data.data.phoneNumber==null){
 								if(that.type=="index"){
 									uni.showToast({
@@ -153,6 +156,8 @@ export default{
 				url:that.$GrzxInter.Interface.login.value,
 				data:{
 					phoneNumber:data.purePhoneNumber,
+					systemname:that.$GrzxInter.systemConfig.appName,//应用名称
+					openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
 				},
 				method:that.$GrzxInter.Interface.login.method,
 				success(res1){
@@ -182,7 +187,7 @@ export default{
 								openId_xcx:that.openId_xcx,
 								birthday:res1.data.data.birthday,
 								autograph:res1.data.data.autograph,
-								systemname:that.$GrzxInter.systemConfig.applyName,//应用名称
+								systemname:that.$GrzxInter.systemConfig.appName,//应用名称
 								openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
 							},
 							method:that.$GrzxInter.Interface.changeInfo.method,

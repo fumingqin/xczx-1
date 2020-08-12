@@ -256,7 +256,6 @@
 		<uni-popup ref="centerPopup" type="center">
 			<view class="centerClass">
 				<view class="pTitleClass">服务协议和隐私政策</view>
-				<!-- <image src="../../static/Home/serve/cun"></image> -->
 				<view class="pTextClass">
 					<text>请你务必审慎阅读，充分理解“软件许可及服务协议”和“隐私政策”各条款。</br>你可阅读</text>
 					<text style="color: #2F9BFE;" @click="agreementClick">《软件许可及服务协议》</text>
@@ -267,7 +266,6 @@
 				<view class="btnBox">
 					<view class="btnClass1" @click="closePopup('centerPopup')">暂不使用</view>
 					<view class="btnClass2" @click="confirm">同意</view>
-					<image src=""></image>
 				</view>
 			</view>
 		</uni-popup>
@@ -338,7 +336,7 @@
 							ItemTitle: "村村通"
 						}, {
 							IsUse: true,
-							clickURL: "",
+							clickURL: "../../pages_LYFW/pages/LYFW/scenicSpotTickets/ticketsList",
 							ImageURL: "../../static/Home/serve/jqgoupiao.png",
 							// ImageURL: "../../static/Home/serve/jqgoupiao2.png",
 							ItemTitle: "景区门票"
@@ -439,7 +437,7 @@
 					key: 'launchFlag',
 					data: true,
 					success: function() {
-						uni.redirectTo({
+						uni.navigateTo({
 							url: 'guidePage'
 						})
 					}
@@ -820,9 +818,9 @@
 								uni.request({
 									url: that.$GrzxInter.Interface.GetUserInfoByOpenId_wx.value,
 									data: {
-										openId_wx: openid,
-										systemname: that.$GrzxInter.systemConfig.applyName, //应用名称
-										openidtype: that.$GrzxInter.systemConfig.openidtype, //应用类型
+										openid: openid,
+										systemname:that.$GrzxInter.systemConfig.appName,//应用名称
+										openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
 									},
 									method: that.$GrzxInter.Interface.GetUserInfoByOpenId_wx.method,
 									success(res1) {
