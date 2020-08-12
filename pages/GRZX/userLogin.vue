@@ -25,14 +25,12 @@
 		<image src="../../static/GRZX/logo.png" class="logoClass"></image>
 
 		<!-- 第三方登录 -->
-		<view class="loginMode">第三方登录</view>
+		<!-- <view class="loginMode">第三方登录</view>
 		<view class="leftLine"></view>
 		<view class="rightLine"></view>
-		<!-- <image src="../../static/GRZX/qqLogo.png" class="qqClass" @click="qqLogin"></image> -->
-		<!-- 苹果登录 -->
 		<image src="../../static/GRZX/appleLogo.png" class="appleClass" @click="appleLogin" v-if="platform=='ios'"></image>
 		<image src="../../static/GRZX/wxLogo.png" class="wxClass" @click="wxLogin" v-if="platform=='ios'"></image>
-		<image src="../../static/GRZX/wxLogo.png" class="wxClass1" v-if="platform!='ios'" @click="wxLogin" ></image>
+		<image src="../../static/GRZX/wxLogo.png" class="wxClass1" v-if="platform!='ios'" @click="wxLogin" ></image> -->
 	</view>
 </template>
 
@@ -761,7 +759,7 @@
 		//登录区域的样式
 		width: 90.4%;
 		//height: 874upx;
-		height: 800upx;
+		height: 650upx;
 		position: absolute;
 		top: 324upx;
 		left: 4.8%;
