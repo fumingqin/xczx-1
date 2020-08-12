@@ -74,7 +74,7 @@
 				let hours = [];
 				let minute = [];
 				this.sDayNum = this.sDay;
-
+				
 				// 时
 				let date1 = new Date(date);
 				let sT = +this.sTime;
@@ -156,7 +156,6 @@
 				this.multiIndex = data.multiIndex;
 			},
 			bindMultiPickerColumnChange(e) {
-				// console.log(e);
 				let hours = [];
 				if (e.detail.column == 0 && e.detail.value == 0 && +this.sDayNum == 0) {
 					let date = new Date();
@@ -204,10 +203,10 @@
 						}
 					}
 					this.multiArray.splice(1, 1, hours)
+					this.multiIndex = [e.detail.value,0,0]
 				} else if (e.detail.column == 0 && e.detail.value != 0) {
 					let sT = +this.sTime;
 					let eT = +this.cTime;
-
 					if (sT <= eT) {
 						for (let i = sT; i <= eT; i++) {
 							hours.push(this.timeFormat(i) + '时');
@@ -222,6 +221,7 @@
 						}
 					}
 					this.multiArray.splice(1, 1, hours)
+					this.multiIndex = [e.detail.value,0,0]
 				}
 //分钟
 				let minute = [];
@@ -231,8 +231,7 @@
 				let m = date1.getMinutes() < 0 ? sT : date1.getMinutes();
 				// m=m+30;
 				m = Math.ceil(m / inter) * inter;
-				if (e.detail.column == 0 && e.detail.value == 0 && +this.sDayNum == 0 || e.detail.column == 1 && e.detail.value ==
-					0) {
+				if ((e.detail.column == 0 && e.detail.value == 0 && +this.sDayNum == 0) || (e.detail.column == 1 && e.detail.value ==0)) {
 					if (m > 0) {
 						for (let i = m; i < 60; i += inter) {
 							minute.push(i < 10 ? '0' + i + '分' : i + '分');
@@ -241,21 +240,37 @@
 						for (let i = 0; i < 60; i += inter) {
 							minute.push(i < 10 ? '0' + i + '分' : i + '分');
 						}
-						this.multiArray.splice(2, 2, minute);
+					}
+					this.multiArray.splice(2, 2, minute);
+					if(e.detail.column == 0){
+						this.multiIndex.splice(0, 1, e.detail.value);
+					}
+					if(e.detail.column == 1){
+						this.multiIndex.splice(1, 1, e.detail.value);
+					}
+					if(e.detail.column == 2){
+						this.multiIndex.splice(2, 1, e.detail.value);
 					}
 				} else {
-					//  console.log(m);
 					for (let i = 0; i < 60; i += inter) {
 						minute.push(i < 10 ? '0' + i + '分' : i + '分');
 					}
+					this.multiArray.splice(2, 2, minute);
+					if(e.detail.column == 0){
+						this.multiIndex.splice(0, 1, e.detail.value);
+					}
+					if(e.detail.column == 1){
+						this.multiIndex.splice(1, 1, e.detail.value);
+					}
+					if(e.detail.column == 2){
+						this.multiIndex.splice(2, 1, e.detail.value);
+					}
 				}
-				this.multiArray.splice(2, 2, minute);
 			},
 			bindStartMultiPickerChange(e) {
 				this.multiIndex = e.detail.value;
 				let da = this.multiArray;
 				let di = e.detail.value;
-
 				let caseDate = da[0][di[0]] + ' ' + da[1][di[1]].replace('时', ':') + this.timeFormat(da[2][di[2]].replace('分', ''))
 
 
