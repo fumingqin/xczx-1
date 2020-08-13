@@ -22,7 +22,7 @@
 			</view>
 		</view>	
 		<view class="btnBox"> 
-			<button type="warn" @click="addPassenger" class="btnAdd1">+添加乘客</button>
+			<button @click="addPassenger" class="btnAdd1">+添加乘客</button>
 			<button type="primary" @click="definite" class="btnDefinite">确定</button>
 		</view>
 		<view class="returnBox" @click="returnPages">
@@ -274,6 +274,8 @@
 		/* #endif */
 	}
 	.btnAdd1{
+		background-color: #ff9012;
+		color: #FFFFFF;
 		border-radius: 12upx;
 		width: 45%;
 		height: 90upx;
@@ -394,9 +396,9 @@
 		height: 40upx;
 		line-height: 40upx;
 		font-size: 24upx;
-		color: #ff0000;
+		color: #ff9012;
 		margin-left: 20upx;
-		border: 1upx solid #ff0000;
+		border: 1upx solid #ff9012;
 		border-radius: 10upx;
 		text-align: center;
 	}

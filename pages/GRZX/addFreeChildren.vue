@@ -598,7 +598,7 @@
 		font-size: 28upx;
 		font-weight: 500;
 		margin-bottom: 150upx;
-		color: #FC4646;
+		color: #ff9012;
 	}
 	.txtClass{
 		width: 82%;

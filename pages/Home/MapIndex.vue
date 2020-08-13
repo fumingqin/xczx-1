@@ -203,24 +203,23 @@
 				console.log(e);
 				this.timer = setTimeout(() => {
 					if (e.type == 'regionchange' || e.type == 'end') {
-						//#ifndef APP-PLUS
-						that.setData({
-							position: {
-								latitude: e.detail.center.latitude,
-								longitude: e.detail.center.longitude,
-							},
-						})
-						if (that.mapStatus) { // 防止地图点击时 进行多次加载
-							that.getAddressList(1)
-						} else {
-							that.mapStatus = 1
-						}
-						//#endif
-						//#ifdef APP-PLUS
+						// //#ifndef APP-PLUS
+						// that.setData({
+						// 	position: {
+						// 		latitude: e.detail.center.latitude,
+						// 		longitude: e.detail.center.longitude,
+						// 	},
+						// })
+						// if (that.mapStatus) { // 防止地图点击时 进行多次加载
+						// 	that.getAddressList(1)
+						// } else {
+						// 	that.mapStatus = 1
+						// }
+						// //#endif
 						that.mapCtx = uni.createMapContext('map')
 						that.mapCtx.getCenterLocation({
 							success: res => {
-								console.log(res.latitude)
+								console.log(res)
 								that.setData({
 									position: {
 										latitude: res.latitude,
@@ -234,7 +233,6 @@
 								}
 							}
 						})
-						//#endif
 					}
 				}, 500)
 			},

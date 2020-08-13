@@ -884,7 +884,7 @@
 		font-size: 28upx;
 		font-weight: 500;
 		margin-bottom: 150upx;
-		color: #FC4646;//#ff9e2e 备用色
+		color: #ff9012;//#ff9e2e 备用色
 	}
 	
 	// .emergencyClass{	//是否为紧急联系人
