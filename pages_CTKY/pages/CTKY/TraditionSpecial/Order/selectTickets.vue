@@ -195,7 +195,7 @@
 				systemName = $KyInterface.KyInterface.systemName.systemNameXYYHH5;;
 				// #endif
 				// #ifdef APP-PLUS
-				systemName = $KyInterface.KyInterface.systemName.systemNameXYYHAPP;
+				systemName = $KyInterface.KyInterface.systemName.systemNameXYYHWeiXin;
 				// #endif
 				// #ifdef MP-WEIXIN
 				systemName = $KyInterface.KyInterface.systemName.systemNameXYYHWeiXin;
