@@ -106,7 +106,7 @@ const Interface={
 	},
 	GetUserInfoByOpenId_xcx:{
 		value:Url+'/api/person/GetUserInfoByOpenId_xcx',
-		name:'通过微信小程序的openid获取用户信息',
+		name:'传什么openid就返回什么openid以及相应的用户信息',
 		method:'POST',
 		pages: [],
 	 },

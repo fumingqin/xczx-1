@@ -49,14 +49,14 @@
 				</view>
 			</view>
 			<!-- #ifdef MP-WEIXIN -->
-			<view style="width: 720rpx;margin-top: 20rpx;align-items: flex-end;margin-right: 30rpx;">
+			<!-- <view style="width: 720rpx;margin-top: 20rpx;align-items: flex-end;margin-right: 30rpx;">
 				<button open-type="share" style="background-color: #FFFFFF;width: 200rpx;margin-right: 0;"><text>分享行程</text></button>
-			</view>
+			</view> -->
 			<!-- #endif -->
 			<!-- #ifdef APP-PLUS -->
-			<view style="width: 720rpx;margin-top: 20rpx;align-items: flex-end;margin-right: 30rpx;">
+			<!-- <view style="width: 720rpx;margin-top: 20rpx;align-items: flex-end;margin-right: 30rpx;">
 				<button  style="background-color: #FFFFFF;width: 200rpx;margin-right: 0;" @click="ShareTrip"><text style="font-size: 32rpx;margin: 20rpx;">分享行程</text></button>
-			</view>
+			</view> -->
 			<!-- #endif -->
 		</view>
 		<view v-if='state == 2' style="width: 750rpx;position: fixed;bottom: 40px;left: 0px;right: 0px;align-items: center;">
@@ -315,11 +315,12 @@
 				//            webUrl: 'http://uniapp.dcloud.io'
 				//        },
 				// });
+				console.log(that.orderNumber) 
 				uni.share({//图文分享
 				    provider: "weixin",
 				    scene: "WXSceneSession",
 				    type: 0,
-				    href: "https://zntc.145u.net:9099/h5/#/pages_CZC/pages/CZC/TripShare?type=出租车_专线&orderNumber="+that.orderNumber,
+				    href: "https://zntc.145u.net:9099/h5/#/pages_CZC/pages/CZC/TripShare?type=出租车&orderNumber="+that.orderNumber,
 				    title: "行程分享",
 				    summary: "你的好友给你分享了一个行程,赶紧查看！",
 				    imageUrl: "https://zntc.145u.net:9099/UpLoadImages/Image/QuanYunLogo.png",

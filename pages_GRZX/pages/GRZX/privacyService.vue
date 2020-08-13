@@ -142,7 +142,7 @@
 			this.loadTitle(options.title);
 			
 			//加载应用名称
-			this.systemName=this.$GrzxInter.systemConfig.applyName;
+			this.systemName=this.$GrzxInter.systemConfig.appName;
 		},
 		methods:{
 			loadTitle:function(e){

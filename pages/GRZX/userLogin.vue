@@ -22,17 +22,15 @@
 		</view>
 
 		<!-- logo -->
-		<image :src="logo" class="logoClass"></image>
+		<image src="../../static/GRZX/logo.png" class="logoClass"></image>
 
 		<!-- 第三方登录 -->
-		<view class="loginMode">第三方登录</view>
+		<!-- <view class="loginMode">第三方登录</view>
 		<view class="leftLine"></view>
 		<view class="rightLine"></view>
-		<!-- <image src="../../static/GRZX/qqLogo.png" class="qqClass" @click="qqLogin"></image> -->
-		<!-- 苹果登录 -->
 		<image src="../../static/GRZX/appleLogo.png" class="appleClass" @click="appleLogin" v-if="platform=='ios'"></image>
 		<image src="../../static/GRZX/wxLogo.png" class="wxClass" @click="wxLogin" v-if="platform=='ios'"></image>
-		<image src="../../static/GRZX/wxLogo.png" class="wxClass1" v-if="platform!='ios'" @click="wxLogin" ></image>
+		<image src="../../static/GRZX/wxLogo.png" class="wxClass1" v-if="platform!='ios'" @click="wxLogin" ></image> -->
 	</view>
 </template>
 
@@ -182,6 +180,8 @@
 								url: that.$GrzxInter.Interface.login.value,
 								data: {
 									phoneNumber: phone,
+									systemname:that.$GrzxInter.systemConfig.appName,//应用名称
+									openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
 								},
 								method: that.$GrzxInter.Interface.login.method,
 								success(res) {
@@ -219,13 +219,9 @@
 				})
 				setTimeout(function(){
 					if (that.urlData == 1) {
-						uni.switchTab({ //返回首页zy_zhcx
-							url: '/pages/Home/zxgpHomePage',
-						})
+						that.$GrzxInter.navToHome();//返回首页
 					} else if (that.urlData == 2) {
-						uni.switchTab({ //返回订单页
-							url: '/pages/order/OrderList',
-						})
+						that.$GrzxInter.navToOrderList();
 					} else {
 						console.log("返回上一页")
 						uni.navigateBack(); //返回上一页
@@ -309,30 +305,41 @@
 						title:'授权登录中...',
 						mask:true,
 					})
-					uni.login({
-						provider: 'weixin',
-						success: function(loginRes) {
-							uni.getUserInfo({
-								provider: 'weixin',
-								success: function(res) {
-									that.requestInterface(res.userInfo,"wx");
-								},
-								fail: function() {
-									uni.hideLoading();
-									uni.showToast({
-										title: '获取用户信息失败',
-										icon: "none"
-									});
-								}
-							})
+					uni.getProvider({
+					    service: 'oauth',
+					    success: function(oauthRes) {
+					        console.log(oauthRes,"授权1");
+							if(~oauthRes.provider.indexOf('weixin')){
+								uni.login({
+									provider: 'weixin',
+									success: function(loginRes) {
+										console.log(loginRes,"授权2");
+										uni.getUserInfo({
+											provider: 'weixin',
+											success: function(res) {
+												that.requestInterface(res.userInfo,"wx");
+											},
+											fail: function(err1) {
+												uni.hideLoading();
+												console.log(err1,'获取用户信息失败');
+												uni.showModal({
+													title: '获取用户信息失败',
+													content: JSON.stringify(err1)
+												});
+											}
+										})
+									},
+									fail(err) {
+										uni.hideLoading();
+										console.log(err,"获取失败");
+										uni.showModal({  
+											title: '获取失败',  
+											content: JSON.stringify(err)  
+										}) 
+									}
+								})
+							}
 						},
-						fail() {
-							uni.hideLoading();
-							uni.showToast({
-								title: '获取失败',
-								icon: "none"
-							});
-						}
 					})
 				}
 			},
@@ -342,13 +349,16 @@
 				var that=this;
 				if(type=="wx"){ //微信授权登录
 					uni.request({
-						url:that.$GrzxInter.Interface.GetUserInfoByOpenId_app.value,
+						url:that.$GrzxInter.Interface.GetUserInfoByOpenId_xcx.value,
 						data:{
-							openId_app:userInfo.openId,
+							openid:userInfo.openId,
+							systemname:that.$GrzxInter.systemConfig.appName,//应用名称
+							openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
 						},
-						method:that.$GrzxInter.Interface.GetUserInfoByOpenId_app.method,
+						method:that.$GrzxInter.Interface.GetUserInfoByOpenId_xcx.method,
 						success(res) {
 							uni.hideLoading();
+							console.log(res,"提示！！！！");
 							if(!res.data.status&&res.data.msg=="获取用户信息失败,不存在该openID用户信息"){
 								uni.setStorageSync('appUserInfo',userInfo);
 								uni.navigateTo({
@@ -367,11 +377,13 @@
 					})
 				}else if(type=="qq"){  //QQ授权登录
 					uni.request({
-						url:that.$GrzxInter.Interface.GetUserInfoByOpenId_qq.value,
+						url:that.$GrzxInter.Interface.GetUserInfoByOpenId_xcx.value,
 						data:{
-							openId_qq:userInfo.openId,
+							openid:userInfo.openId,
+							systemname:that.$GrzxInter.systemConfig.appName,//应用名称
+							openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
 						},
-						method:that.$GrzxInter.Interface.GetUserInfoByOpenId_qq.method,
+						method:that.$GrzxInter.Interface.GetUserInfoByOpenId_xcx.method,
 						success(res) {
 							uni.hideLoading();
 							if(!res.data.status&&res.data.msg=="获取用户信息失败,不存在该openID用户信息"){
@@ -390,11 +402,13 @@
 					})
 				}else if(type=="apple"){  //苹果授权登录
 					uni.request({
-						url:that.$GrzxInter.Interface.GetUserInfoByOpenId_app.value,
+						url:that.$GrzxInter.Interface.GetUserInfoByOpenId_xcx.value,
 						data:{
-							openId_ios:userInfo.openId,
+							openid:userInfo.openId,
+							systemname:that.$GrzxInter.systemConfig.appName,//应用名称
+							openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
 						},
-						method:that.$GrzxInter.Interface.GetUserInfoByOpenId_app.method,
+						method:that.$GrzxInter.Interface.GetUserInfoByOpenId_xcx.method,
 						success(res) {
 							uni.hideLoading();
 							if(!res.data.status&&res.data.msg=="获取用户信息失败,不存在该openID用户信息"){
@@ -745,7 +759,7 @@
 		//登录区域的样式
 		width: 90.4%;
 		//height: 874upx;
-		height: 800upx;
+		height: 650upx;
 		position: absolute;
 		top: 324upx;
 		left: 4.8%;

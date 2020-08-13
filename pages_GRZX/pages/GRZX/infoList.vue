@@ -1,3 +1,4 @@
+<!-- 乡村振兴  第一版 -->
 <template>
 	<view>	
 		<!-- 常用乘车人 -->
@@ -588,9 +589,9 @@
 		height: 40upx;
 		line-height: 40upx;
 		font-size: 24upx;
-		color: #ff0000;
+		color: #ff9012;
 		margin-left: 20upx;
-		border: 1upx solid #ff0000;
+		border: 1upx solid #ff9012;
 		border-radius: 10upx;
 		text-align: center;
 	}

@@ -1114,6 +1114,10 @@
 				{
 					"path": "pages/CCT/villageBus",
 					"style": {}
+				},
+				{
+				    "path" : "pages/CCT/cct_homePage",
+				    "style" : {}
 				}
 			]
 		},

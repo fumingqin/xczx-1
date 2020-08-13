@@ -150,9 +150,7 @@
 				serviceList:[], 	//服务功能模块
 			}
 		},
-		onLoad() {
-			//加载应用名称
-			this.applyName=this.$GrzxInter.systemConfig.applyName;
+		onLoad() {	
 			
 			//加载广告图片
 			this.loadImg();
@@ -183,67 +181,65 @@
 			
 			// ---------------------------加载服务功能模块----------------------------
 			loadServiceList(){
-				if(this.applyName=="南平综合出行"){
-					this.serviceList=[{
-							IsUse: true,
-							clickURL: "",
-							ImageURL: "../../static/GRZX/ServiceIcon/tb_XXGL.png",
-							ItemTitle: "乘客管理"
-						},{
-							IsUse: false,
-							clickURL: "",
-							ImageURL: "../../static/GRZX/ServiceIcon/tb_ZDPZ.png",
-							ItemTitle: "站点拍照"
-						},
-						{
-							IsUse: true,
-							clickURL: "",
-							ImageURL: "../../static/GRZX/ServiceIcon/tb_WDTS.png",
-							ItemTitle: "我的投诉"
-						},
-						{
-							IsUse: false,
-							clickURL: "",
-							ImageURL: "../../static/GRZX/ServiceIcon/tb_JXLXR.png",
-							ItemTitle: "紧急联系人"
-						},
-						{
-							IsUse: false,
-							clickURL: "",
-							ImageURL: "../../static/GRZX/ServiceIcon/tb_SMRZ.png",
-							ItemTitle: "实名认证"
-						},
-						{
-							IsUse: false,
-							clickURL: "",
-							ImageURL: "../../static/GRZX/ServiceIcon/tb_GHSJH.png",
-							ItemTitle: "更换手机号"
-						},
-						{
-							IsUse: true,
-							clickURL: "",
-							ImageURL: "../../static/GRZX/ServiceIcon/tb_DHKF.png",
-							ItemTitle: "电话客服"
-						},
-						{
-							IsUse: true,
-							clickURL: "",
-							ImageURL: "../../static/GRZX/ServiceIcon/tb_YJFK.png",
-							ItemTitle: "意见反馈"
-						},
-						{
-							IsUse: true,
-							clickURL: "",
-							ImageURL: "../../static/GRZX/ServiceIcon/tb_ZXKF.png",
-							ItemTitle: "在线客服"
-						},
-						{
-							IsUse: true,
-							clickURL: "",
-							ImageURL: "../../static/GRZX/ServiceIcon/tb_QQKF.png",
-							ItemTitle: "QQ客服"
-						},]
-				}
+				this.serviceList=[{
+						IsUse: true,
+						clickURL: "",
+						ImageURL: "../../static/GRZX/ServiceIcon/tb_XXGL.png",
+						ItemTitle: "乘客管理"
+					},{
+						IsUse: false,
+						clickURL: "",
+						ImageURL: "../../static/GRZX/ServiceIcon/tb_ZDPZ.png",
+						ItemTitle: "站点拍照"
+					},
+					{
+						IsUse: true,
+						clickURL: "",
+						ImageURL: "../../static/GRZX/ServiceIcon/tb_WDTS.png",
+						ItemTitle: "我的投诉"
+					},
+					{
+						IsUse: false,
+						clickURL: "",
+						ImageURL: "../../static/GRZX/ServiceIcon/tb_JXLXR.png",
+						ItemTitle: "紧急联系人"
+					},
+					{
+						IsUse: false,
+						clickURL: "",
+						ImageURL: "../../static/GRZX/ServiceIcon/tb_SMRZ.png",
+						ItemTitle: "实名认证"
+					},
+					{
+						IsUse: false,
+						clickURL: "",
+						ImageURL: "../../static/GRZX/ServiceIcon/tb_GHSJH.png",
+						ItemTitle: "更换手机号"
+					},
+					{
+						IsUse: true,
+						clickURL: "",
+						ImageURL: "../../static/GRZX/ServiceIcon/tb_DHKF.png",
+						ItemTitle: "电话客服"
+					},
+					{
+						IsUse: true,
+						clickURL: "",
+						ImageURL: "../../static/GRZX/ServiceIcon/tb_YJFK.png",
+						ItemTitle: "意见反馈"
+					},
+					{
+						IsUse: true,
+						clickURL: "",
+						ImageURL: "../../static/GRZX/ServiceIcon/tb_ZXKF.png",
+						ItemTitle: "在线客服"
+					},
+					{
+						IsUse: true,
+						clickURL: "",
+						ImageURL: "../../static/GRZX/ServiceIcon/tb_QQKF.png",
+						ItemTitle: "QQ客服"
+					},]
 			},
 			
 			// ---------------------------加载数据----------------------------
@@ -255,10 +251,15 @@
 						// console.log(user,"user")
 						var phone = user.data.phoneNumber;
 						if (phone != "" && phone != null && user.data != "") {
+							console.log("应用名称",that.$GrzxInter.systemConfig.applyName);
+							console.log("应用类型",that.$GrzxInter.systemConfig.openidtype);
+							console.log("手机号",phone);
 							uni.request({
 								url: that.$GrzxInter.Interface.login.value,
 								data: {
 									phoneNumber: phone,
+									systemname:that.$GrzxInter.systemConfig.appName,//应用名称
+									openidtype:that.$GrzxInter.systemConfig.openidtype,//应用类型
 								},
 								method: that.$GrzxInter.Interface.login.method,
 								success(res) {
@@ -285,6 +286,9 @@
 										that.port = base64;
 									}
 									that.userId = res.data.data.userId;
+								},
+								fail(err) {
+									console.log(err);
 								}
 							})
 						}
