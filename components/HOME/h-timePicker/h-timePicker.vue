@@ -41,7 +41,7 @@
 			},
 			dayNum: { //预约天数
 				type: [Number, String],
-				default: "7"
+				default: "2"
 			},
 
 		},
@@ -74,7 +74,7 @@
 				let hours = [];
 				let minute = [];
 				this.sDayNum = this.sDay;
-				
+
 				// 时
 				let date1 = new Date(date);
 				let sT = +this.sTime;
@@ -130,7 +130,7 @@
 				// 分
 				let inter = +this.interval < 60 ? +this.interval : 59;
 				let m = date1.getMinutes() < 0 ? sT : date1.getMinutes();
-				
+
 				m = Math.ceil(m / inter) * inter;
 				// m=m+4;  
 				//  console.log(m);				
@@ -156,6 +156,20 @@
 				this.multiIndex = data.multiIndex;
 			},
 			bindMultiPickerColumnChange(e) {
+				console.log(e)
+				console.log(this.multiArray );
+				if (e.detail.column == 0) {
+					this.multiIndex[0]=[];
+					this.multiIndex[0]= e.detail.value;
+				}
+				if (e.detail.column == 1) {
+					this.multiIndex[1]=[];
+					this.multiIndex[1]=e.detail.value;
+				}
+				if (e.detail.column == 2) {
+					this.multiIndex[2]=[];
+					this.multiIndex[2]= e.detail.value;
+				}
 				let hours = [];
 				if (e.detail.column == 0 && e.detail.value == 0 && +this.sDayNum == 0) {
 					let date = new Date();
@@ -203,7 +217,6 @@
 						}
 					}
 					this.multiArray.splice(1, 1, hours)
-					this.multiIndex = [e.detail.value,0,0]
 				} else if (e.detail.column == 0 && e.detail.value != 0) {
 					let sT = +this.sTime;
 					let eT = +this.cTime;
@@ -221,9 +234,8 @@
 						}
 					}
 					this.multiArray.splice(1, 1, hours)
-					this.multiIndex = [e.detail.value,0,0]
 				}
-//分钟
+				//分钟
 				let minute = [];
 				let date = new Date();
 				let date1 = new Date(date);
@@ -231,7 +243,9 @@
 				let m = date1.getMinutes() < 0 ? sT : date1.getMinutes();
 				// m=m+30;
 				m = Math.ceil(m / inter) * inter;
-				if ((e.detail.column == 0 && e.detail.value == 0 && +this.sDayNum == 0) || (e.detail.column == 1 && e.detail.value ==0)) {
+				console.log(this.multiIndex);
+				if ((e.detail.column == 0 && e.detail.value == 0 && +this.sDayNum == 0&&this.multiIndex[1]==0) || (this.multiIndex[0]==0&&e.detail.column == 1 && e.detail.value ==
+						0)) {
 					if (m > 0) {
 						for (let i = m; i < 60; i += inter) {
 							minute.push(i < 10 ? '0' + i + '分' : i + '分');
@@ -242,28 +256,12 @@
 						}
 					}
 					this.multiArray.splice(2, 2, minute);
-					if(e.detail.column == 0){
-						this.multiIndex.splice(0, 1, e.detail.value);
-					}
-					if(e.detail.column == 1){
-						this.multiIndex.splice(1, 1, e.detail.value);
-					}
-					if(e.detail.column == 2){
-						this.multiIndex.splice(2, 1, e.detail.value);
-					}
 				} else {
-					for (let i = 0; i < 60; i += inter) {
-						minute.push(i < 10 ? '0' + i + '分' : i + '分');
-					}
-					this.multiArray.splice(2, 2, minute);
-					if(e.detail.column == 0){
-						this.multiIndex.splice(0, 1, e.detail.value);
-					}
-					if(e.detail.column == 1){
-						this.multiIndex.splice(1, 1, e.detail.value);
-					}
-					if(e.detail.column == 2){
-						this.multiIndex.splice(2, 1, e.detail.value);
+					if(this.multiIndex[0]!=0||this.multiIndex[1]!=0){
+						for (let i = 0; i < 60; i += inter) {
+							minute.push(i < 10 ? '0' + i + '分' : i + '分');
+						}
+						this.multiArray.splice(2, 2, minute);
 					}
 				}
 			},

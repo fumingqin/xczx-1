@@ -39,7 +39,7 @@
 					});
 				}else if(e==1){
 					uni.switchTab({
-						url:'../../../pages/Home/Index'
+						url:'../../../pages/Home/zy_zhcx'
 					});
 				}
 			},
