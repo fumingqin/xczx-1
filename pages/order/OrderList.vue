@@ -2123,9 +2123,14 @@
 			},
 			//----------------------------获取时间--------------------
 			gettime2:function(param){
+				if(param!=undefined){
 					let array=param.split(':');
 					var a=array[0]+":"+array[1];
 					return a;
+				}else{
+					return param;
+				}
+					
 			},
 			//-------------------------判断订单状态-------------------------
 			getCtkyOrderStatus(param) {
@@ -4689,9 +4694,10 @@
 
 			.at_icon {
 				position: relative;
-				top: 6upx;
+				top: 4upx;
 				width: 40upx;
-				height: 34upx;
+				right:8upx;
+				height: 38upx;
 			}
 			.at_textView{
 				padding-left: 20upx;

@@ -261,42 +261,42 @@
 						ItemTitle: "车票订购"
 					},
 					{
-						IsUse: true,
-						clickURL: "../../pages_GJCX/pages/GJCX/busH5",
-						ImageURL: "../../static/Home/serve/gjchaxun.png",//亮
-						// ImageURL: "../../static/Home/serve/hgjchaxun.png",//暗
-						ItemTitle: "公交查询"
-					},
-					{
-						IsUse: false,
-						clickURL: "../../pages_GJCX/pages/HB/hangban",
-						// ImageURL: "../../static/Home/serve/hhangban.png",//暗
-						ImageURL: "../../static/Home/serve/hangban.png",//亮
-						ItemTitle: "航班"
-					},
-					{
-						IsUse: false,
-						clickURL: "../../pages_GJCX/pages/HC/huoche",
-						// ImageURL: "../../static/Home/serve/hhuoche.png",//暗
-						ImageURL: "../../static/Home/serve/huoche.png",//亮
-						ItemTitle: "火车"
-					},
-					{
-						IsUse: false,
-						// clickURL: "/pages_BCFW/pages/BCFW/bf_chartered",
-						clickURL:"",
-						ImageURL: "../../static/Home/serve/hbcfuwu.png",//暗
-						// ImageURL: "../../static/Home/serve/bcfuwu.png",//亮
-						ItemTitle: "包车服务"
-					},
+					// 	IsUse: true,
+					// 	clickURL: "../../pages_GJCX/pages/GJCX/busH5",
+					// 	ImageURL: "../../static/Home/serve/gjchaxun.png",//亮
+					// 	// ImageURL: "../../static/Home/serve/hgjchaxun.png",//暗
+					// 	ItemTitle: "公交查询"
+					// },
+					// {
+					// 	IsUse: false,
+					// 	clickURL: "../../pages_GJCX/pages/HB/hangban",
+					// 	// ImageURL: "../../static/Home/serve/hhangban.png",//暗
+					// 	ImageURL: "../../static/Home/serve/hangban.png",//亮
+					// 	ItemTitle: "航班"
+					// },
+					// {
+					// 	IsUse: false,
+					// 	clickURL: "../../pages_GJCX/pages/HC/huoche",
+					// 	// ImageURL: "../../static/Home/serve/hhuoche.png",//暗
+					// 	ImageURL: "../../static/Home/serve/huoche.png",//亮
+					// 	ItemTitle: "火车"
+					// },
+					// {
+					// 	IsUse: false,
+					// 	// clickURL: "/pages_BCFW/pages/BCFW/bf_chartered",
+					// 	clickURL:"",
+					// 	ImageURL: "../../static/Home/serve/hbcfuwu.png",//暗
+					// 	// ImageURL: "../../static/Home/serve/bcfuwu.png",//亮
+					// 	ItemTitle: "包车服务"
+					// },
 					
-					{
+					// {
 						IsUse: true,
 						clickURL: "../../pages_CZC/pages/CZC/Index",
 						// ImageURL: "../../static/Home/serve/hwlyueche.png",//暗
 						ImageURL: "../../static/Home/serve/wlyueche.png",//亮
 						ItemTitle: "网络约车"
-					},
+					// },
 					// {
 					// 	IsUse: false,
 					// 	clickURL: "",
@@ -304,13 +304,13 @@
 					// 	// ImageURL: "../../static/Home/serve/gwzuche.png",//亮
 					// 	ItemTitle: "公务租车"
 					// },
-					{
-						IsUse: false,
-						clickURL: "",
-						ImageURL: "../../static/Home/serve/hxjkuaidi.png",//暗
-						// ImageURL: "../../static/Home/serve/xjkuaidi.png",//亮
-						ItemTitle: "小件快递"
-					},
+					// {
+					// 	IsUse: false,
+					// 	clickURL: "",
+					// 	ImageURL: "../../static/Home/serve/hxjkuaidi.png",//暗
+					// 	// ImageURL: "../../static/Home/serve/xjkuaidi.png",//亮
+					// 	ItemTitle: "小件快递"
+					// },
 					// {
 					// 	IsUse: false,
 					// 	clickURL: "",
@@ -319,26 +319,26 @@
 					// 	ItemTitle: "天气"
 					// },
 				
-					{
-						IsUse: false,
-						clickURL: "",
-						ImageURL: "../../static/Home/serve/hjcyuyue.png",//暗
-						// ImageURL: "../../static/Home/serve/jcyuyue.png",//亮
-						ItemTitle: "检测预约"
-					},
-					{
-						IsUse: false,
-						clickURL: "",
-						ImageURL: "../../static/Home/serve/hxqzhuanxian.png",//暗
-						// ImageURL: "../../static/Home/serve/xqzhuanxian.png",//亮
-						ItemTitle: "武夷新区"
-					},
-					{
-						IsUse: false,
-						clickURL: "",
-						ImageURL: "../../static/Home/serve/hcuncuntong.png",//暗
-						// ImageURL: "../../static/Home/serve/cuncuntong.png",//亮
-						ItemTitle: "村村通"
+					// {
+					// 	IsUse: false,
+					// 	clickURL: "",
+					// 	ImageURL: "../../static/Home/serve/hjcyuyue.png",//暗
+					// 	// ImageURL: "../../static/Home/serve/jcyuyue.png",//亮
+					// 	ItemTitle: "检测预约"
+					// },
+					// {
+					// 	IsUse: false,
+					// 	clickURL: "",
+					// 	ImageURL: "../../static/Home/serve/hxqzhuanxian.png",//暗
+					// 	// ImageURL: "../../static/Home/serve/xqzhuanxian.png",//亮
+					// 	ItemTitle: "武夷新区"
+					// },
+					// {
+					// 	IsUse: false,
+					// 	clickURL: "",
+					// 	ImageURL: "../../static/Home/serve/hcuncuntong.png",//暗
+					// 	// ImageURL: "../../static/Home/serve/cuncuntong.png",//亮
+					// 	ItemTitle: "村村通"
 					}
 				],
 				ItemArr2: [{
