@@ -10,7 +10,7 @@
 					<view class="fontStyle">性别</view>
 					<radio-group class="inputClass" name="userSex">
 						<label v-for="(item, index) in sexMode" :key="index" @click="radioClick(index)" > 
-							<radio style="transform: scale(0.7)" :value="user.userSex" :checked="index===user.userSex" />{{item.title}}
+							<radio style="transform: scale(0.7)" :value="user.userSex" :checked="index===user.userSex"  color="#ff9012"/>{{item.title}}
 						</label>  
 					</radio-group>
 				</view>
@@ -123,7 +123,7 @@
 				<view class="checkBox">
 					<checkbox-group name="userDefault" @change="checkChange">
 						<label>
-							<checkbox :checked="user.userDefault" :value="user.userDefault"  />
+							<checkbox :checked="user.userDefault" :value="user.userDefault"  color="#ff9012" />
 						</label>
 					</checkbox-group>
 				</view>
