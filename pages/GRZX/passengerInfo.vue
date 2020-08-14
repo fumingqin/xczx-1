@@ -23,7 +23,7 @@
 		</view>	
 		<view class="btnBox"> 
 			<button @click="addPassenger" class="btnAdd1">+添加乘客</button>
-			<button type="primary" @click="definite" class="btnDefinite">确定</button>
+			<button type="primary" @click="definite" class="btnDefinite">选择完成</button>
 		</view>
 		<view class="returnBox" @click="returnPages">
 			<image class="returnClass" src="../../static/GRZX/btnReturn.png"></image>
