@@ -7,9 +7,9 @@
 				<view class="sexClass" name="userSex">{{item.userSex}}</view>
 				<!-- <view class="typeClass">{{item.userType}}</view> -->
 				<view class="codeClass fontStyle">证件号</view>
-				<view class="codeNumClass fontStyle">{{item.userCodeNum}}</view>
+				<view class="codeNumClass fontStyle">{{formate(item.userCodeNum,'code')}}</view>
 				<view class="phoneClass fontStyle">联系电话</view>
-				<view class="phoneNumClass fontStyle">{{item.userPhoneNum}}</view>
+				<view class="phoneNumClass fontStyle">{{formate(item.userPhoneNum,'phone')}}</view>
 				<view>
 					<image v-if="item.hiddenIndex == 1"  class="checkClass" src="../../static/GRZX/checked.png"></image>
 				</view>
@@ -23,7 +23,7 @@
 		</view>	
 		<view class="btnBox"> 
 			<button @click="addPassenger" class="btnAdd1">+添加乘客</button>
-			<button type="primary" @click="definite" class="btnDefinite">确定</button>
+			<button type="primary" @click="definite" class="btnDefinite">选择完成</button>
 		</view>
 		<view class="returnBox" @click="returnPages">
 			<image class="returnClass" src="../../static/GRZX/btnReturn.png"></image>
@@ -213,7 +213,25 @@
 					uni.setStorageSync('passengerList',array);
 					uni.navigateBack();	
 				}			
-			}
+			},
+			
+			//--------------------------------格式化手机号和身份证号--------------------------------
+			formate(num,type){
+				switch (type){
+					case 'phone':
+						return num.substr(0,3)+'****'+num.substr(7,11);
+						break;
+					case 'code':
+						// if(num.length!=18){
+						// 	return num;
+						// }else{
+						// }
+						return num.substr(0,6)+'******'+num.substr(14,18);
+						break;
+					default:
+						return num;
+				}
+			},
 		}
 	}
 </script>
