@@ -695,10 +695,10 @@
 							return item.type == '新闻资讯';
 						})
 						this.background = res.data.data.filter(item => {
-							return item.type == '轮播图';
+							return item.type == '轮播图xczx';
 						})
 						this.NanpingStyle = res.data.data.filter(item => {
-							return item.type == '南平风采';
+							return item.type == 'xczx';
 						})
 						// console.log(this.imgXXDT)
 					}
