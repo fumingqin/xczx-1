@@ -202,6 +202,7 @@
 			},
 			payment: function(orderInfo) { //支付
 				let that = this;
+				console.log(orderInfo);
 				uni.requestPayment({
 					//#ifdef MP-WEIXIN
 					timeStamp:orderInfo.timeStamp,
@@ -223,6 +224,7 @@
 						// #ifdef MP-WEIXIN
 						msg="requestPayment:fail cancel";
 						// #endif
+						console.log(res);
 						if (res.errMsg == msg) {
 							setTimeout(function() {
 								that.showToast("支付失败，请重新支付")

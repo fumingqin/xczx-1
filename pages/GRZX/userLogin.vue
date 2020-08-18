@@ -578,17 +578,7 @@
 
 			//-------------------------------------返回按钮------------------------------------
 			returnClick: function() {
-				var that = this;
-				if(that.urlData == 1){
-					that.$GrzxInter.navToHome();//返回首页
-				}else if (that.urlData == 2) {
-					uni.switchTab({ //返回订单页
-						url: '/pages/order/OrderList',
-					})
-				} else {
-					console.log("返回上一页")
-					uni.navigateBack(); //返回上一页
-				}
+				uni.navigateBack(); //返回上一页
 			},
 
 			//-----------------------------------判断是否为base64格式----------------------------
