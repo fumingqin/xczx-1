@@ -28,7 +28,7 @@
 							 lazy-load="true"></image>
 							<image v-if="ArrItem.ItemTitle =='包车服务'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='景区门票'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							<image v-if="ArrItem.ItemTitle =='旅游服务'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
 							<image v-if="ArrItem.ItemTitle =='旅游产品'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
@@ -68,7 +68,7 @@
 							 lazy-load="true"></image>
 							<image v-if="ArrItem.ItemTitle =='包车服务'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='景区门票'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							<image v-if="ArrItem.ItemTitle =='旅游服务'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
 							<image v-if="ArrItem.ItemTitle =='旅游产品'" style="width: 68upx;height: 68upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
@@ -108,7 +108,7 @@
 							 lazy-load="true"></image>
 							<image v-if="ArrItem.ItemTitle =='包车服务'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
-							<image v-if="ArrItem.ItemTitle =='景区门票'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL"
+							<image v-if="ArrItem.ItemTitle =='旅游服务'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
 							<image v-if="ArrItem.ItemTitle =='旅游产品'" style="width: 64upx;height: 64upx;" mode="aspectFit" :src="ArrItem.ImageURL"
 							 lazy-load="true"></image>
@@ -339,7 +339,7 @@
 							clickURL: "../../pages_LYFW/pages/LYFW/scenicSpotTickets/ticketsList",
 							ImageURL: "../../static/Home/serve/jqgoupiao.png",
 							// ImageURL: "../../static/Home/serve/jqgoupiao2.png",
-							ItemTitle: "景区门票"
+							ItemTitle: "旅游服务"
 						}]
 					},
 				],
